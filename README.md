@@ -2,7 +2,7 @@
 
 See Overview.pdf in this repository for conceptual overview of the approach.
 
-This repository incudes code written to test ideas for static gesture recognition. It includes some powerful classiers written in python that cope with smaller training data sets well while handing massive training data sets.    It also includes samples of using the same training data to fed into TensorFlow to test classification using googles deep learning functionality.
+This repository incudes code written to test ideas for static gesture recognition. It includes powerful classiers written in python that cope well with smaller training data sets.  They also handle massive training data sets with minimal memory.    Samples of using the same training data are supplied.  Includes code to feed the same data into TensorFlow to test classification using googles deep learning functionality.
 
 * Version: 0.1
 * License: (MIT) We do sell consulting services http://BayesAnalytic.com/contact
