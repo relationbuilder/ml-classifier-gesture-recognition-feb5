@@ -143,11 +143,11 @@ readTrainingData('data/train/gest_train_ratio2.csv')
 print("colVals=", colVals)
 
  
-matchHSamp =  match([0.080,0.10,0.964,1.000,0.632,0.825])
+matchHSamp =  match([0.082,0.14,0.924,1.000,0.602,0.885])
 
 
 print ("matchHSamp = ", matchHSamp)
 
 
-matchYSamp =  match([0.040,0.100,0.144,0.205,0.750,0.725])
+matchYSamp =  match([0.242,0.120,0.154,0.305,0.730,0.745])
 print ("mathYSamp = ", matchYSamp)
