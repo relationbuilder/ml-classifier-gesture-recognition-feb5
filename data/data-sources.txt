@@ -1,0 +1,10 @@
+See Source site for license and re-use information on this data
+Only duplicated here because most of these required some non-trivial
+tranform before being ready to feed direclty into a machine learning
+algorith.
+
+mnist.csv - https://github.com/savarin/neural-networks
+rottentomatoes.csv - https://github.com/savarin/neural-networks
+titanic.csv - https://github.com/savarin/neural-networks
+move_metadata.csv - https://www.kaggle.com/deepmatrix/imdb-5000-movie-dataset
+breast-cancer-wisconsin.data.csv - https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.names

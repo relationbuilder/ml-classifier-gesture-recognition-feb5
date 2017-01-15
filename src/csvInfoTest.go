@@ -8,7 +8,7 @@ import (
 
 func main() {
 	fmt.Println("csvInfoTest.go")
-	md := qprob.GetCSVMetaData("../data/breast-cancer-wisconsin.adj.data.csv")
+	md := qprob.LoadCSVMetaDataFile("../data/breast-cancer-wisconsin.adj.data.csv")
 	fmt.Println("constructor complete")
 	fmt.Println(md.String())
 	md.BuildDistMatrixFile()

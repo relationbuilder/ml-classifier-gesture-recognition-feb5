@@ -91,15 +91,7 @@ type CSVInfo struct {
 	ByName map[string]*CSVCol // Index of columns by Name
 }
 
-// TODO: Modify this to accept the stream
-//   rather than the filename so we could
-//   feed it with another data source.
-
-// A set of classifiers indexed by
-// name to allow a single process
-// to serve data from multiple training
-// data sets
-func GetCSVMetaData(fiName string) *CSVInfo {
+func LoadCSVMetaDataFile(fiName string) *CSVInfo {
 	fmt.Printf("fiName=%s", fiName)
 	file, err := os.Open(fiName)
 	if err != nil {
@@ -110,13 +102,26 @@ func GetCSVMetaData(fiName string) *CSVInfo {
 	// Return the Header and use it's
 	// contents to create the columns
 	scanner := bufio.NewScanner(file)
+	cc := LoadCSVMetaData(scanner)
+	cc.FiName = fiName
+	return cc
+}
+
+// A set of classifiers indexed by
+// name to allow a single process
+// to serve data from multiple training
+// data sets
+func LoadCSVMetaData(scanner *bufio.Scanner) *CSVInfo {
+
+	// Return the Header and use it's
+	// contents to create the columns
 	scanner.Scan()
 	headStr := scanner.Text()
 	//fmt.Printf("headStr=%s", headStr)
 	heada := s.Split(headStr, ",")
 	numCol := len(heada)
 	tout := &CSVInfo{
-		FiName: fiName,
+		FiName: "",
 		NumRow: 0,
 		NumCol: len(heada),
 		Col:    make([]*CSVCol, numCol),
