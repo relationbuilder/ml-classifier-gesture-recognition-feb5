@@ -36,13 +36,15 @@ type QuantList struct {
 // data for 1 feature of data or in CSV this
 // would be 1 column of data.
 type Feature struct {
-	Buckets   map[int16]*QuantList
-	Spec      *CSVCol
-	Enabled   bool
-	ProcType  QuantType
-	EffMaxVal float32
-	EffMinVal float32
-	BuckSize  float32
+	Buckets        map[int16]*QuantList
+	Spec           *CSVCol
+	Enabled        bool
+	ProcType       QuantType
+	EffMaxVal      float32
+	EffMinVal      float32
+	BuckSize       float32
+	NumBuck        int16
+	NumBuckOveride bool
 }
 
 // Includes the metadaa and classifer
@@ -57,6 +59,10 @@ type Classifier struct {
 	Label        string
 	NumCol       int
 	ClassCol     int
+	NumBuck      int16
+	ClassCounts  map[int16]int32   // total Count of all Records of Class
+	ClassProb    map[int16]float32 // Prob of any record being in class
+	NumTrainRow  int32
 }
 
 // A set of classifiers indexed by
@@ -67,18 +73,129 @@ type Classifiers struct {
 	classifiers map[string]*Classifier
 }
 
+// For results look up each feature for the
+// row then compute a bucket Id for that  value
+// and want to know the count and count and
+// probability each class relative to the
+// total probability of an item being in that
+// bucket.
+type ResultItem struct {
+	Class int16
+	Count int32
+	Prob  float32
+}
+
+// ResultRow is the total set of probabilities
+// along with feeding counts for each Row
+// Not keeping Result items as pointer because
+// we want to be able to feed this direclty
+// into JSON formatter.
+type ResultForFeat struct {
+	Crecs  map[int16]ResultItem
+	TotCnt int32
+}
+
+// we want to know the best chosent
+// result along with the computed results
+// for each feature.   In
+// some applications with many classes we
+// may need to reduce this.
+type ResultForRow struct {
+	best     ResultItem
+	features []ResultForFeat
+}
+
+// Output is a structure that shows us the count
+//  for each class plust the prob for each class
+//  plus the chosen out
+
+func (fier *Classifier) classRow(drow []float32) *ResultForRow {
+	tout := new(ResultForRow)
+	featOut := make([]ResultForFeat, fier.NumCol)
+	tout.features = featOut
+	for fc := 0; fc < fier.NumCol; fc++ {
+		dval := drow[fc]
+		feat := fier.ColDef[fc]
+		cs := feat.Spec
+		fwrk := &featOut[fc]
+		if fc == fier.ClassCol {
+			continue // skip the class
+		}
+		if feat.Enabled == false || cs.CanParseFloat == false {
+			continue
+		}
+		buckId := feat.bucketId(fier, dval)
+		buck, bfound := feat.Buckets[buckId]
+
+		if bfound == true {
+			// Our training data set includes
+			// at least row that had one feature
+			// that contained one value the derived
+			// to the same bucket Id.
+
+			for classId, classCnt := range buck.Counts {
+				// Ieterate over the classes that match
+				// and record them for latter use.
+				fBuckWrk := new(ResultItem)
+				fBuckWrk.Class = classId
+				fBuckWrk.Count = classCnt
+				classProb := fier.ClassProb[classId]
+				baseProb := float32(classCnt) / float32(buck.totCnt)
+				fBuckWrk.Prob = baseProb * classProb
+				fwrk.TotCnt += classCnt
+				fwrk.Crecs[classId] = *fBuckWrk
+			} // for class
+		} // if buck exist
+	} // for feat
+	return tout
+} // func
+
+/* printClassifierModel */
+/* LoadClassifierTrainingModel */
+
 /*func LoadClassifierFile(fiName string ) *Classifier {
 
 }*/
 
+// Change the number of buckets for every feature
+// where that feature has not already been overridden
+func (cl *Classifier) setNumBuckDefault(nb int16) {
+	for a := 0; a < cl.NumCol; a++ {
+		feat := cl.ColDef[a]
+		if feat.NumBuckOveride == false {
+			feat.NumBuck = nb
+		}
+	}
+}
+
+// Set number of buckets for a feature and record
+// the fact it's number of buckets has been overridden
+// so we don't change it if the default numBuck for
+// the entire classifer is changed in the future.
+func (fe *Feature) setNumBuck(nb int16) {
+	fe.NumBuck = nb
+	fe.NumBuckOveride = true
+}
+
+// Compute BucketId for current data value for this
+// feature.
+// TODO: Need to add actual implementation for this
+//  which is based on observed range with outliers
+//  removed.
+func (fe *Feature) bucketId(fier *Classifier, dval float32) int16 {
+	return fe.Spec.buckId(dval)
+}
+
 /* separated out the makeEmptyClassifier so
 accessible by other construction techniques
 like from a string */
-func makEmptyClassifier(fiName string, label string) *Classifier {
+func makEmptyClassifier(fiName string, label string, numBuck int16) *Classifier {
 	fier := new(Classifier)
 	fier.TrainFiName = fiName
 	fier.Label = label
 	fier.ClassCol = 0
+	fier.NumTrainRow = 0
+	fier.NumBuck = numBuck
 	// can not set ColDef until we know how many
 	// colums to allocate space for.
 	//fier.ColDef = make([]*Feature, 0fier.Info.NumCol)
@@ -87,7 +204,7 @@ func makEmptyClassifier(fiName string, label string) *Classifier {
 	return fier
 }
 
-func makeFeature(col *CSVCol) *Feature {
+func (cl *Classifier) makeFeature(col *CSVCol) *Feature {
 	afeat := new(Feature)
 	afeat.Spec = col
 	afeat.Enabled = true
@@ -95,17 +212,19 @@ func makeFeature(col *CSVCol) *Feature {
 	afeat.EffMaxVal = col.MinFlt
 	afeat.EffMinVal = col.MinFlt
 	afeat.ProcType = QTBucket
+	afeat.NumBuck = cl.NumBuck
+	afeat.NumBuckOveride = false
 	return afeat
 }
 
-func LoadClassifierTrainFile(fiName string, label string) *Classifier {
+func LoadClassifierTrainFile(fiName string, label string, numBuck int16) *Classifier {
 	fmt.Printf("fiName=%s", fiName)
 
 	// Instantiate the basic File Information
 	// NOTE: This early construction will have to
 	// be duplciates for construction from
 	// string when using in POST.
-	fier := makEmptyClassifier(fiName, label)
+	fier := makEmptyClassifier(fiName, label, numBuck)
 	fier.Info = LoadCSVMetaDataFile("../data/breast-cancer-wisconsin.adj.data.csv")
 	fier.NumCol = fier.Info.NumCol
 	fier.ColDef = make([]*Feature, fier.NumCol)
@@ -113,11 +232,15 @@ func LoadClassifierTrainFile(fiName string, label string) *Classifier {
 	fmt.Println("loadCSVMetadata complete")
 	fmt.Println(fier.Info.String())
 
+	// build up the feature description
+	// for each column.
 	for i := 0; i < fier.NumCol; i++ {
 		col := fier.Info.Col[i]
-		fier.ColDef[i] = makeFeature(col)
+		fier.ColDef[i] = fier.makeFeature(col)
 	}
 
+	// Now process the actual CSV file
+	// to do the training work
 	file, err := os.Open(fiName)
 	if err != nil {
 		log.Fatal(err)
@@ -150,13 +273,26 @@ value qualifies for and then update the count for
 that class within that bucket. Creats the bucket and
 the class if it is the first time we have seen them */
 func (fier *Classifier) TrainRow(row int, vals []string) {
+	fier.NumTrainRow += 1
+	classId := fier.classId(vals)
+	// Update Counts of all rows of
+	// class so we can compute probability
+	// of any row being of a given class
+	_, classFnd := fier.ClassCounts[classId]
+	if classFnd == false {
+		fier.ClassCounts[classId] = 1
+	} else {
+		fier.ClassCounts[classId] += 1
+	}
+
 	for i := 0; i < fier.NumCol; i++ {
 		if i == fier.ClassCol {
 			continue // skip the class
 		}
-		classId := fier.classId(vals)
+
 		col := fier.Info.Col[i]
 		feat := fier.ColDef[i]
+
 		if feat.Enabled == false {
 			continue // no need testing disabled features
 		}
@@ -180,7 +316,7 @@ func (fier *Classifier) TrainRow(row int, vals []string) {
 			// for now to test the  rest.
 			// TODO: If BuckId outside adjusted range
 			// then may need to set to maxBuck, minBuck-1
-			buckId := col.buckId(f32)
+			buckId := feat.bucketId(fier, f32)
 			abuck, bexist := buckets[buckId]
 			if bexist == false {
 				abuck = new(QuantList)
@@ -200,6 +336,14 @@ func (fier *Classifier) TrainRow(row int, vals []string) {
 	} // for columns
 }
 
+func (fier *Classifier) updateClassProb() {
+	// Update Class Probability for a given
+	// row being in any class
+	for classId, classCnt := range fier.ClassCounts {
+		fier.ClassProb[classId] = float32(classCnt) / float32(fier.NumTrainRow)
+	}
+}
+
 func LoadClassifierTrain(fier *Classifier, scanner *bufio.Scanner) {
 	rowCnt := 0
 	for scanner.Scan() {
@@ -214,4 +358,5 @@ func LoadClassifierTrain(fier *Classifier, scanner *bufio.Scanner) {
 		fier.TrainRow(rowCnt, a)
 		rowCnt += 1
 	} // for row
+	fier.updateClassProb()
 }
