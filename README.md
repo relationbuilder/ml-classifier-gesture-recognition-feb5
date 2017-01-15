@@ -51,6 +51,40 @@ This repository incudes code written to test ideas for static gesture recognitio
 * We do sell consulting services http://BayesAnalytic.com/contact
 
 
+#TODO#
+
+##Actions for Both quant_prob and quant_filt##
+* Make Quant_prob and quant_filt more generic to support 
+* broader use case.
+* Before Making these changes consider porting quant_prob to GO
+  so we can have a stable base to build self hosting service. 
+  Could keep it in python but the python network listener is weak
+  and python threading has known issues.  If running as service 
+  would be better in GO or Rust. 
+  
+* Modify Quant_prob run as server handler. 
+  * Method will use main as data set name unless &dset is specified.
+  * Each named data set is unique and will not conflict with others.
+  * Method to add to training data set with POST BODY
+  * Method to add to training data set with URI to fetch.
+    * Allow the system to skip every N records to reserve for 
+    * testing.
+  * Method to classify values in file at URI 
+    * Allow &testEvery=X to only test every Nth
+      item.  This is to support testing.     
+  * Method to classify with POST multiple lines.
+  * Method to classify with GET for single set of features.
+  * Only include detail probs if requested.
+  * Test with following data
+     *  Push the IMDB data in as a learning data set
+     *  https://www.kaggle.com/datasets
+     *  Convert data sets downloaded into standard format for ML using python scripts.
+     *  Save both versions. 
+     *  
+  *  https://archive.ics.uci.edu/ml/machine-learning-databases/adult/
+  *  
+  * Use the TFLearn example of items to classify.
+
 
 
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)

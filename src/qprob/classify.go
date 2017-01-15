@@ -1,15 +1,13 @@
 package qprob
 
-import (
-	"fmt"
-	//"io"
-	//"io/ioutil"
-	//"log"
-	//"net/http"
-	//"os"
-	//"os/exec"
-	//"strings"
-)
+//"fmt"
+//"io"
+//"io/ioutil"
+//"log"
+//"net/http"
+//"os"
+//"os/exec"
+//"strings"
 
 const (
 	QTBucket = 1 // Quantize using bucket logic
@@ -66,8 +64,4 @@ type QuantProbClassifier struct {
 type Classifiers struct {
 	classifiers map[string]*QuantProbClassifier
 	xx          CSVInfo
-}
-
-func main() {
-	fmt.Printf("Hello, world.\n")
 }
