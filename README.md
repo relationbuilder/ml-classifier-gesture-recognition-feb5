@@ -4,7 +4,7 @@ A general purpose, high performance machine learning
 classifier.  Tests are:
 
    *  ASL Sign language Gesture recognition 
-   *  Classify breast cancer from 9 featurs. 96% accuracy
+   *  Classify breast cancer from 9 features. 96% accuracy
       at 100% recall first pass with no optimization. Using
       623 training rows.      
    *  Predict death or survival of Titanic passengers. 
