@@ -17,7 +17,8 @@ classifier.  Tests are:
 The library includes TensorFlow Deep Learning implementation of 
 classifiers using the same data to compare the run-time 
 performance combined with classification recall and accuracy.  
-###Quantized Classifier###
+
+### Quantized Classifier ###
 The design for Quantized classifiers was inspired by 
 design elements in KNN, Bayesian and SVM engines. 
 A key design goal was a faster mechanism to identify 
