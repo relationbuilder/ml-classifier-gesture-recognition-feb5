@@ -17,7 +17,7 @@ import (
 
 // TODO: Move these to a common utility
 // module.
-func MaxI32(x, y int32) int32 {
+func MaxI16(x, y int16) int16 {
 	if x > y {
 		return x
 	} else {
@@ -25,7 +25,15 @@ func MaxI32(x, y int32) int32 {
 	}
 }
 
-func MaxF32(x, y float32) float32 {
+func MinI16(x, y int16) int16 {
+	if x < y {
+		return x
+	} else {
+		return y
+	}
+}
+
+func MaxI32(x, y int32) int32 {
 	if x > y {
 		return x
 	} else {
@@ -35,6 +43,14 @@ func MaxF32(x, y float32) float32 {
 
 func MinI32(x, y int32) int32 {
 	if x < y {
+		return x
+	} else {
+		return y
+	}
+}
+
+func MaxF32(x, y float32) float32 {
+	if x > y {
 		return x
 	} else {
 		return y

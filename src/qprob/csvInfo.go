@@ -153,7 +153,7 @@ func LoadCSVMetaData(scanner *bufio.Scanner) *CSVInfo {
 		if col.IsInt && (col.AbsRange < 1000) {
 			col.distStepSize = 1.0
 		} else {
-			col.distStepSize = col.AbsRange / 1000
+			col.distStepSize = col.AbsRange / 1001
 		}
 	}
 	return tout
@@ -170,8 +170,12 @@ func (cc *CSVCol) buckId(vin float32) int16 {
 	} else {
 		tout := int16((vin - cc.MinFlt) / cc.distStepSize)
 		if tout > 999 {
+			//fmt.Printf("buckId overeflow vin=%v tout=%v minFlt=%v maxFlt=%v stepSize=%v\n",
+			//	vin, tout, cc.MinFlt, cc.MaxFlt, cc.distStepSize)
 			tout = 999
 		} else if tout < 0 {
+			//fmt.Printf("buckId underflow vin=%v tout=%v minFlt=%v maxFlt=%v stepSize=%v\n",
+			//	vin, tout, cc.MinFlt, cc.MaxFlt, cc.distStepSize)
 			tout = 0
 		}
 		return tout
@@ -226,7 +230,7 @@ func (cv *CSVInfo) BuildDistMatrix(scanner *bufio.Scanner) {
 			if err == nil {
 				f32 := float32(f64)
 				buckId := col.buckId(f32)
-				fmt.Printf("buckid=%v\n", buckId)
+				//fmt.Printf("buckid=%v\n", buckId)
 				col.distCounts[buckId] += 1
 				//fmt.Printf("i=%v f32=%v buckId=%v cnt=%v \n",
 				//	i, f32, buckId, col.distCounts[buckId])

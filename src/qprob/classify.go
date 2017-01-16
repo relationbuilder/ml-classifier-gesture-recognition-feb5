@@ -43,6 +43,7 @@ type Feature struct {
 	ProcType       QuantType
 	EffMaxVal      float32
 	EffMinVal      float32
+	EffRange       float32
 	BuckSize       float32
 	NumBuck        int16
 	NumBuckOveride bool
@@ -178,8 +179,8 @@ func (fier *Classifier) ClassRow(drow []float32) *ResultForRow {
 					clsm[classId] = clswrk
 				}
 				clswrk.Prob += baseProb * feat.FeatWeight
-				fmt.Printf("col%v val=%v buck=%v class=%v baseProb=%v outProb=%v\n",
-					fc, dval, buckId, classId, baseProb, fBuckWrk.Prob)
+				//fmt.Printf("col%v val=%v buck=%v class=%v baseProb=%v outProb=%v\n",
+				//	fc, dval, buckId, classId, baseProb, fBuckWrk.Prob)
 			} // for class
 		} // if buck exist
 	} // for feat
@@ -214,6 +215,7 @@ func (cl *Classifier) SetNumBuckDefault(nb int16) {
 		feat := cl.ColDef[a]
 		if feat.NumBuckOveride == false {
 			feat.NumBuck = nb
+			cl.updateStepValues(feat)
 		}
 	}
 }
@@ -222,9 +224,10 @@ func (cl *Classifier) SetNumBuckDefault(nb int16) {
 // the fact it's number of buckets has been overridden
 // so we don't change it if the default numBuck for
 // the entire classifer is changed in the future.
-func (fe *Feature) SetNumBuck(nb int16) {
+func (cl *Classifier) SetNumBuck(fe *Feature, nb int16) {
 	fe.NumBuck = nb
 	fe.NumBuckOveride = true
+	cl.updateStepValues(fe)
 }
 
 // Compute BucketId for current data value for this
@@ -237,7 +240,14 @@ func (fe *Feature) bucketId(fier *Classifier, dval float32) int16 {
 	//  above minimum value divided by step size. The step size
 	//  must be computed based on an effective range with
 	//  with outliers removed
-	return int16(dval * float32(fier.NumBuck))
+	amtOverMin := dval - fe.EffMinVal
+	if amtOverMin <= 0.0 {
+		return 0
+	}
+	bucket := int16(amtOverMin / float32(fe.BuckSize))
+	//fmt.Printf("dval=%v bucket=%v amtOverMin=%v effMinVal=%v\n",
+	//	dval, bucket, amtOverMin, fe.EffMinVal)
+	return bucket
 }
 
 /* separated out the makeEmptyClassifier so
@@ -260,18 +270,24 @@ func makEmptyClassifier(fiName string, label string, numBuck int16) *Classifier 
 	return fier
 }
 
+func (cl *Classifier) updateStepValues(afeat *Feature) {
+	afeat.EffRange = afeat.EffMaxVal - afeat.EffMinVal
+	afeat.BuckSize = afeat.EffRange / float32(afeat.NumBuck)
+}
+
 func (cl *Classifier) makeFeature(col *CSVCol) *Feature {
 	afeat := new(Feature)
 	afeat.Spec = col
 	afeat.Enabled = true
 	afeat.BuckSize = 1
-	afeat.EffMaxVal = col.MinFlt
+	afeat.EffMaxVal = col.MaxFlt
 	afeat.EffMinVal = col.MinFlt
 	afeat.ProcType = QTBucket
 	afeat.NumBuck = cl.NumBuck
 	afeat.NumBuckOveride = false
 	afeat.Buckets = make(map[int16]*QuantList)
 	afeat.FeatWeight = 1.0
+	cl.updateStepValues(afeat)
 	return afeat
 }
 
@@ -282,7 +298,7 @@ func (fier *Classifier) classId(vals []string) int16 {
 	ctx := vals[fier.ClassCol]
 	id, err := strconv.ParseInt(ctx, 10, 16)
 	if err != nil {
-		fmt.Printf("classId() Encountered int parsing error val=%v err=%v", ctx, err)
+		//fmt.Printf("classId() Encountered int parsing error val=%v err=%v", ctx, err)
 		return -9999
 	}
 	return int16(id)
