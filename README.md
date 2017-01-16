@@ -6,15 +6,72 @@ This repository incudes code written to test ideas for static gesture recognitio
 
 * Version: 0.1
 * License: (MIT) We do sell consulting services http://BayesAnalytic.com/contact
-* Dependencies: GO Code was built using version 1.7.3 windows/amd 64
-* Python code: Was tested with Python 3.5.2 64 bit
-* TensorFlow: Lots of crazy dependencies See: tlearn/tensflowReadme.docx 
+* Dependencies: 
+  * GO Code was built using version 1.7.3 windows/amd 64
+  * Python code: Was tested with Python 3.5.2 64 bit
+  * TensorFlow: Lots of crazy dependencies See: tlearn/tensflowReadme.docx 
+
+### How to Use ###
+  * python quant_filt.py  Runs test on gesture classification data.
+    Shows how quantized concept can be used to implement a
+    splay like search tress.  The more quant buckets used 
+    the more precise.  This is an alternative to the probability
+    model and can provide superior results in some instance.
+  
+  * python quant_prob.py Runs a test on gesture classificaiton data
+    demonstrates quantized probability therory in smallest possible 
+    piece of python code.  A more complete verison is implemented 
+    in classify.go 
+    
+  * makeGO.bat - if you have GO set up then open a command line at
+    the base directory containing makeGO.bat and run it.   It should
+    setup GOHOME and ubild the executable files. Tested on windows 10.
+    
+  * splitData.bat - Creates sub .train.csv and test.csv files for the files
+    used in the GO classifier tests. Uses splitCSVFile.exe which is built
+    by makeGo. 
+    
+  * setGoEvn.bat - will set the GOHOME directory to current working directory
+    in a command prompt.
+    
+  * go build src/classifyTest.go 
+    builds executable classifyTest from GO source. 
+    
+  * classifyTest data/diabeates...  data/daibeaat 
+    will run the GO based classifier built in GO using
+    the first named file for training and the second named
+    file for testing will print out results of how well classification
+    matches actual source data class.
+    
+  * classifyTest data/titantic.train.csv data/titantic.test.csv
+    will run the GO based classifier against the two input files
+    this test attempts to predict mortality and will print out
+    quality of predictions from classifier compared to known
+    result. 
+    
 
 ### Basic Contents ###
 * overview.pdf - explains the conceptual approach behind the facet and measurement data for this
   gesture classification system.  Also includes notes for design of hardware glove to gather the data.
-
-#### Sample Code ####
+ 
+#### GO Based Classifier ####
+  src/classifyTest.go
+  
+  src/csvInfoTest.go
+  
+  src/splitCSVFile.go 
+  
+  src/qprob/classify.go
+  
+  src/qprob/csvInfo.go
+  
+  src/qprob/util.go
+  
+  
+  
+ 
+  
+#### Idea Test Sample Code ####
 * quant_filt.py  - Machine learning Quantized filter classifier.  This system can provide  
    fast classification with moderate memory use and is easy to see how likely the match is to
    be accurate.
