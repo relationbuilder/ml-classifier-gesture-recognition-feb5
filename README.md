@@ -1,8 +1,63 @@
-# Simplified Static Gesture classifier  #
+# ML Quantized classifier in GO#
 
-See Overview.pdf in this repository for conceptual overview of the approach.
+A general purpose, high performance machine learning
+classifier.  Tests are:
 
-This repository incudes code written to test ideas for static gesture recognition. It includes powerful classiers written in python that cope well with smaller training data sets.  They also handle massive training data sets with minimal memory.    Samples of using the same training data are supplied.  Includes code to feed the same data into TensorFlow to test classification using googles deep learning functionality.
+   *  ASL Sign language Gesture recognition 
+   *  Tests classify diabetes 
+   *  predict death or survival of Titanic passengers. 
+
+Also includes TensorFlow implementation of classifiers 
+using the same data to compare the run-time performance
+and classification accuracy.  
+
+Quantized classifiers borrow features from KNN 
+and others from Bayesian engines.  A key design aspect is a 
+faster mechanism to identify similarity for a given features. 
+It was inspired by some of the underlying design of KNN 
+engines combined with techniques from SVM engines. 
+
+  In KNN we find similar records for a given feature by finding 
+  those with the most similar value which works but consumes
+  a lot of space and run-time.   In Quantized approach 
+  we look at the range of data and attempt to 
+  group data based on similar values.  EG: if a given
+  feature has a value from 0.0 to 1.0 then a 10 bucket system 
+  could consider all records that have a value from 0 to 0.1 as 
+  similar. Those from 0.1 to 0.2 are similar, etc.  Rather than 
+  keeping all the training records we only need to keep 
+  the statistics for have many of the records in a given
+  bucket belong to 
+  each class which we can then use to compute a base probability
+  by feature by bucket by class. Applying this across active 
+  features gives us a set of probabilities that can be combined
+  using ensemble techniques into a single probability that a 
+  row would belong to any of the classes.  This allows a relatively
+  small memory foot print with fast training without the KNN
+  need of keeping all the training records in memory which allows 
+  very large training sets. The trade off is that it looses some of 
+  KNN ability to adjust the number of closest neighbors considered.
+  but training is so fast that the quanta size can be adjusted quickly
+  and memory use is so much smaller that we can afford to keep
+  multiple models with different quanta sizes loaded and updated
+  simultaneously. 
+
+Samples of using the same training data are supplied.  Includes code to feed the same data into TensorFlow to test classification using googles deep learning functionality.
+
+###ASP (American Sign Language) Gesture classifier###
+This engine started as a classifier designed to classify Static Gestures for VR with the idea we may be able to produce a useful tool for classifying  ASL using VR input devices.  That is still a primary focus but the core algorithms can be more broadly applied.
+
+See **Overview.pdf** in this repository for conceptual overview of
+the approach when using this kind of classifier for gesture recognition.
+
+This repository includes code written to test ideas for static gesture recognition. 
+
+It also includes samples of the classifiers in python that cope
+well with smaller training data sets and demonstrate using 
+the Quantized classifier approach.  They also handle
+massive training data sets with minimal memory.    
+
+
 
  * Version: 0.1
  * License: (MIT) We do sell consulting services http://BayesAnalytic.com/contact
@@ -18,32 +73,32 @@ This repository incudes code written to test ideas for static gesture recognitio
     the more precise.  This is an alternative to the probability
     model and can provide superior results in some instance.
   
-  * **python quant_prob.py** - Runs a test on gesture classificaiton data
-    demonstrates quantized probability therory in smallest possible 
-    piece of python code.  A more complete verison is implemented 
+  * **python quant_prob.py** - Runs a test on gesture classification data
+    demonstrates quantized probability theory in smallest possible 
+    piece of python code.  A more complete version is implemented 
     in classify.go 
     
   * **makeGO.bat** - if you have GO set up then open a command line at
     the base directory containing makeGO.bat and run it.   It should
-    setup GOHOME and ubild the executable files. Tested on windows 10.
+    setup GOHOME and build the executable files. Tested on windows 10.
     
-  * splitData.bat - Creates sub .train.csv and test.csv files for the files
+  * **splitData.bat** - Creates sub .train.csv and test.csv files for the files
     used in the GO classifier tests. Uses splitCSVFile.exe which is built
     by makeGo. 
     
-  * setGoEvn.bat - will set the GOHOME directory to current working directory
+  * **setGoEvn.bat** - will set the GOHOME directory to current working directory
     in a command prompt.
     
-  * go build src/classifyTest.go 
+  * **go build src/classifyTest.go**
     builds executable classifyTest from GO source. 
     
-  * classifyTest data/diabeates...  data/daibeaat 
+  * **classifyTest data/diabetes...  data/daibeaat **
     will run the GO based classifier built in GO using
     the first named file for training and the second named
     file for testing will print out results of how well classification
     matches actual source data class.
     
-  * classifyTest data/titantic.train.csv data/titantic.test.csv
+  * **classifyTest data/titantic.train.csv data/titantic.test.csv**
     will run the GO based classifier against the two input files
     this test attempts to predict mortality and will print out
     quality of predictions from classifier compared to known
@@ -51,9 +106,6 @@ This repository incudes code written to test ideas for static gesture recognitio
     
 
 ### Basic Contents ###
-* overview.pdf - explains the conceptual approach behind the facet and measurement data for this
-  gesture classification system.  Also includes notes for design of hardware glove to gather the data.
- 
 #### GO Based Classifier ####
   src/classifyTest.go
   
@@ -72,21 +124,21 @@ This repository incudes code written to test ideas for static gesture recognitio
  
   
 #### Idea Test Sample Code ####
-* quant_filt.py  - Machine learning Quantized filter classifier.  This system can provide  
+* **quant_filt.py**  - Machine learning Quantized filter classifier.  This system can provide  
    fast classification with moderate memory use and is easy to see how likely the match is to
    be accurate.
 
-* quant_prob.py - Machine learning Quantized probability classifier. Not quite as precise under
+* **quant_prob.py** - Machine learning Quantized probability classifier. Not quite as precise under
    some conditions and quant_filt.py but it can cope with greater amounts of training noise while
    still delivering good results with moderate amounts of training data.  
  
 
 ####DATA FILES####
- * data/data-sources.txt - Explains sources for the included data files
+ * **data/data-sources.txt** - Explains sources for the included data files
    some data files are not included and will have to be donwloaded from
    those sources if the usage license was unclear or restrictive.
    
- * data/train/gest_train_ratio2.csv - Input training data used for these tests.  We need thousands additional training samples feel free to volunteer after your read overview.pdf in this repository.
+ * **data/train/gest_train_ratio2.csv** - Input training data used for these tests.  We need thousands additional training samples feel free to volunteer after your read overview.pdf in this repository.
 
 
 ####TensorFlow###
@@ -97,10 +149,10 @@ This repository incudes code written to test ideas for static gesture recognitio
  less code while producing higher quality classification
  results than my quantized classifier. 
  
-* tlearn/tensFlowReadme.docx - Notes I made while getting tensor flow running on my windows laptop.
+* **tlearn/tensFlowReadme.docx** - Notes I made while getting tensor flow running on my windows laptop.
 
 
-* tlearn/simple_gestures.py - sample of reading CSV to  train TensorFlow Model.
+* **tlearn/simple_gestures.py** - sample of reading CSV to  train TensorFlow Model.
    Unfortunately this program while it runs does a pour job of classification. I think
    this is the result of insufficient training data but there is a chance that I still have
    a bug in the interface to TensorFlow.
@@ -134,7 +186,7 @@ This repository incudes code written to test ideas for static gesture recognitio
 ##Actions for Both quant_prob and quant_filt##
 * Update QuantProb to properly scale buckets to cope with outliers
 * Utility to split input files into separate sets.
-* Update diabeates test to reserve some data for train, some for test
+* Update diabetes test to reserve some data for train, some for test
   and to call those two. 
 
   
@@ -165,16 +217,16 @@ This repository incudes code written to test ideas for static gesture recognitio
     treat all the other features as empty. So the list of cols
     may grow to several million but will only contain the hashed
     classes for those value. Allow system to pass in a list
-    of clolumns n the CSV to index as text.  This would not 
+    of columns n the CSV to index as text.  This would not 
     effectively use word ordering but we could use quantized buckets
     for probability of any word being that text in text string so
-    a word like "the" that may occur 50 times would occur in a differnt
+    a word like "the" that may occur 50 times would occur in a different
     bucket when it is repeated many times. 
   * Only include detail probs if requested.
   * Choose column to use as class
 
   * Test with following data
-     * Diabeteas classification
+     * Diabetes classification
      * 
      
 
