@@ -6,14 +6,10 @@ test data */
 import (
 	"bufio"
 	"fmt"
-	s "strings"
-	//"io"
-	//"io/ioutil"
 	"log"
-	//"net/http"
 	"os"
-	//"os/exec"
 	"strconv"
+	s "strings"
 )
 
 func check(msg string, e error) {
@@ -108,12 +104,12 @@ func main() {
 		printHelp()
 		return
 	}
-	trestEvery := int(tmpEvery)
+	testEvery := int(tmpEvery)
 
 	fTrainName := s.Replace(fInName, ".csv", ".train.csv", 1)
 	fTestName := s.Replace(fInName, ".csv", ".test.csv", 1)
 	fmt.Printf("fin=%s trainEvery=%d  train=%s test=%s\n",
-		fInName, trestEvery, fTrainName, fTestName)
+		fInName, testEvery, fTrainName, fTestName)
 
-	SplitFileOnEvery(trestEvery, fInName, fTrainName, fTestName)
+	SplitFileOnEvery(testEvery, fInName, fTrainName, fTestName)
 }
