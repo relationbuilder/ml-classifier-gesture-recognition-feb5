@@ -6,9 +6,12 @@ classifier.  Tests are:
    *  ASL Sign language Gesture recognition 
    *  Tests classify breast cancer from 10 inputs. 
    *  Predict death or survival of Titanic passengers. 
+   *  Predict Diabetes
    *  Please send me data sets you would like to add 
       to the test.
-
+      
+**We Offer Consulting services see: http://BayesAnalytic.com/contact**
+      
 Also includes TensorFlow implementation of classifiers 
 using the same data to compare the run-time performance
 and classification accuracy.  
@@ -189,10 +192,7 @@ massive training data sets with minimal memory.
 
 ##Actions for Both quant_prob and quant_filt##
 * Update QuantProb to properly scale buckets to cope with outliers
-* Utility to split input files into separate sets.
-* Update diabetes test to reserve some data for train, some for test
-  and to call those two. 
-
+  and decimal numeric inputs. 
   
   
 * Modify Quant_prob run as server handler. 
