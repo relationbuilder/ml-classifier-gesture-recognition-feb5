@@ -49,7 +49,7 @@ func MinF32(x, y float32) float32 {
 	}
 }
 
-func parseStrAsArrInt32(astr string) []int32 {
+func ParseStrAsArrInt32(astr string) []int32 {
 	a := s.Split(astr, ",")
 	numCol := len(a)
 	wrkArr := make([]int32, numCol)
@@ -67,7 +67,7 @@ func parseStrAsArrInt32(astr string) []int32 {
 
 /* Any values that failed to parse will contain
 math.MaxFloat32 as error indicator */
-func parseStrAsArrFloat(astr string) []float32 {
+func ParseStrAsArrFloat(astr string) []float32 {
 	a := s.Split(astr, ",")
 	numCol := len(a)
 	wrkArr := make([]float32, numCol)

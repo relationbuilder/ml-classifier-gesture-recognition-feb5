@@ -32,6 +32,7 @@ similarity for a given feature.
   features gives us a set of probabilities that can be combined
   using ensemble techniques into the probability a given
   row would belong to any of the classes.  
+  
   Quantizing the data allows a small memory foot print 
   with fast training without the KNN
   need of keeping all the training records in memory. Retaining

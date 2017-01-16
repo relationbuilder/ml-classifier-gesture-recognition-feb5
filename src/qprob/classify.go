@@ -108,7 +108,7 @@ type ResultForRow struct {
 }
 
 func (fier *Classifier) ClassRowStr(astr string) *ResultForRow {
-	a := parseStrAsArrFloat(astr)
+	a := ParseStrAsArrFloat(astr)
 	if len(a) < fier.NumCol {
 		fmt.Println("classRowStr inputStr has wrong num fields numFld=%v numExpect=%v astr=%v",
 			len(a), fier.NumCol, astr)
@@ -394,7 +394,7 @@ func LoadClassifierTrainFile(fiName string, label string, numBuck int16) *Classi
 	// be duplciates for construction from
 	// string when using in POST.
 	fier := makEmptyClassifier(fiName, label, numBuck)
-	fier.Info = LoadCSVMetaDataFile("../data/breast-cancer-wisconsin.adj.data.csv")
+	fier.Info = LoadCSVMetaDataFile(fiName)
 	fier.NumCol = fier.Info.NumCol
 	fier.ColDef = make([]*Feature, fier.NumCol)
 	fier.Info.BuildDistMatrixFile()
