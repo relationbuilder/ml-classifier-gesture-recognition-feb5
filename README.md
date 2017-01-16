@@ -6,11 +6,15 @@ This repository incudes code written to test ideas for static gesture recognitio
 
 * Version: 0.1
 * License: (MIT) We do sell consulting services http://BayesAnalytic.com/contact
+* Dependencies: GO Code was built using version 1.7.3 windows/amd 64
+* Python code: Was tested with Python 3.5.2 64 bit
+* TensorFlow: Lots of crazy dependencies See: tlearn/tensflowReadme.docx 
 
 ### Basic Contents ###
 * overview.pdf - explains the conceptual approach behind the facet and measurement data for this
   gesture classification system.  Also includes notes for design of hardware glove to gather the data.
 
+#### Sample Code ####
 * quant_filt.py  - Machine learning Quantized filter classifier.  This system can provide  
    fast classification with moderate memory use and is easy to see how likely the match is to
    be accurate.
@@ -18,15 +22,32 @@ This repository incudes code written to test ideas for static gesture recognitio
 * quant_prob.py - Machine learning Quantized probability classifier. Not quite as precise under
    some conditions and quant_filt.py but it can cope with greater amounts of training noise while
    still delivering good results with moderate amounts of training data.  
+ 
+
+####DATA FILES####
+ * data/data-sources.txt - Explains sources for the included data files
+   some data files are not included and will have to be donwloaded from
+   those sources if the usage license was unclear or restrictive.
+   
+ * data/train/gest_train_ratio2.csv - Input training data used for these tests.  We need thousands additional training samples feel free to volunteer after your read overview.pdf in this repository.
+
+
+####TensorFlow###
+ One of the goals this project is to test some
+ capabilities of tlearn and TensorFlow using the 
+ same data sets.   The assertion is that the 
+ tensorflow approach should run faster and require
+ less code while producing higher quality classification
+ results than my quantized classifier. 
+ 
+* tlearn/tensFlowReadme.docx - Notes I made while getting tensor flow running on my windows laptop.
+
 
 * tlearn/simple_gestures.py - sample of reading CSV to  train TensorFlow Model.
    Unfortunately this program while it runs does a pour job of classification. I think
    this is the result of insufficient training data but there is a chance that I still have
    a bug in the interface to TensorFlow.
 
- * tlearn/tensFlowReadme.docx - Notes I made while getting tensor flow running on my windows laptop.
-
- * data/train/gest_train_ratio2.csv - Input training data used for these tests.  We need thousands additional training samples feel free to volunteer after your read overview.pdf in this repository.
 
 
 
@@ -56,6 +77,10 @@ This repository incudes code written to test ideas for static gesture recognitio
 ##Actions for Both quant_prob and quant_filt##
 * Update QuantProb to properly scale buckets to cope with outliers
 * Utility to split input files into separate sets.
+* Update diabeates test to reserve some data for train, some for test
+  and to call those two. 
+
+  
   
 * Modify Quant_prob run as server handler. 
   * Method will use main as data set name unless &dset is specified.
