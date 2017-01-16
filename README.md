@@ -202,8 +202,58 @@ massive training data sets with minimal memory.
   distribution items.
 
 * Add recall, precision by class in classifyFiles
+
+* Implement the TLearn / Tensorflow equivelant of
+  classify files.  It could be named CNNClassifyFiles
+  since the first implementation would use a convoluted
+  neural network.
+
+* Add QProb optimizer that is allowed to change Feature
+  weight and feature number of buckets seeking to maximize
+  precision at 100% recall. Where total number of buckets
+  is considered primary cost.  Minimum number of buckets is
+  equal to 2.  a Feature can be turned off by setting it'same
+  feaure weight to 0. 
+
+* Add Test set for Daily stock bar data.  Where we add a 
+  column which is a SMA(x) where X defaults to 30 days.
+  and features are the slope of the SMA(X) when comparing
+  current bar to SMA(x) at some number of days in past
+  create.  In a stock scenario  you would have a goal EG:
+  A Bar for a symbol where price rose by P% within N days 
+  without dropping by more than Q% before it reached P%.  
+  Those that meet the rule get a class of 1 while those 
+  that fail get a class of 0.   
   
-* Modify Quant_prob run as server handler. 
+  
+* Produce GO version of the Quant Filter to see if we can improve
+  performance on the diabetes and titanic data set.  The Quant filter 
+  is unlikely to deliver 100% recall since it aborts the match as it
+  traverses the features when it fails to find a matching bucket id.
+  This gives it some precision filtering capability similar to the 
+  multi-layer convoluted NN but at a lower cost.  We may be able to 
+  add probability since it is still computed by class by feaure. 
+  There some chance that more than one class will survive all layers
+  of the filter which would mean we need to add a probability to that
+  output to act as a tie-breaker. 
+  - Add optimizer to quant filter that allows it to 
+    vary the number of buckets by feature.  Seting 
+    number of buckets to 1 essentially turns a feature
+    off by forcing all items into the same bucket. The 
+    primary cost function is total number of buckets.  
+    The goal of optimizer is based on starting with all
+    buckets equal to X.  As it varies the number of buckets
+    by feature it can keep the change provided it can 
+    increase precision as long as recall does not
+    decrease. Or it can increase recall as long as precision does
+    not decrease recall.  We can discourage over learning by always
+    trying a smaller number of buckets first in the optimizer. 
+    A natural side effect of this is that the engine can turn off
+    features that do not contribute either accuracy or recall.
+    get. 
+    
+
+  * Modify Quant_prob run as server handler. 
   * Method will use main as data set name unless &dset is specified.
   * Each named data set is unique and will not conflict with others.
   * Method to add to training data set with POST BODY
@@ -237,9 +287,6 @@ massive training data sets with minimal memory.
   * Only include detail probs if requested.
   * Choose column to use as class
 
-
-* Produce GO version of the Quant Filter to see if we can improve
-  performance on the diabetes and titanic data set.
 
 
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)

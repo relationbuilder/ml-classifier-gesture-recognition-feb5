@@ -1,5 +1,9 @@
 """ Simple gesture classification using quantized filter. 
 
+    WARN: Example Only intended to demonstrate principals
+    of quantized filter algorithm.  Production version will be
+    implemented in src/qprob as a GO library.
+
     Eg: The AT Feature has the following discrete values 
     1.0, 0.79, 0.505, 0.47, 0.70, 0.40, 0.08  We quantize the values 
     into discrete buckets for feature 1.   For each of these buckets we 

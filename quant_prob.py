@@ -1,4 +1,9 @@
-""" Simple_gest_quant_prob - For the basic gesture descriptions
+"""
+ OBSOLETE - This example is only intended to show the 
+   quantized probability model in a simple piece of code.
+   the production version is implemented in src/qprob/classify.go
+   
+ Simple_gest_quant_prob - For the basic gesture descriptions
 
    Adds basic probabilistic measure of individual bucket membership
    to allows ensemble style combination of results. 

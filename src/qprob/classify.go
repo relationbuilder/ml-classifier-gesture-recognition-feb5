@@ -204,7 +204,11 @@ func (fier *Classifier) ClassRow(drow []float32) *ResultForRow {
 /* printClassifierModel */
 /* LoadClassifierTrainingModel */
 
-/*func LoadClassifierFile(fiName string ) *Classifier {
+/* For an existing pre-loaded training data sett
+add additional traiing data. This will not adjust
+the bucket size or effective min, max values used
+to compute step size for bucket indexing.   */
+/*func AddClassifierTrainingFile(fiName string ) *Classifier {
 
 }*/
 
