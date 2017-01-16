@@ -119,7 +119,11 @@ massive training data sets with minimal memory.
     
 
 ### Basic Contents ###
+* **[todo.md](todo.md)** - list of actions and enhancements roughly
+    prioritized top down.
+    
 #### GO Based Classifier ####
+  
   src/classifyTest.go
   
   src/csvInfoTest.go
