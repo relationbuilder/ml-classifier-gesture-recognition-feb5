@@ -12,18 +12,18 @@ This repository incudes code written to test ideas for static gesture recognitio
     - TensorFlow: Lots of crazy dependencies See: tlearn/tensflowReadme.docx 
 
 ### How to Use ###
-  * python quant_filt.py  Runs test on gesture classification data.
+  * **python quant_filt.py** - Runs test on gesture classification data.
     Shows how quantized concept can be used to implement a
     splay like search tress.  The more quant buckets used 
     the more precise.  This is an alternative to the probability
     model and can provide superior results in some instance.
   
-  * python quant_prob.py Runs a test on gesture classificaiton data
+  * **python quant_prob.py** - Runs a test on gesture classificaiton data
     demonstrates quantized probability therory in smallest possible 
     piece of python code.  A more complete verison is implemented 
     in classify.go 
     
-  * makeGO.bat - if you have GO set up then open a command line at
+  * **makeGO.bat** - if you have GO set up then open a command line at
     the base directory containing makeGO.bat and run it.   It should
     setup GOHOME and ubild the executable files. Tested on windows 10.
     
