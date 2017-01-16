@@ -3,6 +3,7 @@ package qprob
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"strconv"
 	s "strings"
 	//"io"
@@ -21,7 +22,7 @@ const (
 
 type QuantType uint8
 
-// containst the count for each class
+// contains the count for each class
 // identfied as having at least one row.
 // eg for bucket 10 we have 4 classes.
 // each id=1, count=10, id=5, count=4
@@ -45,6 +46,7 @@ type Feature struct {
 	BuckSize       float32
 	NumBuck        int16
 	NumBuckOveride bool
+	FeatWeight     float32
 }
 
 // Includes the metadaa and classifer
@@ -80,9 +82,7 @@ type Classifiers struct {
 // total probability of an item being in that
 // bucket.
 type ResultItem struct {
-	Class int16
-	Count int32
-	Prob  float32
+	Prob float32
 }
 
 // ResultRow is the total set of probabilities
@@ -91,7 +91,7 @@ type ResultItem struct {
 // we want to be able to feed this direclty
 // into JSON formatter.
 type ResultForFeat struct {
-	Crecs  map[int16]ResultItem
+	Cls    map[int16]ResultItem
 	TotCnt int32
 }
 
@@ -101,27 +101,57 @@ type ResultForFeat struct {
 // some applications with many classes we
 // may need to reduce this.
 type ResultForRow struct {
-	best     ResultItem
-	features []ResultForFeat
+	BestClass int16
+	BestProb  float32
+	Classes   map[int16]ResultItem
+	Features  []ResultForFeat
+}
+
+func (fier *Classifier) ClassRowStr(astr string) *ResultForRow {
+	a := parseStrAsArrFloat(astr)
+	if len(a) < fier.NumCol {
+		fmt.Println("classRowStr inputStr has wrong num fields numFld=%v numExpect=%v astr=%v",
+			len(a), fier.NumCol, astr)
+		return nil
+	}
+	return fier.ClassRow(a)
+}
+
+func (fier *Classifier) totFeatWeight() float32 {
+	tout := float32(0.0)
+	for ndx, feat := range fier.ColDef {
+		if feat.Enabled == true && ndx != fier.ClassCol {
+			tout += feat.FeatWeight
+		}
+	}
+	return tout
 }
 
 // Output is a structure that shows us the count
 //  for each class plust the prob for each class
 //  plus the chosen out
 
-func (fier *Classifier) classRow(drow []float32) *ResultForRow {
+func (fier *Classifier) ClassRow(drow []float32) *ResultForRow {
 	tout := new(ResultForRow)
+	tout.Classes = make(map[int16]ResultItem)
+	clsm := make(map[int16]*ResultItem)
 	featOut := make([]ResultForFeat, fier.NumCol)
-	tout.features = featOut
+	for fc := 0; fc < fier.NumCol; fc++ {
+		featOut[fc].Cls = make(map[int16]ResultItem)
+	}
+	tout.Features = featOut
 	for fc := 0; fc < fier.NumCol; fc++ {
 		dval := drow[fc]
 		feat := fier.ColDef[fc]
-		cs := feat.Spec
+		//cs := feat.Spec
 		fwrk := &featOut[fc]
 		if fc == fier.ClassCol {
 			continue // skip the class
 		}
-		if feat.Enabled == false || cs.CanParseFloat == false {
+		if dval == math.MaxFloat32 {
+			continue // skip if value contains invalid value
+		}
+		if feat.Enabled == false {
 			continue
 		}
 		buckId := feat.bucketId(fier, dval)
@@ -137,16 +167,36 @@ func (fier *Classifier) classRow(drow []float32) *ResultForRow {
 				// Ieterate over the classes that match
 				// and record them for latter use.
 				fBuckWrk := new(ResultItem)
-				fBuckWrk.Class = classId
-				fBuckWrk.Count = classCnt
-				classProb := fier.ClassProb[classId]
+				//classProb := fier.ClassProb[classId]
 				baseProb := float32(classCnt) / float32(buck.totCnt)
-				fBuckWrk.Prob = baseProb * classProb
+				fBuckWrk.Prob = baseProb
 				fwrk.TotCnt += classCnt
-				fwrk.Crecs[classId] = *fBuckWrk
+				fwrk.Cls[classId] = *fBuckWrk
+				clswrk, clsFound := clsm[classId]
+				if clsFound == false {
+					clswrk = new(ResultItem)
+					clsm[classId] = clswrk
+				}
+				clswrk.Prob += baseProb * feat.FeatWeight
+				fmt.Printf("col%v val=%v buck=%v class=%v baseProb=%v outProb=%v\n",
+					fc, dval, buckId, classId, baseProb, fBuckWrk.Prob)
 			} // for class
 		} // if buck exist
 	} // for feat
+
+	// Copy Classes to acutal output
+	// and select best item
+	bestProb := float32(0.0)
+	for classId, classWrk := range clsm {
+		classWrk.Prob = classWrk.Prob / float32(fier.totFeatWeight())
+		tout.Classes[classId] = *classWrk
+		if bestProb < classWrk.Prob {
+			bestProb = classWrk.Prob
+			tout.BestProb = classWrk.Prob
+			tout.BestClass = classId
+		}
+	}
+
 	return tout
 } // func
 
@@ -159,7 +209,7 @@ func (fier *Classifier) classRow(drow []float32) *ResultForRow {
 
 // Change the number of buckets for every feature
 // where that feature has not already been overridden
-func (cl *Classifier) setNumBuckDefault(nb int16) {
+func (cl *Classifier) SetNumBuckDefault(nb int16) {
 	for a := 0; a < cl.NumCol; a++ {
 		feat := cl.ColDef[a]
 		if feat.NumBuckOveride == false {
@@ -172,18 +222,22 @@ func (cl *Classifier) setNumBuckDefault(nb int16) {
 // the fact it's number of buckets has been overridden
 // so we don't change it if the default numBuck for
 // the entire classifer is changed in the future.
-func (fe *Feature) setNumBuck(nb int16) {
+func (fe *Feature) SetNumBuck(nb int16) {
 	fe.NumBuck = nb
 	fe.NumBuckOveride = true
 }
 
 // Compute BucketId for current data value for this
 // feature.
-// TODO: Need to add actual implementation for this
-//  which is based on observed range with outliers
-//  removed.
 func (fe *Feature) bucketId(fier *Classifier, dval float32) int16 {
-	return fe.Spec.buckId(dval)
+	// TODO: The simple multiplier process works when
+	//  the numeric values are gauranteed between 0.0 and 1.0
+	//  or are simple integer values.  A better
+	//  process  computes a step size based on the value
+	//  above minimum value divided by step size. The step size
+	//  must be computed based on an effective range with
+	//  with outliers removed
+	return int16(dval * float32(fier.NumBuck))
 }
 
 /* separated out the makeEmptyClassifier so
@@ -201,6 +255,8 @@ func makEmptyClassifier(fiName string, label string, numBuck int16) *Classifier 
 	//fier.ColDef = make([]*Feature, 0fier.Info.NumCol)
 	fier.ColByName = make(map[string]*Feature)
 	fier.ColNumByName = make(map[string]int)
+	fier.ClassCounts = make(map[int16]int32)
+	fier.ClassProb = make(map[int16]float32)
 	return fier
 }
 
@@ -214,44 +270,9 @@ func (cl *Classifier) makeFeature(col *CSVCol) *Feature {
 	afeat.ProcType = QTBucket
 	afeat.NumBuck = cl.NumBuck
 	afeat.NumBuckOveride = false
+	afeat.Buckets = make(map[int16]*QuantList)
+	afeat.FeatWeight = 1.0
 	return afeat
-}
-
-func LoadClassifierTrainFile(fiName string, label string, numBuck int16) *Classifier {
-	fmt.Printf("fiName=%s", fiName)
-
-	// Instantiate the basic File Information
-	// NOTE: This early construction will have to
-	// be duplciates for construction from
-	// string when using in POST.
-	fier := makEmptyClassifier(fiName, label, numBuck)
-	fier.Info = LoadCSVMetaDataFile("../data/breast-cancer-wisconsin.adj.data.csv")
-	fier.NumCol = fier.Info.NumCol
-	fier.ColDef = make([]*Feature, fier.NumCol)
-	fier.Info.BuildDistMatrixFile()
-	fmt.Println("loadCSVMetadata complete")
-	fmt.Println(fier.Info.String())
-
-	// build up the feature description
-	// for each column.
-	for i := 0; i < fier.NumCol; i++ {
-		col := fier.Info.Col[i]
-		fier.ColDef[i] = fier.makeFeature(col)
-	}
-
-	// Now process the actual CSV file
-	// to do the training work
-	file, err := os.Open(fiName)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-	// Return the Header and use it's
-	// contents to create the columns
-	scanner := bufio.NewScanner(file)
-	LoadClassifierTrain(fier, scanner)
-	return fier
-
 }
 
 /* Retrive the class id for the row based on
@@ -265,6 +286,17 @@ func (fier *Classifier) classId(vals []string) int16 {
 		return -9999
 	}
 	return int16(id)
+}
+
+// Update Class Probability for a given
+// row being in any class This is used in
+// later probability computations to adjust
+// observed probability
+func (fier *Classifier) updateClassProb() {
+
+	for classId, classCnt := range fier.ClassCounts {
+		fier.ClassProb[classId] = float32(classCnt) / float32(fier.NumTrainRow)
+	}
 }
 
 /* For each value we retrive it's feature for
@@ -306,7 +338,7 @@ func (fier *Classifier) TrainRow(row int, vals []string) {
 		// Record Min, Max Float
 		f64, err := strconv.ParseFloat(ctxt, 32)
 		if err != nil {
-			fmt.Printf("LoadClassifierTrain() Encountered float parsing error when not expected row=%v col=%v val=%v",
+			fmt.Printf("LoadClassifierTrain() Encountered float parsing error when not expected row=%v col=%v val=%v\n",
 				row, i, ctxt)
 			col.CanParseFloat = false
 		} else {
@@ -326,7 +358,7 @@ func (fier *Classifier) TrainRow(row int, vals []string) {
 			}
 			_, cntExist := abuck.Counts[classId]
 			if cntExist == false {
-				abuck.Counts[classId] = 0
+				abuck.Counts[classId] = 1
 			} else {
 				abuck.Counts[classId] += 1
 			}
@@ -336,16 +368,9 @@ func (fier *Classifier) TrainRow(row int, vals []string) {
 	} // for columns
 }
 
-func (fier *Classifier) updateClassProb() {
-	// Update Class Probability for a given
-	// row being in any class
-	for classId, classCnt := range fier.ClassCounts {
-		fier.ClassProb[classId] = float32(classCnt) / float32(fier.NumTrainRow)
-	}
-}
-
 func LoadClassifierTrain(fier *Classifier, scanner *bufio.Scanner) {
 	rowCnt := 0
+	scanner.Scan() // skip headers
 	for scanner.Scan() {
 		txt := s.TrimSpace(scanner.Text())
 		if err := scanner.Err(); err != nil {
@@ -359,4 +384,41 @@ func LoadClassifierTrain(fier *Classifier, scanner *bufio.Scanner) {
 		rowCnt += 1
 	} // for row
 	fier.updateClassProb()
+}
+
+func LoadClassifierTrainFile(fiName string, label string, numBuck int16) *Classifier {
+	fmt.Printf("fiName=%s", fiName)
+
+	// Instantiate the basic File Information
+	// NOTE: This early construction will have to
+	// be duplciates for construction from
+	// string when using in POST.
+	fier := makEmptyClassifier(fiName, label, numBuck)
+	fier.Info = LoadCSVMetaDataFile("../data/breast-cancer-wisconsin.adj.data.csv")
+	fier.NumCol = fier.Info.NumCol
+	fier.ColDef = make([]*Feature, fier.NumCol)
+	fier.Info.BuildDistMatrixFile()
+	fmt.Println("loadCSVMetadata complete")
+	fmt.Println(fier.Info.String())
+
+	// build up the feature description
+	// for each column.
+	for i := 0; i < fier.NumCol; i++ {
+		col := fier.Info.Col[i]
+		fier.ColDef[i] = fier.makeFeature(col)
+	}
+
+	// Now process the actual CSV file
+	// to do the training work
+	file, err := os.Open(fiName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+	// Return the Header and use it's
+	// contents to create the columns
+	scanner := bufio.NewScanner(file)
+	LoadClassifierTrain(fier, scanner)
+	return fier
+
 }

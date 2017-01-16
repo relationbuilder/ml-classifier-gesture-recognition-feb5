@@ -29,40 +29,6 @@ import (
 	s "strings"
 )
 
-// TODO: Move these to a common utility
-// module.
-func MaxI32(x, y int32) int32 {
-	if x > y {
-		return x
-	} else {
-		return y
-	}
-}
-
-func MaxF32(x, y float32) float32 {
-	if x > y {
-		return x
-	} else {
-		return y
-	}
-}
-
-func MinI32(x, y int32) int32 {
-	if x < y {
-		return x
-	} else {
-		return y
-	}
-}
-
-func MinF32(x, y float32) float32 {
-	if x < y {
-		return x
-	} else {
-		return y
-	}
-}
-
 // CSVColInf information describing A CSV Column
 type CSVCol struct {
 	ColNum        int
@@ -255,8 +221,8 @@ func (cv *CSVInfo) BuildDistMatrix(scanner *bufio.Scanner) {
 				f32 := float32(f64)
 				buckId := col.buckId(f32)
 				col.distCounts[buckId] += 1
-				fmt.Printf("i=%v f32=%v buckId=%v cnt=%v \n",
-					i, f32, buckId, col.distCounts[buckId])
+				//fmt.Printf("i=%v f32=%v buckId=%v cnt=%v \n",
+				//	i, f32, buckId, col.distCounts[buckId])
 			}
 		}
 	} // for row
