@@ -54,13 +54,8 @@ This repository incudes code written to test ideas for static gesture recognitio
 #TODO#
 
 ##Actions for Both quant_prob and quant_filt##
-* Make Quant_prob and quant_filt more generic to support 
-* broader use case.
-* Before Making these changes consider porting quant_prob to GO
-  so we can have a stable base to build self hosting service. 
-  Could keep it in python but the python network listener is weak
-  and python threading has known issues.  If running as service 
-  would be better in GO or Rust. 
+* Update QuantProb to properly scale buckets to cope with outliers
+* Utility to split input files into separate sets.
   
 * Modify Quant_prob run as server handler. 
   * Method will use main as data set name unless &dset is specified.
@@ -74,17 +69,31 @@ This repository incudes code written to test ideas for static gesture recognitio
       item.  This is to support testing.     
   * Method to classify with POST multiple lines.
   * Method to classify with GET for single set of features.
+  * Allow number of buckets to be set by column name
+  * allow column name to be set map direct to bucket id
+
+  *    
+* Produce a version for text parsing that computes position
+    indexed position of all words where each unique word gets 
+    a column number.   Then when building quantized tree 
+    lookup of the indexed position for that word  treat the word 
+    index as the bucketId or possibly as columnNumber need to think
+    that one through buck as a bucket id seems to make most sense
+    nd then 
+    treat all the other features as empty. So the list of cols
+    may grow to several million but will only contain the hashed
+    classes for those value. Allow system to pass in a list
+    of clolumns n the CSV to index as text.  This would not 
+    effectively use word ordering but we could use quantized buckets
+    for probability of any word being that text in text string so
+    a word like "the" that may occur 50 times would occur in a differnt
+    bucket when it is repeated many times. 
   * Only include detail probs if requested.
+  * Choose column to use as class
+
   * Test with following data
-     *  Push the IMDB data in as a learning data set
-     *  https://www.kaggle.com/datasets
-     *  Convert data sets downloaded into standard format for ML using python scripts.
-     *  Save both versions. 
-     *  
-  *  https://archive.ics.uci.edu/ml/machine-learning-databases/adult/
-  *  
-  * Use the TFLearn example of items to classify.
-
-
+     * Diabeteas classification
+     * 
+     
 
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
