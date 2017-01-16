@@ -85,16 +85,16 @@ massive training data sets with minimal memory.
     the more precise.  This is an alternative to the probability
     model and can provide superior results in some instance.
   
-  * **python quant_prob.py** - Runs a test on gesture classification data
+  * **python [quant_prob.py](quant_prob.py)** - Runs a test on gesture classification data
     demonstrates quantized probability theory in smallest possible 
     piece of python code.  A more complete version is implemented 
     in classify.go 
     
-  * **makeGO.bat** - if you have GO set up then open a command line at
+  * **[makeGO.bat](makeGO.bat)** - if you have GO set up then open a command line at
     the base directory containing makeGO.bat and run it.   It should
     setup GOHOME and build the executable files. Tested on windows 10.
     
-  * **splitData.bat** - Creates sub .train.csv and test.csv files for the files
+  * **[splitData.bat](splitData.bat)** - Creates sub .train.csv and test.csv files for the files
     used in the GO classifier tests. Uses splitCSVFile.exe which is built
     by makeGo. 
     
