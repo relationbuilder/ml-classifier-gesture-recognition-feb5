@@ -11,11 +11,10 @@ Also includes TensorFlow implementation of classifiers
 using the same data to compare the run-time performance
 and classification accuracy.  
 
-Quantized classifiers borrow features from KNN 
-and others from Bayesian engines.  A key design aspect is a 
-faster mechanism to identify similarity for a given features. 
-It was inspired by some of the underlying design of KNN 
-engines combined with techniques from SVM engines. 
+My design for Quantized classifiers was inspired by 
+design elements in KNN, Bayesian and SVM engines. 
+A key design goal was a faster mechanism to identify 
+similarity for a given feature. 
 
   In KNN we find similar records for a given feature by finding 
   those with the most similar value which works but consumes
@@ -42,7 +41,6 @@ engines combined with techniques from SVM engines.
   multiple models with different quanta sizes loaded and updated
   simultaneously. 
 
-Samples of using the same training data are supplied.  Includes code to feed the same data into TensorFlow to test classification using googles deep learning functionality.
 
 ###ASP (American Sign Language) Gesture classifier###
 This engine started as a classifier designed to classify Static Gestures for VR with the idea we may be able to produce a useful tool for classifying  ASL using VR input devices.  That is still a primary focus but the core algorithms can be more broadly applied.
