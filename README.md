@@ -14,17 +14,18 @@ classifier.  Tests are:
       
 **We Offer Consulting services see: http://BayesAnalytic.com/contact**
       
-Also includes TensorFlow implementation of classifiers 
-using the same data to compare the run-time performance
-and classification accuracy.  
-
-My design for Quantized classifiers was inspired by 
+The library includes TensorFlow Deep Learning implementation of 
+classifiers using the same data to compare the run-time 
+performance combined with classification recall and accuracy.  
+###Quantized Classifier###
+The design for Quantized classifiers was inspired by 
 design elements in KNN, Bayesian and SVM engines. 
 A key design goal was a faster mechanism to identify 
-similarity for a given feature. 
+similarity for a given feature while providing very fast
+classification using moderate hardware resources. 
 
   In KNN we find similar records for a given feature by finding 
-  those with the most similar value which works but consumes
+  those with the most similar value.  This works but consumes
   a lot of space and run-time.   In Quantized approach 
   we look at the range of data and attempt to 
   group data based on similar values.  EG: if a given
@@ -41,13 +42,15 @@ similarity for a given feature.
   row would belong to any of the classes.  
   
   Quantizing the data allows a small memory foot print 
-  with fast training without the KNN
-  need of keeping all the training records in memory. Retaining
+  with fast training without the
+  need to keep all the training records in memory. Retaining
   only the statistics allows 
-  very large training sets. The trade off is that it looses some of 
-  KNN ability to adjust the number of closest neighbors considered.
-  but training is so fast that the quanta size can be adjusted quickly
-  and memory use is so much smaller that we can afford to keep
+  very large training sets with moderate memory use. 
+  The trade off is loosing some of 
+  KNN ability to adjust the number of closest neighbors considered 
+  quick at runtime.   The offset is that training is so fast that
+  the quanta size can be adjusted quickly.  The memory use is so 
+  much smaller that we can afford to keep
   multiple models with different quanta sizes loaded and updated
   simultaneously. 
 
@@ -70,7 +73,7 @@ massive training data sets with minimal memory.
  * Version: 0.1
  * License: (MIT) We do sell consulting services http://BayesAnalytic.com/contact
  * Dependencies: 
-    - GO Code was built using version 1.7.3 windows/amd 64
+    - GO Code is cross platform and will run Linux.  This softwar was built using version 1.7.3 windows/amd 64
     - Python code: Was tested with Python 3.5.2 64 bit
     - TensorFlow: Lots of crazy dependencies See: tlearn/tensflowReadme.docx 
 
@@ -197,7 +200,7 @@ massive training data sets with minimal memory.
   to prevent them from negatively affecting spread for normal
   distribution items.
 
-
+* Add recall, precision by class in classifyFiles
   
 * Modify Quant_prob run as server handler. 
   * Method will use main as data set name unless &dset is specified.
@@ -233,9 +236,9 @@ massive training data sets with minimal memory.
   * Only include detail probs if requested.
   * Choose column to use as class
 
-  * Test with following data
-     * Diabetes classification
-     * 
-     
+
+* Produce GO version of the Quant Filter to see if we can improve
+  performance on the diabetes and titanic data set.
+
 
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
