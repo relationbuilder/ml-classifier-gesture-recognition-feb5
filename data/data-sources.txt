@@ -1,10 +1,26 @@
-See Source site for license and re-use information on this data
-Only duplicated here because most of these required some non-trivial
-tranform before being ready to feed direclty into a machine learning
-algorith.
+See Source sites for attribution, license and re-use information on 
+this data.  Some of these files will have to be downloaded manually due
+to restrictive licenses.
+
 
 mnist.csv - https://github.com/savarin/neural-networks
+
 rottentomatoes.csv - https://github.com/savarin/neural-networks
+
 titanic.csv - https://github.com/savarin/neural-networks
+
 move_metadata.csv - https://www.kaggle.com/deepmatrix/imdb-5000-movie-dataset
-breast-cancer-wisconsin.data.csv - https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.names
+
+breast-cancer-wisconsin.data.csv -
+  https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+%28Original%29
+  https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.names
+
+contraceptive Predict use of Contraceptive
+  https://archive.ics.uci.edu/ml/datasets/Contraceptive+Method+Choice
+  https://archive.ics.uci.edu/ml/machine-learning-databases/cmc/cmc.names
+
+diabetes.csv Diabetes pima Indian
+ https://archive.ics.uci.edu/ml/datasets/Pima+Indians+Diabetes
+ https://archive.ics.uci.edu/ml/machine-learning-databases/pima-indians-diabetes/ https://archive.ics.uci.edu/ml/machine-learning-databases/pima-indians-diabetes/pima-indians-diabetes.names
+  
+

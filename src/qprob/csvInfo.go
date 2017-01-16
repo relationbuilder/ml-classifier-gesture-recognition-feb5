@@ -168,7 +168,13 @@ func (cc *CSVCol) buckId(vin float32) int16 {
 	if cc.IsInt && cc.AbsRange <= 1000 {
 		return int16(vin)
 	} else {
-		return int16((vin - cc.MinFlt) / cc.distStepSize)
+		tout := int16((vin - cc.MinFlt) / cc.distStepSize)
+		if tout > 999 {
+			tout = 999
+		} else if tout < 0 {
+			tout = 0
+		}
+		return tout
 	}
 }
 
@@ -220,6 +226,7 @@ func (cv *CSVInfo) BuildDistMatrix(scanner *bufio.Scanner) {
 			if err == nil {
 				f32 := float32(f64)
 				buckId := col.buckId(f32)
+				fmt.Printf("buckid=%v\n", buckId)
 				col.distCounts[buckId] += 1
 				//fmt.Printf("i=%v f32=%v buckId=%v cnt=%v \n",
 				//	i, f32, buckId, col.distCounts[buckId])

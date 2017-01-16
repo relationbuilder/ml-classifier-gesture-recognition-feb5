@@ -4,8 +4,10 @@ A general purpose, high performance machine learning
 classifier.  Tests are:
 
    *  ASL Sign language Gesture recognition 
-   *  Tests classify diabetes 
-   *  predict death or survival of Titanic passengers. 
+   *  Tests classify breast cancer from 10 inputs. 
+   *  Predict death or survival of Titanic passengers. 
+   *  Please send me data sets you would like to add 
+      to the test.
 
 Also includes TensorFlow implementation of classifiers 
 using the same data to compare the run-time performance
@@ -93,13 +95,14 @@ massive training data sets with minimal memory.
   * **go build src/classifyTest.go**
     builds executable classifyTest from GO source. 
     
-  * **classifyTest data/diabetes...  data/daibeaat **
+  * **classifyFiles data/breast-cancer-wisconsin.adj.data.train.csv 
+    data/breast-cancer-wisconsin.adj.data.test.csv 10**
     will run the GO based classifier built in GO using
     the first named file for training and the second named
     file for testing will print out results of how well classification
     matches actual source data class.
     
-  * **classifyTest data/titantic.train.csv data/titantic.test.csv**
+  * **classifyFiles data/titanic.train.csv data/titanic.test.csv 6**
     will run the GO based classifier against the two input files
     this test attempts to predict mortality and will print out
     quality of predictions from classifier compared to known
