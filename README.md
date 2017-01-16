@@ -7,9 +7,9 @@ This repository incudes code written to test ideas for static gesture recognitio
 * Version: 0.1
 * License: (MIT) We do sell consulting services http://BayesAnalytic.com/contact
 * Dependencies: 
-  * GO Code was built using version 1.7.3 windows/amd 64
-  * Python code: Was tested with Python 3.5.2 64 bit
-  * TensorFlow: Lots of crazy dependencies See: tlearn/tensflowReadme.docx 
+   * GO Code was built using version 1.7.3 windows/amd 64
+   * Python code: Was tested with Python 3.5.2 64 bit
+   * TensorFlow: Lots of crazy dependencies See: tlearn/tensflowReadme.docx 
 
 ### How to Use ###
   * python quant_filt.py  Runs test on gesture classification data.
