@@ -24,3 +24,8 @@ diabetes.csv Diabetes pima Indian
  https://archive.ics.uci.edu/ml/machine-learning-databases/pima-indians-diabetes/ https://archive.ics.uci.edu/ml/machine-learning-databases/pima-indians-diabetes/pima-indians-diabetes.names
   
 
+Liver disorders
+  https://archive.ics.uci.edu/ml/machine-learning-databases/liver-disorders/
+  https://archive.ics.uci.edu/ml/machine-learning-databases/liver-disorders/bupa.names
+  
+  

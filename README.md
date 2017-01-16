@@ -194,8 +194,10 @@ massive training data sets with minimal memory.
 
 ##Actions for Both quant_prob and quant_filt##
 * Update QuantProb to properly scale buckets to cope with outliers
-  and decimal numeric inputs. 
-  
+  to prevent them from negatively affecting spread for normal
+  distribution items.
+
+
   
 * Modify Quant_prob run as server handler. 
   * Method will use main as data set name unless &dset is specified.

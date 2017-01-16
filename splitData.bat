@@ -4,5 +4,6 @@
 go build src/splitCSVFile.go
 splitCSVFile data/titanic.csv 10
 splitCSVFile data/breast-cancer-wisconsin.adj.data.csv 9
-splitCSVFile data/contraceptive.csv 9
 splitCSVFile data/diabetes.csv 9
+splitCSVFile data/liver-disorder.csv 7
+
