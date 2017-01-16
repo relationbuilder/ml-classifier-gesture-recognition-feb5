@@ -30,10 +30,12 @@ similarity for a given feature.
   each class which we can then use to compute a base probability
   by feature by bucket by class. Applying this across active 
   features gives us a set of probabilities that can be combined
-  using ensemble techniques into a single probability that a 
-  row would belong to any of the classes.  This allows a relatively
-  small memory foot print with fast training without the KNN
-  need of keeping all the training records in memory which allows 
+  using ensemble techniques into the probability a given
+  row would belong to any of the classes.  
+  Quantizing the data allows a small memory foot print 
+  with fast training without the KNN
+  need of keeping all the training records in memory. Retaining
+  only the statistics allows 
   very large training sets. The trade off is that it looses some of 
   KNN ability to adjust the number of closest neighbors considered.
   but training is so fast that the quanta size can be adjusted quickly
