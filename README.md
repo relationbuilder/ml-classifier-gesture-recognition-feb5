@@ -80,12 +80,14 @@ massive training data sets with minimal memory.
     - TensorFlow: Lots of crazy dependencies See: tlearn/tensflowReadme.docx 
 
 ## How to Use ##
-  * Install python. We tested 3.5.2 but should work with newer versions.
+  * [Install python](https://www.python.org/downloads/release/python-352/). We
+    tested 3.5.2 but should work with newer versions.
     only needed if you want to run TensorFlow or Python samples we supplied.
   
-  * Install GO. 
+  * [Install GO](https://golang.org/doc/install)
   
-  * Install TensorFlow, TFLearn and run their basic tests to ensure they
+  * [Install TensorFlow](https://www.tensorflow.org/get_started/os_setup), [TFLearn](http://tflearn.org/installation/) and
+    run their basic tests to ensure they
     run correctly.  This may also require installing CUDA depending on 
     whether you want to use the GPU version of TensorFlow.  TFLearn requires
     Python we tested ours with python 3.5.2.   Not needed if you only want
