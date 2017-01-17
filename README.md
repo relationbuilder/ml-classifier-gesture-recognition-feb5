@@ -14,9 +14,10 @@ classifier.  Tests are:
       
 **We Offer Consulting services see: http://BayesAnalytic.com/contact**
       
-The library includes TensorFlow Deep Learning implementation of 
+Thisrepository includes [TensorFlow Deep Learning implementation](tlearn) of 
 classifiers using the same data to compare the run-time 
 performance combined with classification recall and accuracy.  
+[readme](tlearn)
 
 ### Quantized Classifier ###
 The design for Quantized classifiers was inspired by 
