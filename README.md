@@ -194,18 +194,10 @@ massive training data sets with minimal memory.
 
 
 
-
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies - Tested on Python 3.5 on Windows 10.
-* Database configuration
-* How to run tests
-* Deployment instructions
-
 ### Contribution guidelines ###
 
+* **[todo.md](todo.md)** - list of actions and enhancements roughly
+    prioritized top down.
 * Writing tests
 * Code review
 * Other guidelines
@@ -213,7 +205,7 @@ massive training data sets with minimal memory.
 ### Who do I talk to? ###
 
 * Repo owner Joseph Ellsworth
-* We do sell consulting services http://BayesAnalytic.com/contact
+* I sell consulting services for Search, Machine Learning, High performance High availability distriuted architecture.  http://BayesAnalytic.com/contact
 
 
 
