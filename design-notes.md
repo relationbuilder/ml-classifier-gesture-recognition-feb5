@@ -104,26 +104,19 @@
 >> The output of the optimizer can yield information valuable to the researcher.  For example:  if the optimizer finds that it can provide the best prediction when the priority of the age input is turned up but only when it has been reduced to grouping into 3 groups then this can help the researcher know where to look. 
 >>
 >> There are many strategies for varying the selection of test verus training data but in general they try to find a compromise between the accuracy and recall of the engine so it will truely do the best job when asked to classify new data is has never seen previously.  A search on "avoid over learning in optimized machine learning" will yield a lot of information about this topic. 
->>>     Test Code Block
->>>     TEst line #2
 
 ># Genome Use of Optimizers #
->
->
 >>Looking at the data below.  The slice of the genome use to supply columns c1 to c15 were selected by a researcher as a subset they thought could help predict or classify something.   The optimizer can help identify which bits are providing useful input.
->>
-~~~~
-     class,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15
-     0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
-     0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
-     1,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
-     0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
-     1,0,1,0,1,0,1,1,1,0,0,0,0,1,1,
-     0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
-     
-     class = 0 - not diagnosed with canser before age of 40.
-     class = 1 = was diagnosed with cancer before age of 40.
-~~~~
+>>>     class,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15
+>>>     0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
+>>>     0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
+>>>     1,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
+>>>     0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
+>>>     1,0,1,0,1,0,1,1,1,0,0,0,0,1,1,
+>>>     0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
+>>>     
+>>>     class = 0 - not diagnosed with canser before age of 40.
+>>>     class = 1 = was diagnosed with cancer before age of 40.
 >
 >> #### Identifying relevant portions of the Genome. 
 >>
