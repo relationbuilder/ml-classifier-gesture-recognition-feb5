@@ -126,6 +126,7 @@
 >>0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
 >>
 >>class = 0 - not diagnosed with canser before age of 40
+>>
 >>class = 1 = was diagnosed with cancer before age of 40
 >>```
 >
@@ -182,7 +183,9 @@
 >>  >
 >>  >
 >>  > The first column is the class.  
+>>  >
 >>  >   2 = Cancer not detected.  
+>>  >   
 >>  >   4 = Cancer was detected
 >>  >
 >>  > The rest are results from measurements and tests ran by the Cancer doctor.  Based on this data set the Quantized classifier was able to achive 96% accuracy of predition in the test data set. 
@@ -207,7 +210,9 @@
 >
 >
 >The class is measured results 
+>
 >  0 - did not detect cancer before age 40
+>  
 >  1 - detected cancer before age 40
 >  
 >The rest of the columns represent a slice of data extracted from the genome.   Or several slices collected into a single row.    In the Genome context we may expect hundreds or thousands of features.
