@@ -107,18 +107,18 @@
 
 ># Genome Use of Optimizers #
 >>Looking at the data below.  The slice of the genome use to supply columns c1 to c15 were selected by a researcher as a subset they thought could help predict or classify something.   The optimizer can help identify which bits are providing useful input.
->>>     class,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15
->>>     0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
->>>     0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
->>>     1,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
->>>     0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
->>>     1,0,1,0,1,0,1,1,1,0,0,0,0,1,1,
->>>     0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
->>>     
->>>     class = 0 - not diagnosed with canser before age of 40.
->>>     class = 1 = was diagnosed with cancer before age of 40.
->
->> #### Identifying relevant portions of the Genome. 
+>>     class,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15
+>>     0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
+>>     0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
+>>     1,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
+>>     0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
+>>     1,0,1,0,1,0,1,1,1,0,0,0,0,1,1,
+>>     0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
+>>     
+>>     class = 0 - not diagnosed with canser before age of 40.
+>>     class = 1 = was diagnosed with cancer before age of 40.
+>>
+>>#### Identifying relevant portions of the Genome. 
 >>
 >> It is possible that bits C3,C11,C15 are very important for this diagnosis while bit C1 and C5 actually provide bad data while C6 is important but less important than C3.   If this information can identified then it can help the researcher identify which portion genome actually help and this can feed back to help them refine their diagnostic capabilty for future patients. 
 >>
@@ -154,28 +154,27 @@
 >>
 >>  Example of Data set for predicting breast cancer:
 >>
-    ~~~~
-    Class,ClumpThick,UnifCellSize,UnifCellShape,margAdhesion,singleEpithelialCellSize,BareNucleo,BlandChromatin,NormalNucleoli,Mitoses
-    2,5,1,1,1,2,1,3,1,1
-    2,5,4,4,5,7,10,3,2,1
-    2,3,1,1,1,2,2,3,1,1
-    2,6,8,8,1,3,4,3,7,1
-    2,4,1,1,3,2,1,3,1,1
-    4,8,10,10,8,7,10,9,7,1
-
-    The first column is the class.  
-      2 = Cancer not detected.
-      4 = Cancer was detected.
-
-    The rest are results from measurements and 
-    tests ran by the Cancer doctor.  Based on 
-    this data set the Quantized classifier 
-    was able to achive 96% accuracy of predition
-    in the test data set. 
-    ~~~~
+>>     Class,ClumpThick,UnifCellSize,UnifCellShape,margAdhesion,singleEpithelialCellSize,BareNucleo,BlandChromatin,NormalNucleoli,Mitoses
+>>     2,5,1,1,1,2,1,3,1,1
+>>     2,5,4,4,5,7,10,3,2,1
+>>     2,3,1,1,1,2,2,3,1,1
+>>     2,6,8,8,1,3,4,3,7,1
+>>     2,4,1,1,3,2,1,3,1,1
+>>     4,8,10,10,8,7,10,9,7,1
+>>     
+>>     The first column is the class.  
+>>       2 = Cancer not detected.
+>>       4 = Cancer was detected.
+>>     
+>>     The rest are results from measurements and 
+>>     tests ran by the Cancer doctor.  Based on 
+>>     this data set the Quantized classifier 
+>>     was able to achive 96% accuracy of predition
+>>     in the test data set. 
+>>    
 >
 >Example of Genome Data
-~~~~
+>>     
     class,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15
     0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
     1,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
@@ -183,24 +182,23 @@
     0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
     1,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
     1,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
+     
+     
+>>     The class is measured results 
+>>     0 - did not detect cancer before age 40.
+>>     1 - detected cancer before age 40.
+>>     
+>>     The rest of the columns represent a slice
+>>     of data extracted from the genome. 
+>>     Or several slices collected into a single
+>>     row.  In the Genome context we may expect
+>>     hundreds or thousands of features.
 
-
-   The class is measured results 
-     0 - did not detect cancer before age 40.
-     1 - detected cancer before age 40.
-  
-   The rest of the columns represent a slice
-   of data extracted from the genome. 
-   Or several slices collected into a single
-   row.  In the Genome context we may expect
-   hundreds or thousands of features.
-~~~~
->
->>  For machine learning we would need at least 1K rows to attemp classification.    A more reasonable minimum would be 50 rows of which 40K are used for training and 10K are used for testing.    When used with Genomic data we may find that several million rows provide better classification effectiveness. 
+>>For machine learning we would need at least 1K rows to attemp classification.    A more reasonable minimum would be 50 rows of which 40K are used for training and 10K are used for testing.    When used with Genomic data we may find that several million rows provide better classification effectiveness. 
 >>
->>  The engine should be able to learn from this and predict yes,no if you feed it the same sub region of the genome for each person.   
+>>The engine should be able to learn from this and predict yes,no if you feed it the same sub region of the genome for each person.   
 >>
->>  Please send us data sets using the premise.  I would love to try them.  
+>>Please send us data sets using the premise.  I would love to try them.  
 
 
 
