@@ -61,6 +61,7 @@ type Classifier struct {
 	TestFiName   string
 	Label        string
 	NumCol       int
+	NumRow       int
 	ClassCol     int
 	NumBuck      int16
 	ClassCounts  map[int16]int32   // total Count of all Records of Class
@@ -106,6 +107,85 @@ type ResultForRow struct {
 	BestProb  float32
 	Classes   map[int16]ResultItem
 	Features  []ResultForFeat
+}
+
+/* Determines reasonable effective Min/Max value range for
+the statistically significant values that represent the bulk
+of the data.  Without this feature the quantize process can
+compute poor bucket sizes that are negatively effected by a very
+small amoun of data.  We do this by dividing all inbound data
+counts between 1,000 buckets across the absolute min/max range
+then to find the effective range we scan from the top and bottom
+until the next bucket would exteed the numRemove specification
+then return the value equivilant to the last bucket on each end
+that did not exceed the numRemove requirement.  This allows us
+to remove the influence for a given fraction of the data extreeme
+value data on each end when computing effective range which
+provides a better computation of bucket size based on the dominant
+data.  This is not always desirable but in stock data it is very
+common to have 1% to 2% with extreeme values which ends up causing
+buckets that are too large forcing values in the main distribution
+into a smaller number of buckets than intended. If either value
+for bottom or top meet each other before reachign the number of
+records then returns a error. */
+func (fe *Feature) setFeatEffMinMax(fier *Classifier, numRemMin int, numRemMax int) (float32, float32) {
+	minCnt := 0
+	maxCnt := 0
+	csv := fe.Spec
+	dist := csv.distCounts
+	stepSize := csv.distStepSize
+
+	// Scan from Bottom removing large numbers
+	// We look ahead 1 so if it would place us
+	// over our targetCnt then we abort.
+	bndx := -1
+	effMinVal := csv.MinFlt
+	for ; numRemMin > (minCnt+dist[bndx+1]) && bndx < 999; bndx++ {
+		//fmt.Printf("L144: bndx=%v effMinVal=%v minCnt=%v nextDist=%v numRemMin=%v\n",
+		//	bndx, effMinVal, minCnt, dist[bndx+1], numRemMin)
+		minCnt += dist[bndx+1]
+		effMinVal += stepSize
+	}
+
+	// Scan From Top removing large numbers
+	// We look back by 1 so if that value would put us
+	// over target removed then abort based on curr Val.
+	tndx := 1000
+	effMaxVal := csv.MaxFlt
+	for ; numRemMax > (maxCnt+dist[tndx-1]) && tndx > 1; tndx-- {
+		maxCnt += dist[tndx-1]
+		//fmt.Printf("L155: tndx=%v effMaxVal=%v maxCnt=%v nextDist=%v numRemMax=%v\n",
+		//	tndx, effMaxVal, maxCnt, dist[tndx-1], numRemMax)
+		effMaxVal -= stepSize
+	}
+	if effMaxVal > effMinVal {
+		fe.EffMinVal = effMinVal
+		fe.EffMaxVal = effMaxVal
+		fier.updateStepValues(fe)
+	} else {
+		//fmt.Printf("ERR effMax < effMin in setFeatEffMinMax")
+	}
+	return fe.EffMinVal, fe.EffMaxVal
+}
+
+// set Min Max Effective Range for every feature.
+func (fier *Classifier) SetEffMinMax(numRemMin int, numRemMax int) {
+	for cn := 0; cn < fier.NumCol; cn++ {
+		fe := fier.ColDef[cn]
+		_, _ = fe.setFeatEffMinMax(fier, numRemMin, numRemMax)
+
+		csv := fe.Spec
+		fmt.Printf("SetEffMinMax colNum=%v absMin=%v effMin=%v absMax=%v effMax=%v remMin=%v remMax=%v\n",
+			cn, csv.MinFlt, fe.EffMinVal, csv.MaxFlt, fe.EffMaxVal, numRemMin, numRemMax)
+	}
+}
+
+// Remove the top portion of the outlier records
+// where portion of set is a ratio expressed between
+// 0.0 and 1.0.  Applied to all features.
+func (fier *Classifier) SetEffMinMaxPortSet(portSet float32) {
+	numRemoveRec := int(float32(fier.NumRow) * portSet)
+	fier.SetEffMinMax(numRemoveRec, numRemoveRec)
 }
 
 func (fier *Classifier) ClassRowStr(astr string) *ResultForRow {
@@ -234,6 +314,11 @@ func (cl *Classifier) SetNumBuck(fe *Feature, nb int16) {
 	cl.updateStepValues(fe)
 }
 
+func (cl *Classifier) updateStepValues(afeat *Feature) {
+	afeat.EffRange = afeat.EffMaxVal - afeat.EffMinVal
+	afeat.BuckSize = afeat.EffRange / float32(afeat.NumBuck)
+}
+
 // Compute BucketId for current data value for this
 // feature.
 func (fe *Feature) bucketId(fier *Classifier, dval float32) int16 {
@@ -245,9 +330,6 @@ func (fe *Feature) bucketId(fier *Classifier, dval float32) int16 {
 	//  must be computed based on an effective range with
 	//  with outliers removed
 	amtOverMin := dval - fe.EffMinVal
-	if amtOverMin <= 0.0 {
-		return 0
-	}
 	bucket := int16(amtOverMin / float32(fe.BuckSize))
 	//fmt.Printf("dval=%v bucket=%v amtOverMin=%v effMinVal=%v\n",
 	//	dval, bucket, amtOverMin, fe.EffMinVal)
@@ -274,9 +356,21 @@ func makEmptyClassifier(fiName string, label string, numBuck int16) *Classifier 
 	return fier
 }
 
-func (cl *Classifier) updateStepValues(afeat *Feature) {
-	afeat.EffRange = afeat.EffMaxVal - afeat.EffMinVal
-	afeat.BuckSize = afeat.EffRange / float32(afeat.NumBuck)
+func (fier *Classifier) initFromCSV(csv *CSVInfo) {
+	fier.Info = csv
+	fier.NumCol = fier.Info.NumCol
+	fier.NumRow = fier.Info.NumRow
+	fier.ColDef = make([]*Feature, fier.NumCol)
+	fier.Info.BuildDistMatrixFile()
+	fmt.Println("loadCSVMetadata complete")
+	fmt.Println(fier.Info.String())
+
+	// build up the feature description
+	// for each column.
+	for i := 0; i < fier.NumCol; i++ {
+		col := fier.Info.Col[i]
+		fier.ColDef[i] = fier.makeFeature(col)
+	}
 }
 
 func (cl *Classifier) makeFeature(col *CSVCol) *Feature {
@@ -414,19 +508,8 @@ func LoadClassifierTrainFile(fiName string, label string, numBuck int16) *Classi
 	// be duplciates for construction from
 	// string when using in POST.
 	fier := makEmptyClassifier(fiName, label, numBuck)
-	fier.Info = LoadCSVMetaDataFile(fiName)
-	fier.NumCol = fier.Info.NumCol
-	fier.ColDef = make([]*Feature, fier.NumCol)
-	fier.Info.BuildDistMatrixFile()
-	fmt.Println("loadCSVMetadata complete")
-	fmt.Println(fier.Info.String())
-
-	// build up the feature description
-	// for each column.
-	for i := 0; i < fier.NumCol; i++ {
-		col := fier.Info.Col[i]
-		fier.ColDef[i] = fier.makeFeature(col)
-	}
+	csv := LoadCSVMetaDataFile(fiName)
+	fier.initFromCSV(csv)
 
 	// Now process the actual CSV file
 	// to do the training work
@@ -439,6 +522,8 @@ func LoadClassifierTrainFile(fiName string, label string, numBuck int16) *Classi
 	// contents to create the columns
 	scanner := bufio.NewScanner(file)
 	LoadClassifierTrain(fier, scanner)
+	fier.SetEffMinMaxPortSet(0.015) // remove 1.5% of outlier records from top and bottom
+	// when computing range.
 	return fier
 
 }

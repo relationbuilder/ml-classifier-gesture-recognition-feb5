@@ -5,9 +5,6 @@ using the library.  http://BayesAnalytic.com/contact
 
 
 
-* Update QuantProb to properly scale buckets to cope with outliers
-  to prevent them from negatively affecting spread for normal
-  distribution items.
 
 * Add recall, precision by class in classifyFiles
 
@@ -102,3 +99,15 @@ using the library.  http://BayesAnalytic.com/contact
   * Only include detail probs if requested.
   * Choose column to use as class
 
+* Classifier.Go Classifier class Add BegRow, EndRow to allow a 
+  subset of CSV to be used for Training or Testing.  It may actually
+  be better to add a startRow, StopRow to be passed to the training 
+  file. 
+  
+# Completed Items Phase 1 #
+
+  * DONE:2018-01-18: Update QuantProb to properly scale buckets to 
+    cope with outliers to prevent them from negatively affecting 
+    spread for normal distribution items.
+
+  

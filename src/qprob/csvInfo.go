@@ -183,34 +183,6 @@ func (cc *CSVCol) buckId(vin float32) int16 {
 	}
 }
 
-/* Determines reasonable effective Min/Max value range for
-the statistically significant values that represent the bulk
-of the data.  Without this feature the quantize process can
-compute poor bucket sizes that are negatively effected by a very
-small amoun of data.  We do this by dividing all inbound data
-counts between 1,000 buckets across the absolute min/max range
-then to find the effective range we scan from the top and bottom
-until the next bucket would exteed the numRemove specification
-then return the value equivilant to the last bucket on each end
-that did not exceed the numRemove requirement.  This allows us
-to remove the influence for a given fraction of the data extreeme
-value data on each end when computing effective range which
-provides a better computation of bucket size based on the dominant
-data.  This is not always desirable but in stock data it is very
-common to have 1% to 2% with extreeme values which ends up causing
-buckets that are too large forcing values in the main distribution
-into a smaller number of buckets than intended. If either value
-for bottom or top meet each other before reachign the number of
-records then returns a error. */
-/*** ComputeEffectiveMinMaxOutliersRemoved(numRemoveBott, numRemoveTop) {
-	// Scan from Bottom
-
-	// Scan From Top
-
-	// REt
-	}
-**/
-
 // Helper method to create the stream used to build
 // the matrix.
 func (cv *CSVInfo) BuildDistMatrixFile() {
