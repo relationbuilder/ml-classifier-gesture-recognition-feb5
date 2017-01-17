@@ -33,7 +33,7 @@
 >> A slice of Genomic data can be thought of as Comma 
 >> delimited list like:
 >>> * 0,0,1,0,1,1,1,1,1,0,0,1,1,0,1
->>>      
+>>      
 >> The slice could be pulled from a single portion of
 >> the genome or could be pulled from several different
 >> sections and assembled as one longer slice.   The first
@@ -41,13 +41,13 @@
 >> others are measures from the data.  In some instances
 >> data can be added from other sources such as: 
 >>     
->>      * 0,40,2,60,0,1,0,1,1,1,1,1,0,0,1,1,0,1
+>> * 0,40,2,60,0,1,0,1,1,1,1,1,0,0,1,1,0,1
 >>        
->>>     * Colmmn 0 = Measured Outcome or Class
->>>     * Column 1 = Age, 
->>>        * Column 2 = Number of exercise days per week,
->>>        * Column 3 = Resting heart beat. 
->>>        * Rest are genome measures.         
+>>   * Colmmn 0 = Measured Outcome or Class
+>>   * Column 1 = Age, 
+>>   * Column 2 = Number of exercise days per week,
+>>   * Column 3 = Resting heart beat. 
+>>   * Rest are genome measures.         
       
 ### What is a Class ###
       Each of the unique outcomes they are measuring
