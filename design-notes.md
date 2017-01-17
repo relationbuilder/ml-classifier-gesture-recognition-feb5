@@ -104,6 +104,8 @@
 >> The output of the optimizer can yield information valuable to the researcher.  For example:  if the optimizer finds that it can provide the best prediction when the priority of the age input is turned up but only when it has been reduced to grouping into 3 groups then this can help the researcher know where to look. 
 >>
 >> There are many strategies for varying the selection of test verus training data but in general they try to find a compromise between the accuracy and recall of the engine so it will truely do the best job when asked to classify new data is has never seen previously.  A search on "avoid over learning in optimized machine learning" will yield a lot of information about this topic. 
+>>>     Test Code Block
+>>>     TEst line #2
 
 ># Genome Use of Optimizers #
 >
