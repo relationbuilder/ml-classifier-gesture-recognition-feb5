@@ -29,6 +29,8 @@
   Those that meet the rule get a class of 1 while those 
   that fail get a class of 0.   
   
+* Update rest of filenames links in readme.md to link to
+  local source for the same file. 
   
 * Produce GO version of the Quant Filter to see if we can improve
   performance on the diabetes and titanic data set.  The Quant filter 

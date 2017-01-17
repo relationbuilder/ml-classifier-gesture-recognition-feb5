@@ -59,7 +59,7 @@ classification using moderate hardware resources.
 ###ASP (American Sign Language) Gesture classifier###
 This engine started as a classifier designed to classify Static Gestures for VR with the idea we may be able to produce a useful tool for classifying  ASL using VR input devices.  That is still a primary focus but the core algorithms can be more broadly applied.
 
-See **Overview.pdf** in this repository for conceptual overview of
+See **[Overview.pdf](Overview.pdf)** in this repository for conceptual overview of
 the approach when using this kind of classifier for gesture recognition.
 
 This repository includes code written to test ideas for static gesture recognition. 
@@ -74,32 +74,37 @@ massive training data sets with minimal memory.
  * Version: 0.1
  * License: (MIT) We do sell consulting services http://BayesAnalytic.com/contact
  * Dependencies: 
-    - GO Code is cross platform and will run Linux.  This softwar was built using version 1.7.3 windows/amd 64
+   
+   - GO Code is cross platform and will run Linux.  This softwar was built using version 1.7.3 windows/amd 64
     - Python code: Was tested with Python 3.5.2 64 bit
     - TensorFlow: Lots of crazy dependencies See: tlearn/tensflowReadme.docx 
 
 ### How to Use ###
-  * **python quant_filt.py** - Runs test on gesture classification data.
-    Shows how quantized concept can be used to implement a
-    splay like search tress.  The more quant buckets used 
-    the more precise.  This is an alternative to the probability
-    model and can provide superior results in some instance.
+  * Install python. We tested 3.5.2 but should work with newer versions.
+    only needed if you want to run TensorFlow or Python samples we supplied.
   
-  * **python [quant_prob.py](quant_prob.py)** - Runs a test on gesture classification data
-    demonstrates quantized probability theory in smallest possible 
-    piece of python code.  A more complete version is implemented 
-    in classify.go 
-    
-  * **[makeGO.bat](makeGO.bat)** - if you have GO set up then open a command line at
-    the base directory containing makeGO.bat and run it.   It should
-    setup GOHOME and build the executable files. Tested on windows 10.
-    
-  * **[splitData.bat](splitData.bat)** - Creates sub .train.csv and test.csv files for the files
-    used in the GO classifier tests. Uses splitCSVFile.exe which is built
-    by makeGo. 
-    
+  * Install GO. 
+  
+  * Install TensorFlow, TFLearn and run their basic tests to ensure they
+    run correctly.  This may also require installing CUDA depending on 
+    whether you want to use the GPU version of TensorFlow.  TFLearn requires
+    Python we tested ours with python 3.5.2
+  
   * **setGoEvn.bat** - will set the GOHOME directory to current working directory
-    in a command prompt.
+    in a command prompt.  This is required for the GO compiler to find the
+    source code. Tested on windows 10 but should be similar on linux.
+
+  * **[makeGO.bat](makeGO.bat)** - First install GO and ensure it has
+    been added to PATH.  Open a command line at
+    the base directory containing makeGO.bat and run it. It
+    will build the executables based on GO that are needed to run 
+    the tests. Tested on windows 10 but should be similar on linux.
+    
+
+  * **[splitData.bat](splitData.bat)** - Creates sub .train.csv and 
+    test.csv files for the files used in the classifier tests. Uses splitCSVFile.exe which is built by makeGo.  Run this before 
+    attempting to run the classifier to ensure proper data is present.
+
     
   * **go build src/classifyTest.go**
     builds executable classifyTest from GO source. 
@@ -117,7 +122,18 @@ massive training data sets with minimal memory.
     quality of predictions from classifier compared to known
     result. 
     
-
+    
+  * **python quant_filt.py** - Runs test on gesture classification data.
+    Shows how quantized concept can be used to implement a
+    splay like search tress.  The more quant buckets used 
+    the more precise.  This is an alternative to the probability
+    model and can provide superior results in some instance.
+  
+  * **python [quant_prob.py](quant_prob.py)** - Runs a test on
+    gesture classification data demonstrates quantized probability
+    theory in smallest possible piece of python code.  A more 
+    complete version is implemented in classify.go 
+        
 ### Basic Contents ###
 * **[todo.md](todo.md)** - list of actions and enhancements roughly
     prioritized top down.
@@ -131,6 +147,8 @@ massive training data sets with minimal memory.
   src/splitCSVFile.go 
   
   src/qprob/classify.go
+  
+  src/classifyFiles.go
   
   src/qprob/csvInfo.go
   
