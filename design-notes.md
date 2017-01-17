@@ -27,14 +27,21 @@ training data set will likely exceed available ram the load
 and sort does not work.  
 
 What we do is take the absolute
-minimum and absolute maximum values to divide each value between
-1,000 buckets where we keep a count of the values in that bucket.
-That way we can scan from the Bottom until we accumulate enough
-records to represent 1.5% of the data and then scan from the max
-value down.  Once we find this it becomes a matter of simple math
-to re-compute the effective minimum and effective maximum value 
-and use those to compute the bucket sizes.  The actual buckets are
-based on a sparse matrix so the extreme values get large bucket Id
+minimum and absolute maximum values to divide each value read
+for a each feature evently between 1,000 buckets.  We keep 
+a separate set of counts called a distribution matrix for 
+each feature.  
+
+We can scan from the Bottom of the distribution matrix
+accumulating counts until we have enough records to represent 1.5% 
+of the data and then scan from the max value down. 
+
+Once we find the distribution buckets with the outlier values
+eliminatedit becomes a matter of simple math
+to compute new effective minimum and effective maximum values.
+We use the new effictie min/max values to compute new quana 
+bucket sizes.  The actual buckets are based on a sparse matrix 
+so the extreme values get large bucket Id
 but that is actually desired.
 
 The system defaults to setting the effective range by removing the
@@ -48,7 +55,7 @@ in the method BuildDistMatrix().
 
 #Temporal Reinforcement#
 
-* One of the features provided by convoluted neural networks is the 
+  One of the features provided by convoluted neural networks is the 
   ability to have some more recent records influence classification 
   results more than other records.   
   
