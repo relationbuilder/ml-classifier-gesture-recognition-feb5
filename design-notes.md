@@ -159,7 +159,7 @@
 >>
 >>  Example of Data set for predicting breast cancer:
 >>
-~~~~
+    ~~~~
     Class,ClumpThick,UnifCellSize,UnifCellShape,margAdhesion,singleEpithelialCellSize,BareNucleo,BlandChromatin,NormalNucleoli,Mitoses
     2,5,1,1,1,2,1,3,1,1
     2,5,4,4,5,7,10,3,2,1
@@ -177,7 +177,7 @@
     this data set the Quantized classifier 
     was able to achive 96% accuracy of predition
     in the test data set. 
-~~~~
+    ~~~~
 >
 >Example of Genome Data
 ~~~~
