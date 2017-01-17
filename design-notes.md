@@ -110,7 +110,7 @@
 >
 >>Looking at the data below.  The slice of the genome use to supply columns c1 to c15 were selected by a researcher as a subset they thought could help predict or classify something.   The optimizer can help identify which bits are providing useful input.
 >>
->>~~~~
+~~~~
 >>   class,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15
 >>   0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
 >>   0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
@@ -121,7 +121,7 @@
 >>   
 >>   class = 0 - not diagnosed with canser before age of 40.
 >>   class = 1 = was diagnosed with cancer before age of 40.
->>~~~~
+~~~~
 >
 >> #### Identifying relevant portions of the Genome. 
 >>
@@ -159,7 +159,7 @@
 >>
 >>  Example of Data set for predicting breast cancer:
 >>
->>  >~~~~
+~~~~
 >>  > Class,ClumpThick,UnifCellSize,UnifCellShape,margAdhesion,singleEpithelialCellSize,BareNucleo,BlandChromatin,NormalNucleoli,Mitoses
 >>  >
 >>  > 2,5,1,1,1,2,1,3,1,1
@@ -180,11 +180,11 @@
 >>  >   4 = Cancer was detected.
 >>  >
 >>  > The rest are results from measurements and tests ran by the Cancer doctor.  Based on this data set the Quantized classifier was able to achive 96% accuracy of predition in the test data set. 
->>  > ~~~~
+~~~~
 >
 >Example of Genome Data
 >
->~~~~
+~~~~
 >class,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15
 >
 >0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
@@ -205,7 +205,7 @@
 >  1 - detected cancer before age 40.
 >  
 >The rest of the columns represent a slice of data extracted from the genome.   Or several slices collected into a single row.    In the Genome context we may expect hundreds or thousands of features.
->~~~~
+~~~~
 >
 >>  For machine learning we would need at least 1K rows to attemp classification.    A more reasonable minimum would be 50 rows of which 40K are used for training and 10K are used for testing.    When used with Genomic data we may find that several million rows provide better classification effectiveness. 
 >>
