@@ -72,10 +72,13 @@ massive training data sets with minimal memory.
 ##Metadata##
 
  * Version: 0.1
- * License: (MIT) We do sell consulting services http://BayesAnalytic.com/contact
+ * License: [MIT](https://opensource.org/licenses/MIT)
+ * We do sell consulting services http://BayesAnalytic.com/contact
  * Dependencies: 
    
-   - GO Code is cross platform and will run Linux.  This softwar was built using version 1.7.3 windows/amd 64
+   - [GO Code](https://en.wikipedia.org/wiki/Go_(programming_language)) is
+     cross platform and will run Linux.  This softwar was built using 
+     version 1.7.3 windows/amd 64
     - Python code: Was tested with Python 3.5.2 64 bit
     - TensorFlow: Lots of crazy dependencies See: tlearn/tensflowReadme.docx 
 
