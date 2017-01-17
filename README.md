@@ -214,7 +214,7 @@ when learning the sysem.
 * **[todo.md](todo.md)** - list of actions and enhancements roughly
     prioritized top down.
 
-* **[design-notes.rd](design-notes.rd) Engineering Design Notes and 
+* **[design-notes.md](design-notes.rd) Engineering Design Notes and 
   design thoughts.
 
 * **[go-notes.html](go-notes.html) Notes and helpful links about GO that
