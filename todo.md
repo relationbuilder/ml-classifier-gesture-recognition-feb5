@@ -103,6 +103,19 @@ using the library.  http://BayesAnalytic.com/contact
   subset of CSV to be used for Training or Testing.  It may actually
   be better to add a startRow, StopRow to be passed to the training 
   file. 
+
+* Normalize Output Probs so the sum of all classes
+  in any prediction for a given class is 1.0 
+  But need to make sure this doesn't mess up confidence
+  of prediction between multiple lines.  May need to 
+  take an approach of dividing by the number of columns
+  that could have contributed rather than those that
+  actually contributed then when we scale up it would 
+  provide more accurate output.  The We are currently
+  apply the count for only the features that have a matching
+  bucket to be more accuate we need to apply feature weight
+  to the divisor even if we didn't get a match for the feature
+  for that class.
   
 # Completed Items Phase 1 #
 

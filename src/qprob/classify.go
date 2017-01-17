@@ -329,7 +329,7 @@ func (fe *Feature) bucketId(fier *Classifier, dval float32) int16 {
 	//  above minimum value divided by step size. The step size
 	//  must be computed based on an effective range with
 	//  with outliers removed
-	amtOverMin := dval - fe.EffMinVal
+	amtOverMin := dval - fe.Spec.MinFlt
 	bucket := int16(amtOverMin / float32(fe.BuckSize))
 	//fmt.Printf("dval=%v bucket=%v amtOverMin=%v effMinVal=%v\n",
 	//	dval, bucket, amtOverMin, fe.EffMinVal)
