@@ -1,6 +1,10 @@
-#TODO#
+#TODO - Roughly prioritized Features#
+Please coment and critique.  I need your help to ensure
+future work is prioritized to help the people actually 
+using the library.  http://BayesAnalytic.com/contact
 
-##Actions for Both quant_prob and quant_filt##
+
+
 * Update QuantProb to properly scale buckets to cope with outliers
   to prevent them from negatively affecting spread for normal
   distribution items.
@@ -31,6 +35,11 @@
   
 * Update rest of filenames links in readme.md to link to
   local source for the same file. 
+  
+* Add descriptions to file names in readme.md where they do 
+  not already exist or remove those files.
+  
+* Add links to bat files for new test data structures. 
   
 * Produce GO version of the Quant Filter to see if we can improve
   performance on the diabetes and titanic data set.  The Quant filter 

@@ -69,7 +69,7 @@ well with smaller training data sets and demonstrate using
 the Quantized classifier approach.  They also handle
 massive training data sets with minimal memory.    
 
-
+##Metadata##
 
  * Version: 0.1
  * License: (MIT) We do sell consulting services http://BayesAnalytic.com/contact
@@ -79,7 +79,7 @@ massive training data sets with minimal memory.
     - Python code: Was tested with Python 3.5.2 64 bit
     - TensorFlow: Lots of crazy dependencies See: tlearn/tensflowReadme.docx 
 
-### How to Use ###
+## How to Use ##
   * Install python. We tested 3.5.2 but should work with newer versions.
     only needed if you want to run TensorFlow or Python samples we supplied.
   
@@ -88,7 +88,8 @@ massive training data sets with minimal memory.
   * Install TensorFlow, TFLearn and run their basic tests to ensure they
     run correctly.  This may also require installing CUDA depending on 
     whether you want to use the GPU version of TensorFlow.  TFLearn requires
-    Python we tested ours with python 3.5.2
+    Python we tested ours with python 3.5.2.   Not needed if you only want
+    to run our GO based classier engines. 
   
   * **setGoEvn.bat** - will set the GOHOME directory to current working directory
     in a command prompt.  This is required for the GO compiler to find the
@@ -106,8 +107,10 @@ massive training data sets with minimal memory.
     attempting to run the classifier to ensure proper data is present.
 
     
-  * **go build src/classifyTest.go**
-    builds executable classifyTest from GO source. 
+  * **go build src/classifyFiles.go**
+    builds executable classifyFiles from GO source.
+    this is actualy done automatically by makeGO.bat
+    replicated here to show how to do it manually    
     
   * **classifyFiles data/breast-cancer-wisconsin.adj.data.train.csv 
     data/breast-cancer-wisconsin.adj.data.test.csv 10**
@@ -124,21 +127,28 @@ massive training data sets with minimal memory.
     
     
   * **python quant_filt.py** - Runs test on gesture classification data.
-    Shows how quantized concept can be used to implement a
-    splay like search tress.  The more quant buckets used 
-    the more precise.  This is an alternative to the probability
-    model and can provide superior results in some instance.
+    Shows how quantized concept can be used to implement 
+    splay like search trees.  It acts something like a decision
+    tree and something like a multi layer CNN. 
+    The more quant buckets used the more precise.  This is an 
+    alternative to the probability
+    model and can provide superior results in some
+    instances.
   
   * **python [quant_prob.py](quant_prob.py)** - Runs a test on
     gesture classification data demonstrates quantized probability
     theory in smallest possible piece of python code.  A more 
     complete version is implemented in classify.go 
         
-### Basic Contents ###
+## Basic Contents ##
+Not all files are listed here. The intent is to help 
+you find those files that are most likley to be helpful.
+when learning the sysem.
+
 * **[todo.md](todo.md)** - list of actions and enhancements roughly
     prioritized top down.
     
-#### GO Based Classifier ####
+### GO Based Classifier ###
   
   src/classifyTest.go
   
@@ -158,7 +168,7 @@ massive training data sets with minimal memory.
   
  
   
-#### Idea Test Sample Code ####
+### Idea Test Sample Code ###
 * **quant_filt.py**  - Machine learning Quantized filter classifier.  This system can provide  
    fast classification with moderate memory use and is easy to see how likely the match is to
    be accurate.
@@ -168,7 +178,7 @@ massive training data sets with minimal memory.
    still delivering good results with moderate amounts of training data.  
  
 
-####DATA FILES####
+###DATA FILES###
  * **data/data-sources.txt** - Explains sources for the included data files
    some data files are not included and will have to be donwloaded from
    those sources if the usage license was unclear or restrictive.
@@ -176,7 +186,7 @@ massive training data sets with minimal memory.
  * **data/train/gest_train_ratio2.csv** - Input training data used for these tests.  We need thousands additional training samples feel free to volunteer after your read overview.pdf in this repository.
 
 
-####TensorFlow###
+###TensorFlow###
  One of the goals this project is to test some
  capabilities of tlearn and TensorFlow using the 
  same data sets.   The assertion is that the 
@@ -194,7 +204,7 @@ massive training data sets with minimal memory.
 
 
 
-### Contribution guidelines ###
+## Contribution guidelines ##
 
 * **[todo.md](todo.md)** - list of actions and enhancements roughly
     prioritized top down.
@@ -202,7 +212,7 @@ massive training data sets with minimal memory.
 * Code review
 * Other guidelines
 
-### Who do I talk to? ###
+## Who do I talk to? ##
 
 * Repo owner Joseph Ellsworth
 * I sell consulting services for Search, Machine Learning, High performance High availability distriuted architecture.  http://BayesAnalytic.com/contact
