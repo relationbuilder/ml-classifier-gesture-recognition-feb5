@@ -1,9 +1,11 @@
 #Genome Prediction of Outcomes #
 > **Predicting things like the Risk for Breast Cancer**
-> I am not a Genome expert but I have interacted with people who work on Genomic tools and have picked a up a little knowledge along the way.  **Please correct my vocabulary and explanation to be accurate.**
 >
-> As I understand the genome if it is stretched out it can be modeled as a series of of 0 and 1 stretched out in a very long array.  Researchers seem to identify suspect regions of this 
-> data.  They analyze for patterns that they use to predict a given outcome such as Has Breast Cancer = 1,  Does not have Breast Cancer = 0.  
+> This section explains how the Quantized probability machine learning classifier could be used in the context of genomic research.   It can provide classification services where it learns from sample data how to analyze pieces of a genome to help diagnose specific conditions.   It also explains how the classifier can help identify pieces of the genome most valuable for a given prediction.
+>
+> > I am not a Genome expert but I have interacted with people who work on Genomic tools and have picked a up a little knowledge along the way.  **Please correct my vocabulary and explanation to be accurate.**
+>
+> This approach is based on the premise that if a genome is stretched out it can be modeled as a series of of 0 and 1 stretched out in a very long array.  Researchers seem to work by isolating regions of this data they thing can help predict susceptibility to various conditions.    They analyze for patterns that they use to predict a given outcome such as Has Breast Cancer = 1,  Does not have Breast Cancer = 0.  
 >
 > We take whatever slice of the genome the researcher thinks might may have important data along with the diagnosed class.  Once the system is trained then the system can 
 > be tested against new genome input using the same slice of data and will attempt to predict the class of the output. 
@@ -102,10 +104,6 @@
 >> The output of the optimizer can yield information valuable to the researcher.  For example:  if the optimizer finds that it can provide the best prediction when the priority of the age input is turned up but only when it has been reduced to grouping into 3 groups then this can help the researcher know where to look. 
 >>
 >> There are many strategies for varying the selection of test verus training data but in general they try to find a compromise between the accuracy and recall of the engine so it will truely do the best job when asked to classify new data is has never seen previously.  A search on "avoid over learning in optimized machine learning" will yield a lot of information about this topic. 
-
->#Some Data is more important than others# 
-
->> TODO:  FILL THIS IN
 
 ># Genome Use of Optimizers #
 >
