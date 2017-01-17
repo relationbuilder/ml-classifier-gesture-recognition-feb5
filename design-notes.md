@@ -110,7 +110,7 @@
 >
 >>Looking at the data below.  The slice of the genome use to supply columns c1 to c15 were selected by a researcher as a subset they thought could help predict or classify something.   The optimizer can help identify which bits are providing useful input.
 >>
-~~~~
+>>~~~~
 >>   class,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15
 >>   0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
 >>   0,0,1,0,1,0,1,1,1,0,0,0,0,1,1,0
