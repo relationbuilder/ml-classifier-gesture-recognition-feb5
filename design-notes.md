@@ -3,23 +3,23 @@
 #Binome Prediction when using output from several tools#
 
 #Genome Prediction of Outcomes #
-  such as Risk for Breast Cancer#
-  I am not a Genome expert but I have interacted with people who 
-  work on Genomic tools and have picked a up a little knowledge
-  along the way.  Please correct my vocabulator and explanation
-  to be accurate.
-  
-  As I understand the genome if it is stretched out it can be 
-  modeled as a series of of 0 and 1 stretched out in a very long 
-  array.  
-   
-  Researchers seem to identify suspect regions of this data 
-  they then analalyze for patterns that they use to predict
-  against a class such as Has Breast Cancer = 1,  
-  Does not have Breast Cancer = 0.
-  Or they attempt to predict High cancer risk, Low cancer risk.   
-  
-  
+> **Precting things like the Risk for Breast Cancer**
+> I am not a Genome expert but I have interacted with people who 
+> work on Genomic tools and have picked a up a little knowledge
+> along the way.  Please correct my vocabulator and explanation
+> to be accurate.
+> 
+> As I understand the genome if it is stretched out it can be 
+> modeled as a series of of 0 and 1 stretched out in a very long 
+> array.  
+> 
+> Researchers seem to identify suspect regions of this data 
+> they then analalyze for patterns that they use to predict
+> against a class such as Has Breast Cancer = 1,  
+> Does not have Breast Cancer = 0.  Or they attempt to
+> predict High cancer risk, Low cancer risk.   
+>   
+>   
 >### What is a Feature ###
 >> In the context of a genome each unique 0 or 1 in 
 >> the squence is considered a facet.   If you think of
@@ -32,7 +32,7 @@
 >>     
 >> A slice of Genomic data can be thought of as Comma 
 >> delimited list like:
->>> * 0,0,1,0,1,1,1,1,1,0,0,1,1,0,1
+>> * 0,0,1,0,1,1,1,1,1,0,0,1,1,0,1
 >>      
 >> The slice could be pulled from a single portion of
 >> the genome or could be pulled from several different
@@ -43,30 +43,30 @@
 >>     
 >> * 0,40,2,60,0,1,0,1,1,1,1,1,0,0,1,1,0,1
 >>        
->>   * Colmmn 0 = Measured Outcome or Class
->>   * Column 1 = Age, 
->>   * Column 2 = Number of exercise days per week,
->>   * Column 3 = Resting heart beat. 
->>   * Rest are genome measures.         
+>>>   * Colmmn 0 = Measured Outcome or Class
+>>>   * Column 1 = Age, 
+>>>   * Column 2 = Number of exercise days per week,
+>>>   * Column 3 = Resting heart beat. 
+>>>   * Rest are genome measures.         
       
-### What is a Class ###
-      Each of the unique outcomes they are measuring
-      represent one class.   For example:
-        * class = 1 = Person had heart attack before Age of 40
-        * class = 0 = Person did not have heart attack before 40.
-      A more complex set outcomes
-        * class = 0 = Diagnosed Parkinsons Age 0 .. 20
-        * class = 1 = Diagnosed Parkinsons Age 21 .. 40
-        * Class = 2 = Diagnosed Parkinsons Age 41 .. 50
-        * class = 3 = Diagnosed Parkinsons Age 51 .. 60
-        * class = 4 = Diagnosed Parkinsons Age 61 .. 90        
+>### What is a Class ###
+>> Each of the unique outcomes they are measuring
+>> represent one class.   For example:
+>>   * class = 1 = Person had heart attack before Age of 40
+>>   * class = 0 = Person did not have heart attack before 40.
+>> A more complex set outcomes
+>>   * class = 0 = Diagnosed Parkinsons Age 0 .. 20
+>>   * class = 1 = Diagnosed Parkinsons Age 21 .. 40
+>>   * Class = 2 = Diagnosed Parkinsons Age 41 .. 50
+>>   * class = 3 = Diagnosed Parkinsons Age 51 .. 60
+>>   * class = 4 = Diagnosed Parkinsons Age 61 .. 90        
   
-      In reality there can be any number up classes but
-      keeping the number small tends to work somewhat better
-      but in some applications the classes could be ethnic 
-      origin which may require hundreds of classes. 
+>>> In reality there can be any number up classes but
+>>> keeping the number small tends to work somewhat better
+>>> but in some applications the classes could be ethnic 
+>>> origin which may require hundreds of classes. 
   
-  While input data like a Genomome measures individual 
+>  While input data like a Genomome measures individual 
   data elements as a zero or one.  We can also use other
   data such as Age that may be a number between 0.0 and
   150.  In low dimensionality data such as zero or 1 
