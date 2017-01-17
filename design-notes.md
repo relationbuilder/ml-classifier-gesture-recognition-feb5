@@ -2,7 +2,8 @@
 
 #Binome Prediction when using output from several tools#
 
-#Genome Prediction of individual Features such as Risk for Breast Cancer#
+#Genome Prediction of Outcomes #
+  such as Risk for Breast Cancer#
   I am not a Genome expert but I have interacted with people who 
   work on Genomic tools and have picked a up a little knowledge
   along the way.  Please correct my vocabulator and explanation
@@ -19,36 +20,36 @@
   Or they attempt to predict High cancer risk, Low cancer risk.   
   
   
-    ### What is a Feature ###
-      In the context of a genome each unique 0 or 1 in 
-      the squence is considered a facet.   If you think of
-      it as a CSV file the the first column would be used
-      as a predictor then there would be 1..N columns 
-      each representing a unit bit of data.
+>### What is a Feature ###
+>> In the context of a genome each unique 0 or 1 in 
+>> the squence is considered a facet.   If you think of
+>> it as a CSV file the the first column would be used
+>> as a predictor then there would be 1..N columns 
+>> each representing a unit bit of data.
+>>      
+>> More complex models may assign a number between 0 and
+>> X for each position in the genome.  
+>>     
+>> A slice of Genomic data can be thought of as Comma 
+>> delimited list like:
+>>> * 0,0,1,0,1,1,1,1,1,0,0,1,1,0,1
+>>>      
+>> The slice could be pulled from a single portion of
+>> the genome or could be pulled from several different
+>> sections and assembled as one longer slice.   The first
+>> number is generally the measured outcome or class while
+>> others are measures from the data.  In some instances
+>> data can be added from other sources such as: 
+>>     
+>>      * 0,40,2,60,0,1,0,1,1,1,1,1,0,0,1,1,0,1
+>>        
+>>>     * Colmmn 0 = Measured Outcome or Class
+>>>     * Column 1 = Age, 
+>>>        * Column 2 = Number of exercise days per week,
+>>>        * Column 3 = Resting heart beat. 
+>>>        * Rest are genome measures.         
       
-      More complex models may assign a number between 0 and
-      X for each position in the genome.  
-     
-      A slice of Genomic data can be thought of as 
-      
-      * 0,0,1,0,1,1,1,1,1,0,0,1,1,0,1
-      
-      The slice could be pulled from a single portion of
-      the genome or could be pulled from several different
-      sections and assembled as one longer slice.   The first
-      number is generally the measured outcome or class while
-      others are measures from the data.  In some instances
-      data can be added from other sources such as: 
-      
-      * 0,40,2,60,0,1,0,1,1,1,1,1,0,0,1,1,0,1
-        
-        * Colmmn 0 = Measured Outcome or Class
-        * Column 1 = Age, 
-        * Column 2 = Number of exercise days per week,
-        * Column 3 = Resting heart beat. 
-        * Rest are genome measures.         
-      
-    ### What is a Class ###
+### What is a Class ###
       Each of the unique outcomes they are measuring
       represent one class.   For example:
         * class = 1 = Person had heart attack before Age of 40
