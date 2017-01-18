@@ -46,10 +46,8 @@ classifer reading the .train.csv file for traing and using the
 * **[TensorFlow-and-TFLearn-Readme.html](TensorFlow-and-TFLearn-Readme.html)** - Notes I made while getting tensor flow running on my windows laptop.
 
 
-* **[tlearn/simple_gestures.py](tlearn/simple_gestures.py)** - sample of reading CSV to  train TensorFlow Model.
-   Unfortunately this program while it runs does a pour job of classification. I think
-   this is the result of insufficient training data but there is a chance that I still have
-   a bug in the interface to TensorFlow.
+>##Obsolete##
+>* **[tlearn/simple_gestures.py](tlearn/simple_gestures.py)** - sample of >reading CSV to  train TensorFlow Model.   Unfortunately this program while it runs does a pour job of classification. I think   this is the result of insufficient training data but there is a chance that I still have a bug in the interface to TensorFlow.
  
   
 
