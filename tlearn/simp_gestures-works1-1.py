@@ -17,13 +17,18 @@ print ("labels=", labels)
 data = np.array(data, dtype=np.float32)
 
 print("data as float array=", data)
+print("labels=", labels)
+numCol = len(data[0])
+numRow = len(data)
+numClass = 7
 
+print("numCol=",numCol, "numRow=", numRow, " numClass=", numClass)
 
 # Build neural network
-net = tflearn.input_data(shape=[None, 6])
+net = tflearn.input_data(shape=[None, numCol])
 net = tflearn.fully_connected(net, 32)
 net = tflearn.fully_connected(net, 32)
-net = tflearn.fully_connected(net, 7, activation='softmax')
+net = tflearn.fully_connected(net, numClass, activation='softmax')
 net = tflearn.regression(net)
 
 # Define model
