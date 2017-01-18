@@ -24,8 +24,24 @@ then built production version in GO.   The intent is to measure
      
 ## Sample Use ##
 
+* **python CNNClassify.py ../data/breast-cancer-wisconsin.adj.data.train.csv ../data/breast-cancer-wisconsin.adj.data.test.csv** Runs the Tensorflow NN
+classifer reading the .train.csv file for traing and using the 
+.test.csv file to supply test data. It prints out the classification results.  
+
 ## Important Files ##
 
+* **[CNNClassify.py](CNNClassify.py)** Runs the Tensorflow NN
+  classifer reading the .train.csv file for traing and using the 
+  .test.csv file to supply test data. 
+  It prints out the classification results and shows the precision
+  when forced to 100% recall.  To the best of my knowledge this is
+  the only TensorFlow utility that can run across many different 
+  CSV files that contain differnt sets of clases and different 
+  numbers of columns without changing the code.  
+      ** See comments at very bottom of file.  I still have to
+      implement the command line processor to change the test
+      and traing files. For now it is just uncomment the one
+      you want to run. 
 
 * **[TensorFlow-and-TFLearn-Readme.html](TensorFlow-and-TFLearn-Readme.html)** - Notes I made while getting tensor flow running on my windows laptop.
 

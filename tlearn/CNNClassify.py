@@ -1,13 +1,25 @@
 from __future__ import print_function
+""" CNNClassify.py  A multi layered Neural Network
+ classifier implemented using tflearn and and
+ TensorFlow.  It can read and classify any of the
+ CSV filles suppored by our go utility ClassifyFiles
+ which implements a Quantized probability classifer.
 
+ The results for the test cases is the quantized 
+ classifer is faster and produces slightly more 
+ accurate results but if you crank the epoch 
+ on the convoluted NN to 30 it will sometimes
+ beat the quantized classifer but it takes about
+ 20 times as long to train in that mode. 
+"""
 import numpy as np
 import tflearn
 
-
-# In TFLearn Labels Must be consecutive 
-# numbered integers.   This is a general 
-# purpose method to map them assigning the
-# next unqiue integer to each unique value
+# In TFLearn class labels are used to 
+# create a array of potential outputs
+# the class ID must be integers 
+# and we need to know how many there
+# will be before we use the tflear reader.
 def getNumClass(fiName, colNum):
   f = open(fiName)
   lines = f.readlines()[1:]
