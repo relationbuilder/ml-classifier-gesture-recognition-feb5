@@ -151,7 +151,7 @@ Not all files are listed here. The intent is to help
 you find those files that are most likley to be helpful.
 when learning the sysem.
 
-* **[todo.md](todo.md)** - list of actions and enhancements roughly
+* **[todo.md](docs/todo.md)** - list of actions and enhancements roughly
     prioritized top down.
     
 ### GO Based Classifier ###
@@ -192,33 +192,16 @@ when learning the sysem.
  * **data/train/gest_train_ratio2.csv** - Input training data used for these tests.  We need thousands additional training samples feel free to volunteer after your read overview.pdf in this repository.
 
 
-###TensorFlow###
- One of the goals this project is to test some
- capabilities of tlearn and TensorFlow using the 
- same data sets.   The assertion is that the 
- tensorflow approach should run faster and require
- less code while producing higher quality classification
- results than my quantized classifier. 
- 
-* **tlearn/tensFlowReadme.docx** - Notes I made while getting tensor flow running on my windows laptop.
-
-
-* **tlearn/simple_gestures.py** - sample of reading CSV to  train TensorFlow Model.
-   Unfortunately this program while it runs does a pour job of classification. I think
-   this is the result of insufficient training data but there is a chance that I still have
-   a bug in the interface to TensorFlow.
-
-
 
 ## Contribution guidelines ##
 
-* **[todo.md](todo.md)** - list of actions and enhancements roughly
+* **[todo.md](docs/todo.md)** - list of actions and enhancements roughly
     prioritized top down.
 
-* **[design-notes.md](design-notes.md) Engineering Design Notes and 
+* **[design-notes.md](docs/design-notes.md) Engineering Design Notes and 
   design thoughts.
 
-* **[go-notes.html](go-notes.html) Notes and helpful links about GO that
+* **[go-notes.html](docs/go-notes.html) Notes and helpful links about GO that
   I recorded while working on the classifer.go
   
   
