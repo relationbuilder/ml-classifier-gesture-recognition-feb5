@@ -50,8 +50,13 @@ classifer reading the .train.csv file for traing and using the
    Unfortunately this program while it runs does a pour job of classification. I think
    this is the result of insufficient training data but there is a chance that I still have
    a bug in the interface to TensorFlow.
+ 
+  
 
-* **[classify_breast_cancer.py](classify_breast_cancer.py)** - Sample 
+#Actions#
+* Add command line parms parser to CNNClassify
+
+* **[CNNclassifyBreastCancer.bat](CNNClassifyBreaskCancer.bat)** - Sample 
   attempting to classify the [breast cancer](../data/breast-cancer-wisconsin.adj.data.csv)
   data files in the to compare against the results from 
   [classifyTestBCancer.bat](../classifyTestBCancer.bat) 
@@ -61,22 +66,9 @@ classifer reading the .train.csv file for traing and using the
   must transform the training data set and then run the
   tensorflow classify methods exract the results and output
   them in a form we can read easily. 
+
   
-
-## Special Requirements  ##
-TensorFlow can only cope with very specific shapes 
-of data so it is more difficult to build  ClassifyFiles
-component like we did for the Quantized probability
-classifier we built in GO.    
-* All Class Id must integers starting with 0 and rising
-  with no gaps.  EG: They can not be 2,4,10 they must be
-  0,1,2 if there are 3 discrete classes.
-
-
-#Actions#
-
-* classify_breast_cancer.py modify file loader to be
-  general purpose.
+# DONE #
   
 * Convert classify_breast_cancer.py into general purpose
   CNNClassifyFiles.py that can handle any file provided 
