@@ -76,69 +76,33 @@ massive training data sets with minimal memory.
    - TensorFlow: Lots of crazy dependencies See: tlearn/tensflowReadme.docx 
 
 ## How to Use ##
-* [Install python](https://www.python.org/downloads/release/python-352/). We
-      tested 3.5.2 but should work with newer versions.
-      only needed if you want to run TensorFlow or Python samples we supplied.
 
 * [Install GO](https://golang.org/doc/install)
+* **setGoEvn.bat** - will set the GOHOME directory to current working directory  in a command prompt.  This is required for the GO compiler to find the  source code. 
+  Tested on windows 10 but should be similar on linux.
+* **[makeGO.bat](makeGO.bat)** - First install GO and ensure it has  been added to PATH.  Open a command line at  the base directory containing makeGO.bat and run it. It will build the executables based on GO that are needed to run  the tests. Tested on windows 10 but should be similar on linux.
+* **[splitData.bat](splitData.bat)** - Creates sub .train.csv and  test.csv files for the files used in the classifier tests. Uses splitCSVFile.exe which is built by makeGo.  Run this before  attempting to run the classifier to ensure proper data is present.
+* **go build src/classifyFiles.go**   builds executable classifyFiles from GO source.     This is done automatically by makeGO.bat but  replicated here to show how to do it manually    
+* **classifyFiles data/breast-cancer-wisconsin.adj.data.train.csv   data/breast-cancer-wisconsin.adj.data.test.csv 10**  will run the GO based classifier built in GO using the first named file for training and the second named file for testing will print out results of how well classification matches actual source data class.   This is called automatically by classifyTestBCancer.bat.   Output will be written to stdout.
+* **classifyFiles data/titanic.train.csv data/titanic.test.csv 6**  will run the GO based classifier against the two input files  this test attempts to predict mortality and will print out      quality of predictions from classifier compared to known  result.   This is called automatically by classifyTestTitanic.bat 
+* **classifyTestBCancer.bat** - Runs classifyFiles on breast cancer data set.  Writes output to classifyTestBCanser.out.txt. 
+* **classifyTestDiabetes.bat** - Runs classifyFiles on diabetes data set. Writes output to stdout
+* **classifyTestLiverDisorder.bat** - Runs classifyFiles on Liver disorder data set.  Writes output to classifyTestLiverDisorder.out.txt
+* **classifyTestTitanic.bat** - Runs classifyFiles on Titanic survial data set.  Writes output to classifyTestTitanic.out.txt
 
-    * [Install TensorFlow](https://www.tensorflow.org/get_started/os_setup), [TFLearn](http://tflearn.org/installation/) and
-      run their basic tests to ensure they
-      run correctly.  This may also require installing CUDA depending on 
-      whether you want to use the GPU version of TensorFlow.  TFLearn requires
-      Python we tested ours with python 3.5.2.   Not needed if you only want
-      to run our GO based classier engines. 
+####For the Tensorflow tests###
+* See [TensorFlow Demo][tlearn]
+* [Install python](https://www.python.org/downloads/release/python-352/). We   tested 3.5.2 but should work with newer versions. Onlyneeded if you want to run TensorFlow or Python samples we supplied.
+* [Install TensorFlow](https://www.tensorflow.org/get_started/os_setup), [TFLearn](http://tflearn.org/installation/) and     run their basic tests to ensure they    run correctly.  This may also require installing CUDA depending on  whether you want to use the GPU version of TensorFlow.  TFLearn requires      Python we tested ours with python 3.5.2.   Not needed if you only want      to run our GO based classier engines. 
+####For Original Proof of theory samples####
+* [Install python](https://www.python.org/downloads/release/python-352/). We  tested 3.5.2 but should work with newer versions.    Only needed if you want to run the Python samples we supplied.
 
-    * **setGoEvn.bat** - will set the GOHOME directory to current working directory
-      in a command prompt.  This is required for the GO compiler to find the
-      source code. Tested on windows 10 but should be similar on linux.
+* **python quant_filt.py** - Runs test on gesture classification data.   Shows how quantized concept can be used to implement    splay like search trees.  It acts something like a decision    tree and something like a multi layer CNN.     The more quant buckets used the more precise.  This is an    alternative to the probability  model and can provide superior results in some   instances.
 
-    * **[makeGO.bat](makeGO.bat)** - First install GO and ensure it has
-      been added to PATH.  Open a command line at
-      the base directory containing makeGO.bat and run it. It
-      will build the executables based on GO that are needed to run 
-      the tests. Tested on windows 10 but should be similar on linux.
-
-    * **[splitData.bat](splitData.bat)** - Creates sub .train.csv and 
-      test.csv files for the files used in the classifier tests. Uses splitCSVFile.exe which is built by makeGo.  Run this before 
-      attempting to run the classifier to ensure proper data is present.
-
-    * **go build src/classifyFiles.go**
-      builds executable classifyFiles from GO source.
-      this is actualy done automatically by makeGO.bat
-      replicated here to show how to do it manually    
-
-    * **classifyFiles data/breast-cancer-wisconsin.adj.data.train.csv 
-      data/breast-cancer-wisconsin.adj.data.test.csv 10**
-      will run the GO based classifier built in GO using
-      the first named file for training and the second named
-      file for testing will print out results of how well classification
-      matches actual source data class.
-
-    * **classifyFiles data/titanic.train.csv data/titanic.test.csv 6**
-      will run the GO based classifier against the two input files
-      this test attempts to predict mortality and will print out
-      quality of predictions from classifier compared to known
-      result. 
-
-    * **python quant_filt.py** - Runs test on gesture classification data.
-      Shows how quantized concept can be used to implement 
-      splay like search trees.  It acts something like a decision
-      tree and something like a multi layer CNN. 
-      The more quant buckets used the more precise.  This is an 
-      alternative to the probability
-      model and can provide superior results in some
-      instances.
-
-    * **python [quant_prob.py](quant_prob.py)** - Runs a test on
-      gesture classification data demonstrates quantized probability
-      theory in smallest possible piece of python code.  A more 
-      complete version is implemented in classify.go 
-      ​    
+* **python [quant_prob.py](quant_prob.py)** - Runs a test on  gesture classification data demonstrates quantized probability theory in smallest possible piece of python code.  A more   complete version is implemented in classify.go 
+  ​       
 ## Basic Contents ##
-Not all files are listed here. The intent is to help 
-you find those files that are most likley to be helpful.
-when learning the sysem.
+Not all files are listed here. The intent is to help you find those files that are most likley to be helpful. when learning the sysem.
 
 * **[todo.md](docs/todo.md)** - list of actions and enhancements roughly
     prioritized top down.
@@ -164,19 +128,13 @@ when learning the sysem.
  
 
 ### Idea Test Sample Code ###
-* **quant_filt.py**  - Machine learning Quantized filter classifier.  This system can provide  
-   fast classification with moderate memory use and is easy to see how likely the match is to
-   be accurate.
+* **quant_filt.py**  - Machine learning Quantized filter classifier.  This system can provide  fast classification with moderate memory use and is easy to see how likely the match is to be accurate.
 
-* **quant_prob.py** - Machine learning Quantized probability classifier. Not quite as precise under
-   some conditions and quant_filt.py but it can cope with greater amounts of training noise while
-   still delivering good results with moderate amounts of training data.  
+* **quant_prob.py** - Machine learning Quantized probability classifier. Not quite as precise under some conditions and quant_filt.py but it can cope with greater amounts of training noise while still delivering good results with moderate amounts of training data.  
 
 
 ###DATA FILES###
-* **data/data-sources.txt** - Explains sources for the included data files
-   some data files are not included and will have to be donwloaded from
-   those sources if the usage license was unclear or restrictive.
+* **data/data-sources.txt** - Explains sources for the included data files some data files are not included and will have to be donwloaded from those sources if the usage license was unclear or restrictive.
 
 * **data/train/gest_train_ratio2.csv** - Input training data used for these tests.  We need thousands additional training samples feel free to volunteer after your read overview.pdf in this repository.
 
@@ -184,16 +142,13 @@ when learning the sysem.
 
 ## Contribution guidelines ##
 
-* **[todo.md](docs/todo.md)** - list of actions and enhancements roughly
-    prioritized top down.
+* **[todo.md](docs/todo.md)** - list of actions and enhancements roughly prioritized top down.
 
-* **[design-notes.md](docs/design-notes.md)** Engineering Design Notes and 
-  design thoughts.
+* **[design-notes.md](docs/design-notes.md)** Engineering Design Notes and design thoughts.
 
 * **[genomic-notes.md](docs/genomic-notes.md)**
 
-* **[go-notes.html](docs/go-notes.html)** Notes and helpful links about GO that
-  I recorded while working on the classifer.go
+* **[go-notes.html](docs/go-notes.html)** Notes and helpful links about GO that I recorded while working on the classifer.go
 
 * Writing tests
 * Code review
@@ -205,9 +160,7 @@ when learning the sysem.
 * **I sell consulting services for Search, Machine Learning, High performance High availability distriuted architecture.  http://BayesAnalytic.com/contact**
 
 
-
-
-> NOTE:  This work actually includes two classifiers.  The first one is the Quantized Probability classifier.  The other is a Quantized Filter classifier.  Both can classify but they tend to be optimized for different use cases.    I will add additional documenation for the Quantized Filter as it matures but wanted to finish the optimizer and web interface for the Quantized probability engine first.
+> This work actually includes two classifiers.  The first one is the Quantized Probability classifier.  The other is a Quantized Filter classifier.  Both can classify but they tend to be optimized for different use cases.    I will add additional documenation for the Quantized Filter as it matures but wanted to finish the optimizer and web interface for the Quantized probability engine first.
 
 ### Why another Classifier
 
