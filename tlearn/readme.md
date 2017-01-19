@@ -19,29 +19,34 @@ then built production version in GO.   The intent is to measure
 * F) Classification recall at a given accuracy
 * G) Test the common aglorithms supported by TensorFlow
      to see which ones perform better.  We will start with
-     CNN the Convoluted Neural Networks and add more as I
+     CNN the Convolutional Neural Networks and add more as I
      have time.
 
 ## Sample Use ##
 
-* **python CNNClassify.py ../data/breast-cancer-wisconsin.adj.data.train.csv ../data/breast-cancer-wisconsin.adj.data.test.csv** Runs the Tensorflow NN
-  classifer reading the .train.csv file for traing and using the 
-  .test.csv file to supply test data. It prints out the classification results.  
+* **[CNNClassifyBCancer.bat](CNNClassifyBCancer.bat )**
+
+* >> Runs the Tensorflow NN classifier on the Breast Cancer data set.  Uses CNNClassify.py Prints out the classification results.   
+
+* **[CNNClassifyDiabetes.bat](CNNClassifyDiabetes.bat)**
+
+* >> Runs the Tensorflow NN classifier using the Diabetes training and test data. Uses [CNNClassify.py](CNNClassify.py) Prints out the classification results. 
+  >>
+* **[CNNClassifyLiverDisorder.bat](CNNClassifyLiverDisorder.bat)**
+
+  >>Runs the Tensorflow NN classifier using the Diabetes training and test data. Uses [CNNClassify.py](CNNClassify.py) Prints out the classification results. 
+
+* **[CNNClassifyTitanic.bat](CNNClassifyTitanic.bat)
+  >>Runs the Tensorflow NN classifier using the Titanic Survivor training and test data. Uses [CNNClassify.py](CNNClassify.py) Prints out the classification results. 
+* **[CNNClassifyWine](CNNClassifyWine)
+  >> Runs the Tensorflow NN classifier using the Wine Tasting training and test data. Uses [CNNClassify.py](CNNClassify.py) Prints out the classification results.   The Tensorflow configuration only scored 64% with n_epoch equal to 30 but when increased to 90 the score improved to 92%. 
+* **python [CNNClassify.py](CNNClassify.py) ../data/breast-cancer-wisconsin.adj.data.train.csv ../data/breast-cancer-wisconsin.adj.data.test.csv 30 ** 
+
+* > > This is done automatically by CNNClassifyBCancer.bat.   Included here to illustrate how to do the same manually. Runs the Tensorflow NN classifier reading the .train.csv file for traing and using the .test.csv file to supply test data. It prints out the classification results.  
 
 ## Important Files ##
 
-* **[CNNClassify.py](CNNClassify.py)** Runs the Tensorflow NN
-  classifer reading the .train.csv file for traing and using the 
-  .test.csv file to supply test data. 
-  It prints out the classification results and shows the precision
-  when forced to 100% recall.  To the best of my knowledge this is
-  the only TensorFlow utility that can run across many different 
-  CSV files that contain differnt sets of clases and different 
-  numbers of columns without changing the code.  
-      ** See comments at very bottom of file.  I still have to
-      implement the command line processor to change the test
-      and traing files. For now it is just uncomment the one
-      you want to run. 
+* **[CNNClassify.py](CNNClassify.py)** Runs the Tensorflow NN classifer reading the .train.csv file for traing and using the .test.csv file to supply test data. It prints out the classification results and shows the precision when forced to 100% recall.  To the best of my knowledge this is the only TensorFlow utility that can run across many different  CSV files that contain differnt sets of clases and different numbers of columns without changing the code.  
 
 * **[TensorFlow-and-TFLearn-Readme.html](TensorFlow-and-TFLearn-Readme.html)** - Notes I made while getting tensor flow running on my windows laptop.
 

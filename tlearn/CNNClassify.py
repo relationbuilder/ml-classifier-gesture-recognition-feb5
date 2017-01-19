@@ -14,6 +14,8 @@ from __future__ import print_function
 """
 import numpy as np
 import tflearn
+import sys
+import os
 
 # In TFLearn class labels are used to 
 # create a array of potential outputs
@@ -81,7 +83,7 @@ def load(fiName):
   return (numRow, numCol, numClass, data, labels, labVal)
   
 
-def run(trainFiName, testFiName):
+def run(trainFiName, testFiName, n_epoch):
   numRow, numCol, numClass, data, labels, labVal = load(trainFiName)
   tstNumRow, tstNumCol, tstNumClass, tstData, tstLabels, tstLabVal = load(testFiName)
 
@@ -97,7 +99,7 @@ def run(trainFiName, testFiName):
   # Define model
   model = tflearn.DNN(net)
   # Start training (apply gradient descent algorithm)
-  model.fit(data, labels, n_epoch=30, batch_size=55, show_metric=True)
+  model.fit(data, labels, n_epoch=n_epoch, batch_size=55, show_metric=True)
 
   
   # Run the prediction for the 
@@ -120,13 +122,35 @@ def run(trainFiName, testFiName):
         " fail=", tstNumRow - sucessCnt, " failPerc=", failPerc)
     
 
+def help():
+  print("usage CNNClassify.py trainFileName testFiName num_epoch")
+  print("argv=", str(sys.argv))
+  raise SystemExit
+  
+ 
+if len(sys.argv) != 4:
+  print("incorrect number of command line args")
+  help()
+trainFiName = sys.argv[1]
+testFiName = sys.argv[2]
+n_epoch = int(sys.argv[3])
+
+if os.path.isfile(trainFiName) == False:
+  print("train file does not exist ", trainFiName)
+  help()
+  
+if os.path.isfile(testFiName) == False:
+  print("test file does not exist", testFiName)
+  help()
+ 
+print ("CNNClassify.py trainFiName=", trainFiName, " testFiName=", testFiName, " n_epoch=", n_epoch)
+run(trainFiName, testFiName, n_epoch)
+  
     
 #run('../data/breast-cancer-wisconsin.adj.data.train.csv', '../data/breast-cancer-wisconsin.adj.data.test.csv')
 
 #run('../data/diabetes.train.csv', '../data/diabetes.test.csv')
 
-#run('../data/liver-disorder.train.csv', '../data/liver-disorder.test.csv' )
 
-run('../data/titanic.test.csv', '../data/titanic.test.csv')
 
 
