@@ -24,19 +24,12 @@ then built production version in GO.   The intent is to measure
 
 ## Sample Use ##
 
-* **[CNNClassifyBCancer.bat](CNNClassifyBCancer.bat )**
-* >> Runs the Tensorflow NN classifier on the Breast Cancer data set.  Uses CNNClassify.py Prints out the classification results.   
-* **[CNNClassifyDiabetes.bat](CNNClassifyDiabetes.bat)**
-* >> Runs the Tensorflow NN classifier using the Diabetes training and test data. Uses [CNNClassify.py](CNNClassify.py) Prints out the classification results. 
-* **[CNNClassifyLiverDisorder.bat](CNNClassifyLiverDisorder.bat)**
-  >>Runs the Tensorflow NN classifier using the Diabetes training and test data. Uses [CNNClassify.py](CNNClassify.py) Prints out the classification results. 
-* **[CNNClassifyTitanic.bat](CNNClassifyTitanic.bat)
-  >>Runs the Tensorflow NN classifier using the Titanic Survivor training and test data. Uses [CNNClassify.py](CNNClassify.py) Prints out the classification results. 
-* **[CNNClassifyWine](CNNClassifyWine)
-  >> Runs the Tensorflow NN classifier using the Wine Tasting training and test data. Uses [CNNClassify.py](CNNClassify.py) Prints out the classification results.   The Tensorflow configuration only scored 64% with n_epoch equal to 30 but when increased to 90 the score improved to 92%. 
-* **python [CNNClassify.py](CNNClassify.py) ../data/breast-cancer-wisconsin.adj.data.train.csv ../data/breast-cancer-wisconsin.adj.data.test.csv 30 ** 
-
-* > > This is done automatically by CNNClassifyBCancer.bat.   Included here to illustrate how to do the same manually. Runs the Tensorflow NN classifier reading the .train.csv file for traing and using the .test.csv file to supply test data. It prints out the classification results.  
+* **[CNNClassifyBCancer.bat](CNNClassifyBCancer.bat )**   Runs the Tensorflow NN classifier on the Breast Cancer data set.  Uses CNNClassify.py Prints out the classification results.   
+* **[CNNClassifyDiabetes.bat](CNNClassifyDiabetes.bat)**   Runs the Tensorflow NN classifier using the Diabetes training and test data. Uses [CNNClassify.py](CNNClassify.py) Prints out the classification results. 
+* **[CNNClassifyLiverDisorder.bat](CNNClassifyLiverDisorder.bat)**  Runs the Tensorflow NN classifier using the Diabetes training and test data. Uses [CNNClassify.py](CNNClassify.py) Prints out the classification results. 
+* **[CNNClassifyTitanic.bat](CNNClassifyTitanic.bat)**  Runs the Tensorflow NN classifier using the Titanic Survivor training and test data. Uses [CNNClassify.py](CNNClassify.py) Prints out the classification results. 
+* **[CNNClassifyWine](CNNClassifyWine)**  Runs the Tensorflow NN classifier using the Wine Tasting training and test data. Uses [CNNClassify.py](CNNClassify.py) Prints out the classification results.   The Tensorflow configuration only scored 64% with n_epoch equal to 30 but when increased to 90 the score improved to 92%. 
+* **python [CNNClassify.py](CNNClassify.py) ../data/breast-cancer-wisconsin.adj.data.train.csv ../data/breast-cancer-wisconsin.adj.data.test.csv 30 **    This is done automatically by CNNClassifyBCancer.bat.   Included here to illustrate how to do the same manually. Runs the Tensorflow NN classifier reading the .train.csv file for traing and using the .test.csv file to supply test data. It prints out the classification results.  
 
 ## Important Files ##
 
@@ -56,17 +49,10 @@ then built production version in GO.   The intent is to measure
 - ​
 
 #Actions#
-* Add command line parms parser to CNNClassify
+
 
 
 # DONE #
-
-* Convert classify_breast_cancer.py into general purpose
-  CNNClassifyFiles.py that can handle any file provided 
-  the class is in column 1 and all values are int, float
-  or can safely be set to 0.0 if they are strings.   Will
-  need a more complex transform for files that contain 
-  strings but I think I can re-purpose the transform keys
-  value if we detect any column can not be transformed
-  to float safely. 
+* DONE-2017-01-18 Add command line parms parser to CNNClassify
+* DONE-2017-01-17 Convert classify_breast_cancer.py into general purpose   CNNClassifyFiles.py that can handle any file provided    the class is in column 1 and all values are int, float  or can safely be set to 0.0 if they are strings.   Will  need a more complex transform for files that contain   strings but I think I can re-purpose the transform keys  value if we detect any column can not be transformed  to float safely. 
 
