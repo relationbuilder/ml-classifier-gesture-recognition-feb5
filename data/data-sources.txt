@@ -28,4 +28,9 @@ Liver disorders
   https://archive.ics.uci.edu/ml/machine-learning-databases/liver-disorders/
   https://archive.ics.uci.edu/ml/machine-learning-databases/liver-disorders/bupa.names
   
+
+wine.data.uci.csv
+  https://archive.ics.uci.edu/ml/datasets/Wine
+  https://archive.ics.uci.edu/ml/machine-learning-databases/wine/wine.data
+  https://dataaspirant.com/2017/01/09/knn-implementation-r-using-caret-package/
   
