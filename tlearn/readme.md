@@ -1,18 +1,14 @@
 # TensorFlow Readme #
- One of the goals this project is to test some
- capabilities of tlearn and TensorFlow using the 
- same data sets.   The assertion is that the 
- tensorflow approach should run faster and require
- less code while producing higher quality classification
- results than my quantized classifier. 
+ One of the goals this project is to test some capabilities of tlearn and TensorFlow using the 
+ same data sets.   If the Market Buz is correct then  tensorflow should run faster, require
+ less code and produce superior classification results.. 
 
+These Tensorflow wrappers are intended to allow us to test TensorFlow against the same set of data we used to test the Quantise probability engine.  
 
-These Tensorflow wrappers are intended to allow us to test TensorFlow
-against the same set of data we used to test the Quantise probability
-and quantized filter classifiers we first demonstrated in Python and
-then built production version in GO.   The intent is to measure 
+The intent is to Compare 
+
 * A) Runtime for training
-* B) Runtime for classifing
+* B) Runtime for classifying
 * C) Memory cost for training
 * D) Memory cost for classification
 * E) Classification accuracy at 100%
