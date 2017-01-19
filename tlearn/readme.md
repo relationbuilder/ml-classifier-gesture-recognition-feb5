@@ -25,17 +25,11 @@ then built production version in GO.   The intent is to measure
 ## Sample Use ##
 
 * **[CNNClassifyBCancer.bat](CNNClassifyBCancer.bat )**
-
 * >> Runs the Tensorflow NN classifier on the Breast Cancer data set.  Uses CNNClassify.py Prints out the classification results.   
-
 * **[CNNClassifyDiabetes.bat](CNNClassifyDiabetes.bat)**
-
 * >> Runs the Tensorflow NN classifier using the Diabetes training and test data. Uses [CNNClassify.py](CNNClassify.py) Prints out the classification results. 
-  >>
 * **[CNNClassifyLiverDisorder.bat](CNNClassifyLiverDisorder.bat)**
-
   >>Runs the Tensorflow NN classifier using the Diabetes training and test data. Uses [CNNClassify.py](CNNClassify.py) Prints out the classification results. 
-
 * **[CNNClassifyTitanic.bat](CNNClassifyTitanic.bat)
   >>Runs the Tensorflow NN classifier using the Titanic Survivor training and test data. Uses [CNNClassify.py](CNNClassify.py) Prints out the classification results. 
 * **[CNNClassifyWine](CNNClassifyWine)
@@ -63,17 +57,6 @@ then built production version in GO.   The intent is to measure
 
 #Actions#
 * Add command line parms parser to CNNClassify
-
-* **[CNNclassifyBreastCancer.bat](CNNClassifyBreaskCancer.bat)** - Sample 
-  attempting to classify the [breast cancer](../data/breast-cancer-wisconsin.adj.data.csv)
-  data files in the to compare against the results from 
-  [classifyTestBCancer.bat](../classifyTestBCancer.bat) 
-  Tensorflow can not cope with some of the data in the source
-  file so we must transform into a version Tensorflow can
-  cope with then we can run the training.  After that we 
-  must transform the training data set and then run the
-  tensorflow classify methods exract the results and output
-  them in a form we can read easily. 
 
 
 # DONE #
