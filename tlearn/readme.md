@@ -5,7 +5,7 @@
  tensorflow approach should run faster and require
  less code while producing higher quality classification
  results than my quantized classifier. 
- 
+
 
 These Tensorflow wrappers are intended to allow us to test TensorFlow
 against the same set of data we used to test the Quantise probability
@@ -21,12 +21,12 @@ then built production version in GO.   The intent is to measure
      to see which ones perform better.  We will start with
      CNN the Convoluted Neural Networks and add more as I
      have time.
-     
+
 ## Sample Use ##
 
 * **python CNNClassify.py ../data/breast-cancer-wisconsin.adj.data.train.csv ../data/breast-cancer-wisconsin.adj.data.test.csv** Runs the Tensorflow NN
-classifer reading the .train.csv file for traing and using the 
-.test.csv file to supply test data. It prints out the classification results.  
+  classifer reading the .train.csv file for traing and using the 
+  .test.csv file to supply test data. It prints out the classification results.  
 
 ## Important Files ##
 
@@ -48,8 +48,13 @@ classifer reading the .train.csv file for traing and using the
 
 >##Obsolete##
 >* **[tlearn/simple_gestures.py](tlearn/simple_gestures.py)** - sample of >reading CSV to  train TensorFlow Model.   Unfortunately this program while it runs does a pour job of classification. I think   this is the result of insufficient training data but there is a chance that I still have a bug in the interface to TensorFlow.
+
  
-  
+
+# Reference Links
+
+- I discovered this Tensorflow classifer after I had already written my own. His code didn't use the TLearn library so it may have fewer dependencies. [A neural network in TensorFlow for classifying UCI breast cancer data](http://vprusso.github.io/blog/2016/tensor-flow-neural-net-breast-cancer/) by Vincent Russo
+- ​
 
 #Actions#
 * Add command line parms parser to CNNClassify
@@ -65,9 +70,9 @@ classifer reading the .train.csv file for traing and using the
   tensorflow classify methods exract the results and output
   them in a form we can read easily. 
 
-  
+
 # DONE #
-  
+
 * Convert classify_breast_cancer.py into general purpose
   CNNClassifyFiles.py that can handle any file provided 
   the class is in column 1 and all values are int, float
@@ -76,4 +81,4 @@ classifer reading the .train.csv file for traing and using the
   strings but I think I can re-purpose the transform keys
   value if we detect any column can not be transformed
   to float safely. 
-  
+
