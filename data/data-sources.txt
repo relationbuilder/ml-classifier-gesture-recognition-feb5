@@ -11,25 +11,30 @@ titanic.csv - https://github.com/savarin/neural-networks
 
 move_metadata.csv - https://www.kaggle.com/deepmatrix/imdb-5000-movie-dataset
 
-breast-cancer-wisconsin.data.csv -
+breast-cancer-wisconsin.data.csv
+  Lichman, M. (2013). UCI Machine Learning Repository [http://archive.ics.uci.edu/ml]. Irvine, CA: University of California, School of Information and Computer Science. -
   https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+%28Original%29
   https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.names
 
 contraceptive Predict use of Contraceptive
+  Lichman, M. (2013). UCI Machine Learning Repository [http://archive.ics.uci.edu/ml]. Irvine, CA: University of California, School of Information and Computer Science.
   https://archive.ics.uci.edu/ml/datasets/Contraceptive+Method+Choice
   https://archive.ics.uci.edu/ml/machine-learning-databases/cmc/cmc.names
 
 diabetes.csv Diabetes pima Indian
+  Lichman, M. (2013). UCI Machine Learning Repository [http://archive.ics.uci.edu/ml]. Irvine, CA: University of California, School of Information and Computer Science.
  https://archive.ics.uci.edu/ml/datasets/Pima+Indians+Diabetes
  https://archive.ics.uci.edu/ml/machine-learning-databases/pima-indians-diabetes/ https://archive.ics.uci.edu/ml/machine-learning-databases/pima-indians-diabetes/pima-indians-diabetes.names
   
 
 Liver disorders
+  Lichman, M. (2013). UCI Machine Learning Repository [http://archive.ics.uci.edu/ml]. Irvine, CA: University of California, School of Information and Computer Science.
   https://archive.ics.uci.edu/ml/machine-learning-databases/liver-disorders/
   https://archive.ics.uci.edu/ml/machine-learning-databases/liver-disorders/bupa.names
   
 
 wine.data.uci.csv
+  Lichman, M. (2013). UCI Machine Learning Repository [http://archive.ics.uci.edu/ml]. Irvine, CA: University of California, School of Information and Computer Science.
   https://archive.ics.uci.edu/ml/datasets/Wine
   https://archive.ics.uci.edu/ml/machine-learning-databases/wine/wine.data
   https://dataaspirant.com/2017/01/09/knn-implementation-r-using-caret-package/
