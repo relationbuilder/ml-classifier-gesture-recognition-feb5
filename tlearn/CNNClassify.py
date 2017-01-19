@@ -97,7 +97,7 @@ def run(trainFiName, testFiName):
   # Define model
   model = tflearn.DNN(net)
   # Start training (apply gradient descent algorithm)
-  model.fit(data, labels, n_epoch=6, batch_size=4, show_metric=True)
+  model.fit(data, labels, n_epoch=30, batch_size=55, show_metric=True)
 
   
   # Run the prediction for the 
