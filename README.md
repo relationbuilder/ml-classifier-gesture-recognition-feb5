@@ -46,9 +46,9 @@ Please send me data sets you would like to add  to the test.
 >Whenever using statistical techniques outliers in the data can yeild a negative impact on classification accuracy.  In a quantized engine outlier values affect results because quanta ID are computed based on the absolute range of training data.  This can cause values in the center of the distribution to be forced into a smaller number of quanta which reduces the discrimination the majority data that also tends to be closer to the center of the distribution.   The Quantized classifier handels this by computing an effective range for the values in each Quanta.   The effective range is determined by removing 1.5% of the training values from the low and high end and then computing the range between min and max for the remaining records.  We use a clever mechanism for outlier removal that avoids the need to sort the values because we wanted to handle training sets larger than physical memory.    The quanta are indexed in a sparse matrix so outlier values still get their own quanta and can participate in classification but the effective range mechanism prevents outliers from negatively affecting precision for the majority dataset. 
 >
 ####Tensor Flow Comparison####
->One goal of this project was to compare the classification and machine performance of the Quantized Classifier against Tensorflow when ran against the same data.    The repository includes TensorFlow Deep Learning implementation of classifiers. [readme](tlearn)  
+>One goal of this project was to compare the classification and machine performance of Quantized Classifier against Tensorflow when ran against the same data.    This repository includes TensorFlow Deep Learning implementation of classifiers. [readme](tlearn)  
 
->CNNClassify.py](tlearn/CNNClassify.py) Provides Python code that will read our [Machine learning CSV Files](data) and produce classification output without changing the code.  It provides a nice way to think about generalized use of Tensorflow.
+>[CNNClassify.py](tlearn/CNNClassify.py) Provides Python code that will read our [Machine learning CSV Files](data) and produce classification output without changing the code.  It provides a nice way to think about generalized use of Tensorflow.
 
 ###ASP (American Sign Language) Gesture classifier###
 This engine started as a classifier designed to classify Static Gestures for VR with the idea we may be able to produce a useful tool for classifying  ASL using VR input devices.  That is still a primary focus but the core algorithms can be more broadly applied.
@@ -64,7 +64,7 @@ the Quantized classifier approach.  They also handle
 massive training data sets with minimal memory.    
 ##Metadata##
 
-* Version: 0.1
+* Version: 0.15
 * License: [MIT](https://opensource.org/licenses/MIT) I reserve the right to change the license in the future but you will always be able to continue using the version you downloaded under the MIT version using the MIT license. 
 * **We sell consulting services http://BayesAnalytic.com/contact**
 * Dependencies: 
