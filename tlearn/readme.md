@@ -1,7 +1,7 @@
 # TensorFlow Readme #
  One of the goals this project is to test some capabilities of tlearn and TensorFlow using the 
- same data sets.   If the Market Buz is correct then  tensorflow should run faster, require
- less code and produce superior classification results.. 
+ same data sets.   If Market Buzz is correct then  Tensorflow should run faster, require
+ less code and produce superior classification results. 
 
 These Tensorflow wrappers are intended to allow us to test TensorFlow against the same set of data we used to test the Quantise probability engine.  
 

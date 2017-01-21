@@ -78,17 +78,37 @@ massive training data sets with minimal memory.
 ## How to Use ##
 
 * [Install GO](https://golang.org/doc/install)
+
 * **setGoEvn.bat** - will set the GOHOME directory to current working directory  in a command prompt.  This is required for the GO compiler to find the  source code. 
   Tested on windows 10 but should be similar on linux.
+
 * **[makeGO.bat](makeGO.bat)** - First install GO and ensure it has  been added to PATH.  Open a command line at  the base directory containing makeGO.bat and run it. It will build the executables based on GO that are needed to run  the tests. Tested on windows 10 but should be similar on linux.
+
 * **[splitData.bat](splitData.bat)** - Creates sub .train.csv and  test.csv files for the files used in the classifier tests. Uses splitCSVFile.exe which is built by makeGo.  Run this before  attempting to run the classifier to ensure proper data is present.
+
 * **go build src/classifyFiles.go**   builds executable classifyFiles from GO source.     This is done automatically by makeGO.bat but  replicated here to show how to do it manually    
-* **classifyFiles data/breast-cancer-wisconsin.adj.data.train.csv   data/breast-cancer-wisconsin.adj.data.test.csv 10**  will run the GO based classifier built in GO using the first named file for training and the second named file for testing will print out results of how well classification matches actual source data class.   This is called automatically by classifyTestBCancer.bat.   Output will be written to stdout.
-* **classifyFiles data/titanic.train.csv data/titanic.test.csv 6**  will run the GO based classifier against the two input files  this test attempts to predict mortality and will print out      quality of predictions from classifier compared to known  result.   This is called automatically by classifyTestTitanic.bat 
-* **classifyTestBCancer.bat** - Runs classifyFiles on breast cancer data set.  Writes output to classifyTestBCanser.out.txt. 
-* **classifyTestDiabetes.bat** - Runs classifyFiles on diabetes data set. Writes output to stdout
-* **classifyTestLiverDisorder.bat** - Runs classifyFiles on Liver disorder data set.  Writes output to classifyTestLiverDisorder.out.txt
-* **classifyTestTitanic.bat** - Runs classifyFiles on Titanic survial data set.  Writes output to classifyTestTitanic.out.txt
+
+* **classifyFiles TrainingFileName TestFileName numQuanta -class inputFiName outFiName -o1 -o2 -o3**   This command is ran automatically by the various classify* bat files.  Shown here to make it easy to run against custom data sets.   The ClassifyFiles code for this uses underlying quantized classifier library so it is feasible to write a version that uses completely different interface while continuing to use the same underlying library. 
+
+* > > > **-class InputFileName OutputFile**  -class is optional but when present it must be followed by name of a input file that contains records to be classified.  The results will be written as a CSV into OutputFileName.  The input file name must have same number of columns as traing data but the contents of the first column class will be ignored and replaced with the systems specified class.   TBD
+  > > >
+  > > > **-o3, -o2, -o1** - The -o options are optional and specify the level of optimization to be completed before the system attempts to classify based on the TestFileName and before it runs the optional classify step.  o1 - perform light optimization,   o2 - perform medium optimization,  o3 - perform heavy optimization TBD
+  > > >
+  > > > ​
+
+* > **classifyFiles data/breast-cancer-wisconsin.adj.data.train.csv   data/breast-cancer-wisconsin.adj.data.test.csv 10**  will run the GO based classifier built in GO using the first named file for training and the second named file for testing will print out results of how well classification matches actual source data class.   This is called automatically by classifyTestBCancer.bat.   Output will be written to stdout.
+
+* > **classifyFiles data/titanic.train.csv data/titanic.test.csv 6**  will run the GO based classifier against the two input files  this test attempts to predict mortality and will print out      quality of predictions from classifier compared to known  result.   This is called automatically by classifyTestTitanic.bat 
+
+* > **classifyTestBCancer.bat** - Runs classifyFiles on breast cancer data set.  Writes output to classifyTestBCanser.out.txt. 
+
+* > **classifyTestDiabetes.bat** - Runs classifyFiles on diabetes data set. Writes output to stdout
+
+* > **classifyTestLiverDisorder.bat** - Runs classifyFiles on Liver disorder data set.  Writes output to classifyTestLiverDisorder.out.txt
+
+* > **classifyTestTitanic.bat** - Runs classifyFiles on Titanic survial data set.  Writes output to classifyTestTitanic.out.txt
+  >
+  > **classifyWine.bat** - runs classifyFiles on the Wine taste prediction data set.
 
 ####For the Tensorflow tests###
 * See [TensorFlow Demo][tlearn]

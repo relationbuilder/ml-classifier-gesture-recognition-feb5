@@ -39,3 +39,6 @@ wine.data.uci.csv
   https://archive.ics.uci.edu/ml/machine-learning-databases/wine/wine.data
   https://dataaspirant.com/2017/01/09/knn-implementation-r-using-caret-package/
   
+mnist.*.csv
+  http://pjreddie.com/projects/mnist-in-csv/
+  

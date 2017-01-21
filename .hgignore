@@ -1,0 +1,22 @@
+syntax: glob
+
+*cifar*.csv
+*.exe
+*.out.txt
+t.txt
+t.t
+diabetes.train.csv
+diabetes.test.csv
+titanic.train.csv
+titanic.test.csv
+movie_metadata.csv
+minst.csv
+liver-disorder.train.csv
+liver.disorder.test.csv
+wine.data.usi.train.csv
+wine.data.usi.test.csv
+rottentomatoes.csv
+breast*train.csv
+breast*test.csv
+breast-cancer-wisconsin.adj.data.test.csv
+breast-cancer-wisconsin.adj.data.train.csv
