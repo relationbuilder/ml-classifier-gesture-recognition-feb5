@@ -23,7 +23,7 @@ Please send me data sets you would like to add  to the test.
 ### Quantized Classifier ###
 >The Quantized classifier uses a clever grouping mechanism to identify similar groups of items for each feature.  This mechanism is very fast, yields good classification accurcy and delivers unique data discovery capabilities.  The design was  inspired by  KNN, Bayesian, K-Means, SVM and Ensemble techniques.  
 >
->The key benefit is accuracy and recall that rivals [Deep learning Convolutional Neural Networks](https://www.tensorflow.org/tutorials/deep_cnn/) while providing faster training, faster classification and consuming less RAM.  It has no dependencies other than the GO compiler which makes deployment easy.  
+>The key benefit is accuracy and recall that rivals [Deep learning Convolutional Neural Networks](https://www.tensorflow.org/tutorials/deep_cnn/) while providing faster training, faster classification and consuming less RAM.  It has no dependencies other than the GO compiler which makes deployment easy.   CNN is better for image classification while Quantized classifier is well suited for tasks where each feature contains a measurement that has the same meaning for all rows.
 >
 >The quantized optimizer provides the unique ability to identify features that are most important for accurate classification.  It can identify the best grouping for each feature. For example: It can determine that dividing age in two groups between 0..50, 51..100 are important for some predictions while a much finer breakdown is more important for other predictions.   It can identify features that negatively contribute to classification accuracy.    These findings can be surfaced to the user who can use them to help guide their research.
 >
@@ -45,10 +45,8 @@ Please send me data sets you would like to add  to the test.
 >
 >Whenever using statistical techniques outliers in the data can yeild a negative impact on classification accuracy.  In a quantized engine outlier values affect results because quanta ID are computed based on the absolute range of training data.  This can cause values in the center of the distribution to be forced into a smaller number of quanta which reduces the discrimination the majority data that also tends to be closer to the center of the distribution.   The Quantized classifier handels this by computing an effective range for the values in each Quanta.   The effective range is determined by removing 1.5% of the training values from the low and high end and then computing the range between min and max for the remaining records.  We use a clever mechanism for outlier removal that avoids the need to sort the values because we wanted to handle training sets larger than physical memory.    The quanta are indexed in a sparse matrix so outlier values still get their own quanta and can participate in classification but the effective range mechanism prevents outliers from negatively affecting precision for the majority dataset. 
 >
-####Tensor Flow Comparison####
->One goal of this project was to compare the classification and machine performance of Quantized Classifier against Tensorflow when ran against the same data.    This repository includes TensorFlow Deep Learning implementation of classifiers. [readme](tlearn)  
 
->[CNNClassify.py](tlearn/CNNClassify.py) Provides Python code that will read our [Machine learning CSV Files](data) and produce classification output without changing the code.  It provides a nice way to think about generalized use of Tensorflow.
+>> 
 
 ###ASP (American Sign Language) Gesture classifier###
 This engine started as a classifier designed to classify Static Gestures for VR with the idea we may be able to produce a useful tool for classifying  ASL using VR input devices.  That is still a primary focus but the core algorithms can be more broadly applied.
@@ -143,10 +141,6 @@ Not all files are listed here. The intent is to help you find those files that a
 
   src/qprob/util.go
 
-  
-
- 
-
 ### Idea Test Sample Code ###
 * **quant_filt.py**  - Machine learning Quantized filter classifier.  This system can provide  fast classification with moderate memory use and is easy to see how likely the match is to be accurate.
 
@@ -203,5 +197,17 @@ After trying several different ML systems I found each of them had one or more o
 I tried many libraries including Weka, Scikit-learn, Azure ML, Theano, [orange](http://orange.biolab.si/),  Etc.  I tested a wide variety of classifiers such as Bayesian, Decision Trees, SVM, KNN, CNN.    Of the libraries I tried Weka seemed to offer the best performance but it struggled to cope with the data volumes I was using.      
 
 TensorFlow Deep Learning is the newest buzz term so I am evaluating it's performance concurrent with building and testing the Quantized classifier.    I will probably add a spark test as well. 
+
+#### Tensor Flow Comparison
+
+> One goal of this project was to compare the classification and machine performance of Quantized Classifier against Tensorflow when ran against the same data.    This repository includes TensorFlow Deep Learning implementation of classifiers. [readme](tlearn)  
+
+> [CNNClassify.py](tlearn/CNNClassify.py) Provides Python code that will read our [Machine learning CSV Files](data) and produce classification output without changing the code.  It provides a nice way to think about generalized use of Tensorflow.
+>
+> > ##### Quantized Classifier not designed for image classification 
+> >
+> > Quantized classifier is designed specifically for data sets where the value of a feature column describes the same measurement for all rows.    For pictures subject moves around within the frame.  This movement essentially changes the meaning of the feature column.   The simplistic approach to feeding image data into the Quantized classifier is to flatten the data into a single long array of int.    This means the quantized classifier is measuring the pixel per pixel comparison of pixel brightness.  This works in some conditions but breaks down when lighting conditions change or the subject moves in the frame.     A variety of [Neural Nets](http://rodrigob.github.io/are_we_there_yet/build/classification_datasets_results.html) have better ability to cope with image data when the subject moves or is variable sized.  There are a variety of ways to improve the Quantized classifier performance on images but we choose to focus on classification jobs where the meaning of the measurement for a given column remains constant.   
+> >
+> > For large data sets the Tensorflow demo speed improved substantially.   This seems to indicate that the CUDA version of Tensorflow we are using has a high startup overhead but runs well one loaded.    With the 500 Mb cifar dataset the Tensorflow CNN was 15%  slower than quantized classier with n_epoch=8.   When n_epoch was increased to 150 to maximize precision of CNN classification it was  over 10X slower.  The CNN substantially outperformed in the MNIST image classification with 91% versus 52% precision at 100% recall.   Even though it is slower the CNN is still better for image classification. 
 
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)

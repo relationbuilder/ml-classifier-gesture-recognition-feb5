@@ -12,7 +12,7 @@ titanic.test.csv
 movie_metadata.csv
 minst.csv
 liver-disorder.train.csv
-liver.disorder.test.csv
+liver-disorder.test.csv
 wine.data.usi.train.csv
 wine.data.usi.test.csv
 rottentomatoes.csv
