@@ -1,10 +1,10 @@
 // classifyOptimizer.go
-package main
+package qprob
 
 import (
 	"fmt"
 )
 
-func main() {
+func testClassifyOpt() {
 	fmt.Println("Hello World!")
 }

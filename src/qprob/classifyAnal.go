@@ -1,10 +1,11 @@
+package qprob
+
 // classifyAnal.go
-package main
 
 import (
 	"fmt"
 )
 
-func main() {
+func TestClassifyAnal() {
 	fmt.Println("Hello World!")
 }
