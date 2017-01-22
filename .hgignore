@@ -9,6 +9,10 @@ diabetes.train.csv
 diabetes.test.csv
 titanic.train.csv
 titanic.test.csv
+cifar-10.test.csv
+cifar-10.train.csv
+mnist.test.csv
+mnist.train.csv
 movie_metadata.csv
 minst.csv
 liver-disorder.train.csv

@@ -3,7 +3,9 @@ this data.  Some of these files will have to be downloaded manually due
 to restrictive licenses.
 
 
-mnist.csv - https://github.com/savarin/neural-networks
+mnist.*.csv
+  http://pjreddie.com/projects/mnist-in-csv/
+  
 
 rottentomatoes.csv - https://github.com/savarin/neural-networks
 
@@ -38,7 +40,4 @@ wine.data.uci.csv
   https://archive.ics.uci.edu/ml/datasets/Wine
   https://archive.ics.uci.edu/ml/machine-learning-databases/wine/wine.data
   https://dataaspirant.com/2017/01/09/knn-implementation-r-using-caret-package/
-  
-mnist.*.csv
-  http://pjreddie.com/projects/mnist-in-csv/
   

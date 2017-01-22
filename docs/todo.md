@@ -16,15 +16,18 @@ There are several focus areas where I can invest time. Please let me know if you
 
 ##Roughly prioritized Feature Work##
 
-* Implement -class option for 3rd input file in classifyFiles
+* Support -class versus -test option as input to classifyFiles
 
-* Output should include Add recall, precision by class in classifyFiles
+* > Implement -class option for 3rd input file in classifyFiles
+  >
+  > Classify Files needs to support both the test mode and a classify mode.
+  >
+  > ​
 
-* Convert output of run from byte array to a structure that can be retained and used as output by optimizer to compare quality of output against other runs. 
+* Create ClassifyAnal module to create output Statistics
 
-* Classify Files needs to support both the test mode and a classify mode.
-
-* Add Command Parser to TLearn/CNNClassify.py so it can be driven externally by command line parameters.
+  * Output should include Add recall, precision by class in classifyFiles
+  * Convert output of run from byte array to a structure that can be retained and used as output by optimizer to compare quality of output against other runs. 
 
 * Add the call to setGoEnv to all BAT that build the GO libraries.
 
@@ -32,7 +35,14 @@ There are several focus areas where I can invest time. Please let me know if you
 
 * Add Shell script alternatives for each of BAT file. 
 
-* Add ability for training and classify to be ran from an array of pre-parsed float.   Need this to support speed during optimizer runs.   Ideally if input file size is below a threshold we would retain in RAM otherwise we have to scan form disk to avoid consuming all available ram. 
+* Add Retrain from RAM option which causes CSV util to pre-parse float array.  Will need one fast scan to count lines.  Need to borrow the fast version of that I wrote to support the comparative testing.
+  Add ability for training and classify to be ran from an array of pre-parsed float.   Need this to support speed during optimizer runs.   Ideally if input file size is below a threshold we would retain in RAM otherwise we have to scan form disk to avoid consuming all available ram. 
+
+* Add report of base prob by class so we can see how the Accuracy of the class compares to the base probability or measure Lift.
+
+* ​
+
+* Add a function which reports by Class and for the entire set What is the minimum Prob Number needed to reach a given level of precision in 5% increments from the base sucess  rate to 100% sucess rate.    This should include the % of recall at each tier. This may be a alternative way to set the optimizer goal where we seek to maximize recall at the X% such as 95% precision. 
 
 * Add QProb optimizer that is allowed to change Feature weight and number of buckets.
 
@@ -46,7 +56,7 @@ There are several focus areas where I can invest time. Please let me know if you
   > * Allow only a single feature to be retrained.  This is needed to support speed when allowing the optimizer change number of buckets for a feature. 
   > * weight and feature number of buckets seeking to maximize precision at 100% recall. Where total number of buckets is considered primary cost.  Minimum number of buckets is equal to 2.  a Feature can be turned off by setting it's feature weight to 0. 
   > * Optimizer needs ability to reserve some data from training data set to use for training.  It needs to periodically change which data is reserved.  EG: It may choose every 5th record for a while then switch to every 10th record.   It Also needs choice to use only last x% of set for optimizer setting when running with time series data.
-  > *  Optimizer rules.   Can keep change if precision increases while recall stays the same.  Can keep the change is recall rises while precision remains the same. Can keep change is both precision and recall rise.   Can keep change if precision rises but recall doesn't drop below a configured threashold.    When changing number of buckets must always try  1 bucket,  1/2 current number of buckets,  random number between 1 and max buckets.   When changing  priority of a feature it must first try a priority of 0,  then a priority of 1/2 current priority, then random number between 0  and maxPriority.   When changing features the system must ensure all features are checked so first try 3 random features then 1 feature from each end working from the end towards the other end.    
+  > * Optimizer rules.   Can keep change if precision increases while recall stays the same.  Can keep the change is recall rises while precision remains the same. Can keep change is both precision and recall rise.   Can keep change if precision rises but recall doesn't drop below a configured threashold.    When changing number of buckets must always try  1 bucket,  1/2 current number of buckets,  random number between 1 and max buckets.   When changing  priority of a feature it must first try a priority of 0,  then a priority of 1/2 current priority, then random number between 0  and maxPriority.   When changing features the system must ensure all features are checked so first try 3 random features then 1 feature from each end working from the end towards the other end.    
 
 * Normalize Output Probs so the sum of all classes  in any prediction for a given class is 1.0 
   But need to make sure this doesn't mess up confidence  of prediction between multiple lines.  May need to   take an approach of dividing by the number of columns  that could have contributed rather than those that  actually contributed then when we scale up it would 
@@ -87,20 +97,20 @@ There are several focus areas where I can invest time. Please let me know if you
     * ​
 
 *   Produce a version for text parsing that computes position
-        indexed position of all words where each unique word gets 
-        a column number.   Then when building quantized tree 
-        lookup of the indexed position for that word  treat the word 
-        index as the bucketId or possibly as columnNumber need to think
-        that one through buck as a bucket id seems to make most sense
-        nd then 
-        treat all the other features as empty. So the list of cols
-        may grow to several million but will only contain the hashed
-        classes for those value. Allow system to pass in a list
-        of columns n the CSV to index as text.  This would not 
-        effectively use word ordering but we could use quantized buckets
-        for probability of any word being that text in text string so
-        a word like "the" that may occur 50 times would occur in a different
-        bucket when it is repeated many times. 
+          indexed position of all words where each unique word gets 
+          a column number.   Then when building quantized tree 
+          lookup of the indexed position for that word  treat the word 
+          index as the bucketId or possibly as columnNumber need to think
+          that one through buck as a bucket id seems to make most sense
+          nd then 
+          treat all the other features as empty. So the list of cols
+          may grow to several million but will only contain the hashed
+          classes for those value. Allow system to pass in a list
+          of columns n the CSV to index as text.  This would not 
+          effectively use word ordering but we could use quantized buckets
+          for probability of any word being that text in text string so
+          a word like "the" that may occur 50 times would occur in a different
+          bucket when it is repeated many times. 
     * Only include detail probs if requested.
     * Choose column to use as class
 
@@ -108,20 +118,24 @@ There are several focus areas where I can invest time. Please let me know if you
 
 # Completed Items Phase 1 #
 
-* DONE:2018-01-18: Update QuantProb to properly scale buckets to 
-    cope with outliers to prevent them from negatively affecting 
-    spread for normal distribution items.
-
 * DONE:2017-01-20: Implement the TLearn / Tensorflow equivelant of
+
     classify files.  It could be named CNNClassifyFiles
     since the first implementation would use a convoluted
     neural network.
+
+* > DONE:2018-01-18: Add Command Parser to TLearn/CNNClassify.py so it can be driven externally by command line parameters.
+
+  ​
 
 * DONE:2017-01-20 Test the classifier against Image data to see how it performs.  State of the art seems to be a 16% error rate. Will need a way to incrementally update the engine image by image rather than reading all the data from a CSV.  Try it first just by converting the images native.   Then reduce the images to greyscale and try again just to see how it does.  Will need to buy a larger hard disk.   http://image-net.org/download-imageurls  http://image-net.org/  https://en.m.wikipedia.org/wiki/ImageNet  At the very least this set of images would be great to test a image search engine.    I suspect we will need to analyze the image in smaller blocks and then classify them individually.    The best strategy would likely be to attempt to trace similar colored objects after applying an averaging filter then classify based on the vectors. http://farm1.static.flickr.com/32/50803710_8cd339faaf.jpg  As shown here differentiating the background from primary object and accomodating different scale of primary object along with different postion will be the most challenging.  
 
 >>> I tested it with data for mnist and I cifar-10 with mnist best quantizer score for cifar was  31% compared to 36% for the Tensorflow CNN.   With mnist digit classification the best score for quantizer  was 51% while the CNN scored over 91%.    It is a little surprising the Qauntizer did as well as it did on the cifar data since it has no support for subjects moving within the frame of the data.   It could be improved but image classificaiton doesn't seem like a good place to invest with the excelent work already being done in that area.    A surprising aspect is that when n_epoch was low between 5 and 8 the CNN speed improved to be nearly comparable to the speed of the Quantized classifier.   I did find the n_epoch needed to be about 150 to get good precision out of CNN on these data sets and then it was 5 to 10 times slower. 
 
 ..
+
+- DONE:2018-01-18: Update QuantProb to properly scale buckets to   cope with outliers to prevent them from negatively affecting   spread for normal distribution items.
+- ​
 
 ..
 

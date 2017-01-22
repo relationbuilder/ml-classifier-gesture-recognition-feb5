@@ -250,6 +250,8 @@ func (fier *Classifier) ClassRow(drow []float32) *ResultForRow {
 				fBuckWrk := new(ResultItem)
 				//classProb := fier.ClassProb[classId]
 				baseProb := float32(classCnt) / float32(buck.totCnt)
+				//workProb := baseProb * classProb
+				//fBuckWrk.Prob = workProb
 				fBuckWrk.Prob = baseProb
 				fwrk.TotCnt += classCnt
 				fwrk.Cls[classId] = *fBuckWrk
@@ -258,6 +260,11 @@ func (fier *Classifier) ClassRow(drow []float32) *ResultForRow {
 					clswrk = new(ResultItem)
 					clsm[classId] = clswrk
 				}
+				// NOTE: In every case tested the precision
+				//   at 100% accuracy droped when we used
+				//   the baseProb * classProb  instead of
+				//    simply the baseProb.
+				//clswrk.Prob += workProb * feat.FeatWeight
 				clswrk.Prob += baseProb * feat.FeatWeight
 				//fmt.Printf("col%v val=%v buck=%v class=%v baseProb=%v outProb=%v\n",
 				//	fc, dval, buckId, classId, baseProb, fBuckWrk.Prob)
