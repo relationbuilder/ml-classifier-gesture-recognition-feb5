@@ -43,6 +43,18 @@ type ResultForRow struct {
 	Features  []ResultForFeat
 }
 
+// Structures to support most basic
+// classify save of chosen class and
+// basic probability for that choice
+type simpResRow struct {
+	bestClass int16
+	bestProb  float32
+}
+
+type simpResults struct {
+	rows []simpResRow
+}
+
 func (fier *Classifier) ClassRowStr(astr string) *ResultForRow {
 	a := ParseStrAsArrFloat(astr)
 	if len(a) < fier.NumCol {
@@ -132,3 +144,18 @@ func (fier *Classifier) ClassRow(drow []float32) *ResultForRow {
 
 	return tout
 } // func
+
+// NOTE: Consider just writing the formatting from JSON results
+//   save the JSON results and make it easily read by ajax
+//   That would save writting custom formatting in go and push
+//   over to javascript where it is easier.
+
+// function save testResult by row as csv
+
+// function save classifyResult by row as csv
+
+// function save results by class as json
+
+// function save summary results by class as csv
+
+// function printout nice summary of results by class

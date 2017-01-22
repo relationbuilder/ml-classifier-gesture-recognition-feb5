@@ -417,3 +417,5 @@ func LoadClassifierTrainFile(fiName string, label string, numBuck int16) *Classi
 	return fier
 
 }
+
+// Function Describe Training Result Finding by Class
