@@ -10,7 +10,7 @@ There are several focus areas where I can invest time. Please let me know if you
 * **Finish the HTTP wrappers to allow it to run as REST service.**   This could be helpful to allow the classification engine to be integrated with a VR engine running on a different piece of hardware or written in a different language. This could be important when analyzing data sets with lots of classes because the data sizes could become larger than could be contained in mobile devices. 
 * **Implement Time Sequence recognition** Some gestures must start with a given pose that transitions between a series of poses ending in a termal pose. Recognizing these moving gesture recognition may be acomplished by classifying several input sets across time then running as a set through a second classifier.  Since all humans will not move at the same rate one interesting aspect will be allowing for variable time between the poses. 
 * **Implement the text parsing version**.   Many common demonstration systems use text databases like IMDB and attempt to classify input text against those movies.  This is interesting but has a lot of overlap with search engines. 
-* **Implement the image parsing version** so we can test against ImageNet and Minst.   Much of the TensorFlow work is demonstrated parsing and classifying images. I didn't not invent the quantized classifier for engines but it would be intersting to see how it performs. 
+* **Implement the image parsing version** so we can test against ImageNet and Minst.   Much of the TensorFlow work is demonstrated parsing and classifying images. I didn't not invent the quantized classifier for engines but it would be interesting to see how it performs. 
 * **Optimize for Image Classification**   I am not sure this is worth while because image classification is one area where CNN and other Deep learning seem to perform very well with relatively little tuning. 
 
 
@@ -22,31 +22,33 @@ There are several focus areas where I can invest time. Please let me know if you
   >
   > Classify Files needs to support both the test mode and a classify mode.
   >
+  > Should generate the correct output .test.out or .class.out
+  >
+  > Should generate meta statistics in separate file. 
+  >
   > ​
 
 * Create ClassifyAnal module to create output Statistics
 
   * Output should include Add recall, precision by class in classifyFiles
   * Convert output of run from byte array to a structure that can be retained and used as output by optimizer to compare quality of output against other runs. 
+  * Add report of base prob by class so we can see how the Accuracy of the class compares to the base probability or measure Lift.
 
-* Add the call to setGoEnv to all BAT that build the GO libraries.
+* Implement Model Save and Model Restore for Classify.go Saves the model wide parameters in INI file key=value Saves the model wide parameters in INI file key=value / parameters in file fiName.model.txt  Saves the feature defenitions in CSV format. featureNum, NumBuck, FeatWeight, TotCnt, Bucket1Id, Bucket1Cnt, Buck1EffMinVal, Buc1MaxVal, Bucket1AbsMinVAl, Bucket1AbsMaxVal Where each of the Bucket1  features are repeated for 1..N buckets.  This should give us everything we need to restore a model with  all of it's optimized settings intack.  It also gives us a nice representation to support the discovery aspects of the system.  function saveModel
 
-* Modify the BAT files to skip Erase and Build when SKIPGOBUILD Env Var is set.
+* Implement LoadModel to restore model state from files created by saveModel.  Also add print model that produces human friendly version. 
 
-* Add Shell script alternatives for each of BAT file. 
-
-* Add Retrain from RAM option which causes CSV util to pre-parse float array.  Will need one fast scan to count lines.  Need to borrow the fast version of that I wrote to support the comparative testing.
-  Add ability for training and classify to be ran from an array of pre-parsed float.   Need this to support speed during optimizer runs.   Ideally if input file size is below a threshold we would retain in RAM otherwise we have to scan form disk to avoid consuming all available ram. 
-
-* Add report of base prob by class so we can see how the Accuracy of the class compares to the base probability or measure Lift.
-
-* ​
+* Implement browser display utility to display in nice format data from saveModel
 
 * Add a function which reports by Class and for the entire set What is the minimum Prob Number needed to reach a given level of precision in 5% increments from the base sucess  rate to 100% sucess rate.    This should include the % of recall at each tier. This may be a alternative way to set the optimizer goal where we seek to maximize recall at the X% such as 95% precision. 
+
+* ​
 
 * Add QProb optimizer that is allowed to change Feature weight and number of buckets.
 
 * > * Implement a option to allow the quantized classifier to store the entire array of training data in memory pre-converted to arrays of floats.  This will allow much faster re-train when changing the number number of buckets in the optimizer.    Also Requires Modify the classifier core to accept row with array of flow.  Separate the parsing / conversion form the training. 
+  > > * Add Retrain from RAM option which causes CSV util to pre-parse float array.  Will need one fast scan to count lines.  Need to borrow the fast version of that I wrote to support the comparative testing.
+  > > * Add ability for training and classify to be ran from an array of pre-parsed float.   Need this to support speed during optimizer runs.   Ideally if input file size is below a threshold we would retain in RAM otherwise we have to scan form disk to avoid consuming all available ram. 
 
 * > * Improve optimizer specification on ClassifyFiles 
 
@@ -57,19 +59,37 @@ There are several focus areas where I can invest time. Please let me know if you
   > * weight and feature number of buckets seeking to maximize precision at 100% recall. Where total number of buckets is considered primary cost.  Minimum number of buckets is equal to 2.  a Feature can be turned off by setting it's feature weight to 0. 
   > * Optimizer needs ability to reserve some data from training data set to use for training.  It needs to periodically change which data is reserved.  EG: It may choose every 5th record for a while then switch to every 10th record.   It Also needs choice to use only last x% of set for optimizer setting when running with time series data.
   > * Optimizer rules.   Can keep change if precision increases while recall stays the same.  Can keep the change is recall rises while precision remains the same. Can keep change is both precision and recall rise.   Can keep change if precision rises but recall doesn't drop below a configured threashold.    When changing number of buckets must always try  1 bucket,  1/2 current number of buckets,  random number between 1 and max buckets.   When changing  priority of a feature it must first try a priority of 0,  then a priority of 1/2 current priority, then random number between 0  and maxPriority.   When changing features the system must ensure all features are checked so first try 3 random features then 1 feature from each end working from the end towards the other end.    
+  > * ​
+
+* Add ability in CSV Files for command line parser to specify a column other than column #1 as the class.  
+
+> - Only include detail probs if requested.   
+> - Choose column to use as class
 
 * Normalize Output Probs so the sum of all classes  in any prediction for a given class is 1.0 
   But need to make sure this doesn't mess up confidence  of prediction between multiple lines.  May need to   take an approach of dividing by the number of columns  that could have contributed rather than those that  actually contributed then when we scale up it would 
   provide more accurate output.  The We are currently  apply the count for only the features that have a matching  bucket to be more accuate we need to apply feature weight
   to the divisor even if we didn't get a match for the feature  for that class.
 
-* Finish filling in sections of the [Genomic research white paper](genomic-notes.md). Add Test set for Daily stock bar data.  Where we add a column which is a SMA(x) where X defaults to 30 days. and features are the slope of the SMA(X) when comparing current bar to SMA(x) at some number of days in past create.  In a stock scenario  you would have a goal EG: A Bar for a symbol where price rose by P% within N days without dropping by more than Q% before it reached P%.  Those that meet the rule get a class of 1 while those that fail get a class of 0.   
+
+* Update CSV Parser to automatically build a class ID for CSV columns that contain string values.   The first time it sees each value assign it a integer value from the series.    Will need to save those values to allow reverse mapping.   Also need to support this for the class columns.
+
 
 * Update rest of filenames links in readme.md to link to local source for the same file. 
 
 * Add descriptions to file names in readme.md where they do not already exist or remove those files.
 
 * Add links to bat files for new test data structures. 
+
+* Add the call to setGoEnv to all BAT that build the GO libraries.
+
+* Modify the BAT files to skip Erase and Build when SKIPGOBUILD Env Var is set.
+
+* Add Shell script alternatives for each of BAT file. 
+
+* Modify the CSV parser to use the [faster binary Bulk IO method that I tested with the GO](https://github.com/joeatbayes/StockCSVAndSMAPerformanceComparison) performance test.     
+
+* > * Test the relative performance of reading the CSV line by line using their built in method while appending parsed rows rows to a slice versus scanning the file to count the number of lines then pre-allocating the slice at the correct size and grabbing the rows out of a memory byte level memory buffer. 
 
 * Produce GO version of the Quant Filter to see if we can improve performance on the diabetes and titanic data set.  The Quant filter is unlikely to deliver 100% recall since it aborts the match as it traverses the features when it fails to find a matching bucket id. This gives it some precision filtering capability similar to the multi-layer convoluted NN but at a lower cost.  We may be able to add probability since it is still computed by class by feaure. There some chance that more than one class will survive all layers of the filter which would mean we need to add a probability to that output to act as a tie-breaker. 
   - Add optimizer to quant filter that allows it to  vary the number of buckets by feature.  Seting number of buckets to 1 essentially turns a feature off by forcing all items into the same bucket. The primary cost function is total number of buckets. The goal of optimizer is based on starting with all buckets equal to X.  As it varies the number of buckets
@@ -96,25 +116,13 @@ There are several focus areas where I can invest time. Please let me know if you
 
     * ​
 
-*   Produce a version for text parsing that computes position
-          indexed position of all words where each unique word gets 
-          a column number.   Then when building quantized tree 
-          lookup of the indexed position for that word  treat the word 
-          index as the bucketId or possibly as columnNumber need to think
-          that one through buck as a bucket id seems to make most sense
-          nd then 
-          treat all the other features as empty. So the list of cols
-          may grow to several million but will only contain the hashed
-          classes for those value. Allow system to pass in a list
-          of columns n the CSV to index as text.  This would not 
-          effectively use word ordering but we could use quantized buckets
-          for probability of any word being that text in text string so
-          a word like "the" that may occur 50 times would occur in a different
-          bucket when it is repeated many times. 
-    * Only include detail probs if requested.
-    * Choose column to use as class
+*   Implement the samples with [AWS MXNet](https://aws.amazon.com/blogs/compute/seamlessly-scale-predictions-with-aws-lambda-and-mxnet/) libraries for comparison. 
 
-    ​
+*   Produce a version for text parsing that computes position  indexed position of all words where each unique word gets  a column number.   Then when building quantized tree               lookup of the indexed position for that word  treat the word  index as the bucketId or possibly as columnNumber need to think  that one through buck as a bucket id seems to make most sense and then treat all the other features as empty. So the list of cols may grow to several million but will only contain the hashed classes for those value. Allow system to pass in a list   of columns n the CSV to index as text.  This would not effectively use word ordering but we could use quantized buckets for probability of any word being that text in text string so            a word like "the" that may occur 50 times would occur in a different bucket when it is repeated many times. 
+
+*   Finish filling in sections of the [Genomic research white paper](genomic-notes.md). Add Test set for Daily stock bar data.  Where we add a column which is a SMA(x) where X defaults to 30 days. and features are the slope of the SMA(X) when comparing current bar to SMA(x) at some number of days in past create.  In a stock scenario  you would have a goal EG: A Bar for a symbol where price rose by P% within N days without dropping by more than Q% before it reached P%.  Those that meet the rule get a class of 1 while those that fail get a class of 0.       
+
+          ​
 
 # Completed Items Phase 1 #
 

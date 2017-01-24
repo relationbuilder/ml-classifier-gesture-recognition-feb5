@@ -41,3 +41,28 @@ wine.data.uci.csv
   https://archive.ics.uci.edu/ml/machine-learning-databases/wine/wine.data
   https://dataaspirant.com/2017/01/09/knn-implementation-r-using-caret-package/
   
+ics.uci.edu cars.data
+  http://archive.ics.uci.edu/ml/machine-learning-databases/car/car.names
+  http://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data
+  Adding this data set to test features in quantized
+  classifier to develop integer feature ID from string 
+  value columns automatically.  It is also used in 
+  the following article.    Buying is the class for this 
+  data set.   http://rpubs.com/m3cinc/Benchmarking_20_Machine_Learning_Models_Accuracy_and_Speed where the performanceo of many different classifiers are tested.
+  
+Poker Hands 
+  25,000 rows of poker hand valude used to 
+  predict quality of hand like straight flush
+  http://archive.ics.uci.edu/ml/machine-learning-databases/poker/
+  http://archive.ics.uci.edu/ml/machine-learning-databases/poker/poker-hand.names
+  
+Amazon Book Reviews
+  23 MB of book reviews
+  http://archive.ics.uci.edu/ml/machine-learning-databases/00370/
+  
+  
+Dermatology
+  only 366 rows but a large set of attributes to test. 
+ http://archive.ics.uci.edu/ml/machine-learning-databases/dermatology/ http://archive.ics.uci.edu/ml/machine-learning-databases/dermatology/dermatology.names
+  
+  
