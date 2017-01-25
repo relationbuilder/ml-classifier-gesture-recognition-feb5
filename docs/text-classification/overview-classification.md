@@ -117,6 +117,35 @@ I suspect that superior results could be used extracting topics from the text us
 
 
 
+# Not Prioritized But interesting links I at least looked at
+
+* [Intro to Automatic Keyphrase extraction](http://bdewilde.github.io/blog/2014/09/23/intro-to-automatic-keyphrase-extraction/)  Well worth the read.  Some good python samples that could be ported to other languages.
+* http://www.hlt.utdallas.edu/~saidul/acl14.pdf
+* [Automatic Keyphrase Extraction A Survey of the State of the Art](http://www.hlt.utdallas.edu/~saidul/acl14.pdf)  12 pages Kazi Saidul Hasan and Vincent Ng Human Language Technology Research Institute University of Texas at Dallas
+  Richardson, TX 75083-0688
+* [Wiki on automatic Summarization](https://en.wikipedia.org/wiki/Automatic_summarization) Very high level. 
+* [A Survey on Automatic Text Summarization](https://www.cs.cmu.edu/~afm/Home_files/Das_Martins_survey_summarization.pdf) Dipanjan Das Andr´e F.T. Martins
+  Language Technologies Institute Carnegie Mellon University November 21, 2007
+* [Survey of Keyword Extraction Techniques](http://www.cs.unm.edu/~pdevineni/papers/Lott.pdf). 11 pages.  cs.unm.edu December 4, 2012
+* [Automatic Creation of Literature Abstracts](http://courses.ischool.berkeley.edu/i256/f06/papers/luhn58.pdf)  Focuses on Luhn method that is supposed ot be easy to implement
+* [An Algorithm for One-page Summarization of a Long Text Based on Thematic Hierarchy Detection](http://www.aclweb.org/anthology/P00-1039.pdf)  Yoshio Nakao Fujitsu Laboratories Ltd. Kamikodanaka 4-1-1, Nakahara-ku, Kawasaki, Japan, 211-8588 
+* [Automatic Multi-document Summarization Based on New Sentence Similarity Measures](http://net.pku.edu.cn/~hle/pubs/pricai12_automatic.pdf) 6 pages based on LDA algorithm.   Wenpeng Yin, Yulong Pei, and Lian’en Huang Shenzhen Key Lab for Cloud Computing Technology and Applications Peking University Shenzhen Graduate School Shenzhen, Guangdong 518055, P.R. China
+* [Automatic Text Summarization using a Machine Learning Approach](https://www.cs.kent.ac.uk/people/staff/aaf/pub_papers.dir/SBIA-2002-Joel.pdf)  Joel Larocca Neto Pontifical Catholic University of Parana (PUCPR) Rua Imaculada Conceicao, 1155
+* [Summarization by Latent Dirichlet Allocation: Superior Sentence Extraction through Topic Modeling](http://kentonmurray.com/thesis/thesis.pdf) 81 pages Thesis  Kenton W. Murray April 17, 2009
 * [Python keyword extraction using RAKE](https://www.airpair.com/nlp/keyword-extraction-tutorial)  also mentions Maui the java version
-* ​
+* [Stanford online NLP parser with Open ID support](http://corenlp.run/)
+* [Stanford openIE explained](http://nlp.stanford.edu/software/openie.html)
+* [Stanford online NLP parser](http://nlp.stanford.edu:8080/parser/index.jsp)
+* [Stanford Core NLP command line github](http://stanfordnlp.github.io/CoreNLP/cmdline.html)
+* [30 API for text summarization](http://blog.mashape.com/list-of-30-summarizer-apis-libraries-and-software/)
+* [Similarity Measure based on LDA for Automatic Summarization](http://www.sciencedirect.com/science/article/pii/S1877705812004298)  Science direct   Latent Dirichlet Allocation LMMR and LSD algorithm 
+* [Gensim automatic text summarization using Iron Python](https://rare-technologies.com/text-summarization-with-gensim/)  Uses the [TextRank algorithm](https://web.eecs.umich.edu/~mihalcea/papers/mihalcea.emnlp04.pdf) and the [BM25 ranking](https://raw.githubusercontent.com/summanlp/docs/master/articulo/articulo-en.pdf)
+* [Automatic Text Summarizer in Python](https://github.com/miso-belica/sumy).  GitHub  uses   [Luhn Heuristic](http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=5392672),  [LSA (Latent Semantic Analysis)](http://scholar.google.com/citations?user=0fTuW_YAAAAJ&hl=en), [LexRank](http://tangra.si.umich.edu/~radev/lexrank/lexrank.pdf), [TextRank](https://en.wikipedia.org/wiki/Automatic_summarization#Unsupervised_approaches:_TextRank_and_LexRank), [SumBasic](http://www.cis.upenn.edu/~nenkova/papers/ipm.pdf), [KL-Sum](http://www.aclweb.org/anthology/N09-1041)
+* [Text Summarization with NLTK in python](http://glowingpython.blogspot.com/2014/09/text-summarization-with-nltk.html)
+* [Node JS module that summarizes text using a naive summarization algorithm](https://github.com/jbrooksuk/node-summary) github [Nice simple algorithm](https://github.com/jbrooksuk/node-summary/blob/master/lib/summary.js)
+* [An Efficient Way to Extract the Main Topics from a Sentence](https://thetokenizer.com/2013/05/09/efficient-way-to-extract-the-main-topics-of-a-sentence/) By Shlomi Babluki 2013  [python source github](https://gist.github.com/shlomibabluki/5539628)  [Uses context fee grammar](https://en.wikipedia.org/wiki/Context-free_grammar)  Very small python module seems to work well.
+* [Text Mining Online Keyword extraction using Ipython and Rake](http://textminingonline.com/getting-started-with-keyword-extraction)
+* [go-freeling](https://github.com/advancedlogic/go-freeling) - github - natural language procssing in GO 
+* [go-rake](https://github.com/wolfgangmeyers/go-rake) gitup A golang implementation of the Rapid Automatic Keyword Extraction (RAKE) algorithm MIT license   [another Go Rake on github seems more complete at least from docs ](https://github.com/Obaied/RAKE.Go) 
+* [Go Machine learning & NLP libraries](https://biosphere.cc/software-engineering/go-machine-learning-nlp-libraries/)
 
