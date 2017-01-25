@@ -93,17 +93,17 @@ Please send me data sets you would like to add  to the test.
   > >
   > > Sample data in tmpout/breast-cancer.class.out.sum.csv.   This is the short version  of results that gives the caller just enough information to map the predicted class up with the original classification request.  There are also options to generate the original CSV with the class column updated to reflect the predictions. 
 
->>> ```
->>>     ndx,bestClass,bestProb
->>>     0,2,0.78951055
->>>     1,4,0.6948877
->>>     2,2,0.78734744
->>>     3,4,0.7989442
->>>     4,2,0.7599269
->>>     5,4,0.664731
->>>     6,4,0.46487543
->>>     7,2,0.5792924
->>> ```
+  
+  > >     ndx,bestClass,bestProb
+  > >     0,2,0.78951055
+  > >     1,4,0.6948877
+  > >     2,2,0.78734744
+  > >     3,4,0.7989442
+  > >     4,2,0.7599269
+  > >     5,4,0.664731
+  > >     6,4,0.46487543
+  > >     7,2,0.5792924
+  > > 
 
 >> * **ClassifyFiles**  This following is printed by the classify files when incorrect parameters are entered. 
 >> ```
