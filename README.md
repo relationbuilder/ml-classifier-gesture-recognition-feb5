@@ -77,7 +77,7 @@ massive training data sets with minimal memory.
 
 * [Install GO](https://golang.org/doc/install)
 
-* **setGoEvn.bat** - will set the GOHOME directory to current working directory  in a command prompt.  This is required for the GO compiler to find the  source code. 
+* **[setGoEvn.bat](setGOEnv.bat)** - will set the GOHOME directory to current working directory  in a command prompt.  This is required for the GO compiler to find the  source code. 
 
   Tested on windows 10 but should be similar on linux.
 
@@ -85,9 +85,9 @@ massive training data sets with minimal memory.
 
 * **[splitData.bat](splitData.bat)** - Creates sub .train.csv and  test.csv files for the files used in the classifier tests. Uses splitCSVFile.exe which is built by makeGo.  Run this before  attempting to run the classifier to ensure proper data is present.
 
-* **go build src/classifyFiles.go**   builds executable classifyFiles from GO source.     This is done automatically by makeGO.bat but  replicated here to show how to do it manually    
+* **go build src/classifyFiles.go**   builds executable classifyFiles from GO source.     This is done automatically by [makeGO.bat](makeGo.bat) but  replicated here to show how to do it manually    
 
-* [classifyBreastCancer.bat](classifyBreastCancer.bat)
+* [**classifyBreastCancer.bat**](classifyBreastCancer.bat)
 
   > > ```
   > > classifyFiles -train=data/breast-cancer-wisconsin.adj.data.train.csv -class=data/breast-cancer-wisconsin.adj.data.class.csv -numBuck=10 -WriteJSON=false -classOut=tmpout/breast-cancer.class.out.csv  -WriteFullCSV=true  -detToStdOut=true
@@ -172,26 +172,23 @@ massive training data sets with minimal memory.
   > >                   defaults to true.
   > > ```
 
-* > **classifyTestBCancer.bat** - Runs classifyFiles on breast cancer data set.   Look in tmpout for generated files.
+* > **[classifyTestBCancer.bat](classifyTestBCancer.bat)** - Runs classifyFiles on breast cancer data set.   Look in tmpout for generated files.
 
-* > **classifyTestDiabetes.bat** - Runs classifyFiles on diabetes data set. Look in tmpout for generated files.
+* > **[classifyTestDiabetes.bat](classifyTestDiabetes.bat)** - Runs classifyFiles on diabetes data set. Look in tmpout for generated files.
 
-* > **classifyTestLiverDisorder.bat** - Runs classifyFiles on Liver disorder data set.  Look in tmpout for generated files.
+* > **[classifyTestLiverDisorder.bat](classifyTestLiverDisorder.bat)** - Runs classifyFiles on Liver disorder data set.  Look in tmpout for generated files.
 
-* > **classifyTestTitanic.bat** - Runs classifyFiles on Titanic survial data set.  Look in tmpout for generated files.
+* > **[classifyTestTitanic.bat](classifyTestTitanic.bat)** - Runs classifyFiles on Titanic survial data set.  Look in tmpout for generated files.
   >
-  > **classifyWine.bat** - runs classifyFiles on the Wine taste prediction data set. Look in tmpout for generated files.
+  > **[classifyWine.bat](classifyTestWine.bat)** - runs classifyFiles on the Wine taste prediction data set. Look in tmpout for generated files.
 
 ####For the Tensorflow tests###
 * See [TensorFlow Demo][tlearn]
 * [Install python](https://www.python.org/downloads/release/python-352/). We   tested 3.5.2 but should work with newer versions. Onlyneeded if you want to run TensorFlow or Python samples we supplied.
 * [Install TensorFlow](https://www.tensorflow.org/get_started/os_setup), [TFLearn](http://tflearn.org/installation/) and     run their basic tests to ensure they    run correctly.  This may also require installing CUDA depending on  whether you want to use the GPU version of TensorFlow.  TFLearn requires      Python we tested ours with python 3.5.2.   Not needed if you only want      to run our GO based classier engines. 
-####For Original Proof of theory samples####
-* [Install python](https://www.python.org/downloads/release/python-352/). We  tested 3.5.2 but should work with newer versions.    Only needed if you want to run the Python samples we supplied.
 
-* **python quant_filt.py** - Runs test on gesture classification data.   Shows how quantized concept can be used to implement    splay like search trees.  It acts something like a decision    tree and something like a multi layer CNN.     The more quant buckets used the more precise.  This is an    alternative to the probability  model and can provide superior results in some   instances.
 
-* **python [quant_prob.py](quant_prob.py)** - Runs a test on  gesture classification data demonstrates quantized probability theory in smallest possible piece of python code.  A more   complete version is implemented in classify.go 
+* ​
   ​       
 ## Basic Contents ##
 Not all files are listed here. The intent is to help you find those files that are most likley to be helpful. when learning the sysem.
@@ -201,24 +198,19 @@ Not all files are listed here. The intent is to help you find those files that a
 
 ### GO Based Classifier ###
 
-  src/classifyTest.go
-
-  src/csvInfoTest.go
-
-  src/splitCSVFile.go 
-
-  src/qprob/classify.go
-
-  src/classifyFiles.go
-
-  src/qprob/csvInfo.go
-
-  src/qprob/util.go
+* [src/splitCSVFile.go](src/splitCSVFile.go) - Utility to split input CSV files into two separate files one for training and one for testing.
+* [src/qprob/classify.go](src/qprob/classify.go) Main Classifier data structures along with training logic.
+* [src/classifyFiles.go](src/classifyFiles.go) Main file driver interface for classifier.  A good set of example code if you want to use the classifier library from GO source code. 
+* [src/qprob/csvInfo.go](src/qprob/csvInfo.go)  Utility library to parse CSV files including finding min, max values,  determining which columns are valid numbers, etc. 
+* [src/qprob/util.go](src/qprob/util.go) Utility library adding silly things that should have been built in like a Max that works type safe with int32 and split a string into array of float.
+* ​
+* ​
 
 ### Idea Test Sample Code ###
-* **quant_filt.py**  - Machine learning Quantized filter classifier.  This system can provide  fast classification with moderate memory use and is easy to see how likely the match is to be accurate.
-
-* **quant_prob.py** - Machine learning Quantized probability classifier. Not quite as precise under some conditions and quant_filt.py but it can cope with greater amounts of training noise while still delivering good results with moderate amounts of training data.  
+* Original Proof of theory samples
+  - [Install python](https://www.python.org/downloads/release/python-352/). We  tested 3.5.2 but should work with newer versions.    Only needed if you want to run the Python samples we supplied.
+  - **python [quant_filt.py](quant_filt.py)** - Runs test on gesture classification data.   Shows how quantized concept can be used to implement    splay like search trees.  It acts something like a decision    tree and something like a multi layer CNN.     The more quant buckets used the more precise.  This is an    alternative to the probability  model and can provide superior results in some   instances.  Machine learning Quantized filter classifier.  This system can provide  fast classification with moderate memory use and is easy to see how likely the match is to be accurate.
+  - **python [quant_prob.py](quant_prob.py)** - Runs a test on  gesture classification data demonstrates quantized probability theory in smallest possible piece of python code.  A more   complete version is implemented in classify.go Machine learning Quantized probability classifier. Not quite as precise under some conditions and quant_filt.py but it can cope with greater amounts of training noise while still delivering good results with moderate amounts of training data.  
 
 
 ###DATA FILES###
