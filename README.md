@@ -62,7 +62,7 @@ Please send me data sets you would like to add  to the test.
 
 ## How to Use ##
 
-* On my machine I have cygwin installed and added to PATH so I can use most linux commands from DOS shells.   You will notice that I use some linux commands like rm instead of the DOS equivalent.  You can edit the BAT to make the windows specific without cygwin but I prefer them the way they are because it allows the Linux shell to execute them once chmod +x is added to the .bat files.  
+* On my machine I have cygwin installed and added to PATH so I can use most linux commands from DOS shells.   You will notice that I use some linux commands like rm instead of the DOS equivalent.  You can edit the BAT to make them windows specific without cygwin but I prefer them the way they are because it allows the Linux shell to execute them once chmod +x is added to the .bat files.  
 
 
 * [**Install GO**](https://golang.org/doc/install)
@@ -94,7 +94,7 @@ Please send me data sets you would like to add  to the test.
   > >
   > > ##### Sample Classification Output
   > >
-  > > Sample data in tmpout/breast-cancer.class.out.sum.csv.   This is the short version  of results that gives the caller just enough information to map the predicted class up with the original classification request.  There are also options to generate the original CSV with the class column updated to reflect the predictions. 
+  > > Sample data in tmpout/breast-cancer.class.out.sum.csv.   This is the short version  of results that gives the caller just enough information to map the predicted class up with the original classification request.  There are also options to generate the original CSV with the class column updated to reflect the predictions.   
 
 
   > >     ndx,bestClass,bestProb
@@ -212,13 +212,10 @@ Not all files are listed here. The intent is to help you find those files that a
 ## Contribution guidelines ##
 
 * **[todo.md](docs/todo.md)** - list of actions and enhancements roughly prioritized top down.
-
+>*  See [Text classification overview](docs/text-classification/overview-classification.md) 
 * **[design-notes.md](docs/design-notes.md)** Engineering Design Notes and design thoughts.
-
 * **[genomic-notes.md](docs/genomic-notes.md)**
-
 * **[go-notes.html](docs/go-notes.html)** Notes and helpful links about GO that I recorded while working on the classifer.go
-
 * Writing tests
 * Code review
 * Other guidelines

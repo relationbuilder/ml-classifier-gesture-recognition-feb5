@@ -9,27 +9,12 @@ There are several focus areas where I can invest time. Please let me know if you
 * **Implement the Quantized Filter Algorithm in GO** This version more closely approximates the multi-layer approach used in CNN in TensorFlow but with a drastically different approach.  It can provide better output when there is a benefit from eliminating matching on a class when there is a negative match for a given feature such that there is no matching quanta from the test set.  This could allow us to do even a better job of important discovery and can provide better capacity on eliminate featurs that negatively contribute to prediction accuracy. 
 * **Finish the HTTP wrappers to allow it to run as REST service.**   This could be helpful to allow the classification engine to be integrated with a VR engine running on a different piece of hardware or written in a different language. This could be important when analyzing data sets with lots of classes because the data sizes could become larger than could be contained in mobile devices. 
 * **Implement Time Sequence recognition** Some gestures must start with a given pose that transitions between a series of poses ending in a termal pose. Recognizing these moving gesture recognition may be acomplished by classifying several input sets across time then running as a set through a second classifier.  Since all humans will not move at the same rate one interesting aspect will be allowing for variable time between the poses. 
-* **Implement the text parsing version**.   Many common demonstration systems use text databases like IMDB and attempt to classify input text against those movies.  This is interesting but has a lot of overlap with search engines. 
+* **Implement the text parsing version**.   Many common demonstration systems use text databases like IMDB and attempt to classify input text against those movies.  This is interesting but has a lot of overlap with search engines.  See [Text classification overview](docs/text-classification/overview-classification.md)
 * **Implement the image parsing version** so we can test against ImageNet and Minst.   Much of the TensorFlow work is demonstrated parsing and classifying images. I didn't not invent the quantized classifier for engines but it would be interesting to see how it performs. 
 * **Optimize for Image Classification**   I am not sure this is worth while because image classification is one area where CNN and other Deep learning seem to perform very well with relatively little tuning. 
 
 
 ##Roughly prioritized Feature Work##
-
-* Support -class versus -test option as input to classifyFiles
-
-* > - Implement -class option for 3rd input file in classifyFiles
-  >
-  > - Classify Files needs to support both the test mode and a classify mode.
-  >
-  > - Should generate the correct output .test.out or .class.out
-  >
-  > - Should generate meta statistics in separate file. 
-  >
-  >
-  > - DONE:JOE:2017-01-24: Added command line parser library to support more complex command line needed to support optimizer. 
-  >
-  > ​
 
 * Create ClassifyAnal module to create output Statistics
 
@@ -53,7 +38,7 @@ There are several focus areas where I can invest time. Please let me know if you
   > > * Add Retrain from RAM option which causes CSV util to pre-parse float array.  Will need one fast scan to count lines.  Need to borrow the fast version of that I wrote to support the comparative testing.
   > > * Add ability for training and classify to be ran from an array of pre-parsed float.   Need this to support speed during optimizer runs.   Ideally if input file size is below a threshold we would retain in RAM otherwise we have to scan form disk to avoid consuming all available ram. 
 
-* > * Improve optimizer specification on ClassifyFiles 
+* > * DONE:JOE:2017-01-24: Improve optimizer specification on ClassifyFiles 
 
 * > * Implement a -describe option to better explain reasoning output
   > * Implement option to describe high priority features  in optimizer.
@@ -79,21 +64,8 @@ There are several focus areas where I can invest time. Please let me know if you
 
 
 * Update rest of filenames links in readme.md to link to local source for the same file. 
-
-* Add descriptions to file names in readme.md where they do not already exist or remove those files.
-
-* Add links to bat files for new test data structures. 
-
-* Add the call to setGoEnv to all BAT that build the GO libraries.
-
 * Modify the BAT files to skip Erase and Build when SKIPGOBUILD Env Var is set.
-
 * Add Shell script alternatives for each of BAT file. 
-
-* Modify the CSV parser to use the [faster binary Bulk IO method that I tested with the GO](https://github.com/joeatbayes/StockCSVAndSMAPerformanceComparison) performance test.     
-
-* > * Test the relative performance of reading the CSV line by line using their built in method while appending parsed rows rows to a slice versus scanning the file to count the number of lines then pre-allocating the slice at the correct size and grabbing the rows out of a memory byte level memory buffer. 
-
 * Produce GO version of the Quant Filter to see if we can improve performance on the diabetes and titanic data set.  The Quant filter is unlikely to deliver 100% recall since it aborts the match as it traverses the features when it fails to find a matching bucket id. This gives it some precision filtering capability similar to the multi-layer convoluted NN but at a lower cost.  We may be able to add probability since it is still computed by class by feaure. There some chance that more than one class will survive all layers of the filter which would mean we need to add a probability to that output to act as a tie-breaker. 
   - Add optimizer to quant filter that allows it to  vary the number of buckets by feature.  Seting number of buckets to 1 essentially turns a feature off by forcing all items into the same bucket. The primary cost function is total number of buckets. The goal of optimizer is based on starting with all buckets equal to X.  As it varies the number of buckets
     by feature it can keep the change provided it can  increase precision as long as recall does not decrease. Or it can increase recall as long as precision does not decrease recall.  We can discourage over learning by always trying a smaller number of buckets first in the optimizer.  A natural side effect of this is that the engine can turn off
@@ -125,17 +97,33 @@ There are several focus areas where I can invest time. Please let me know if you
 
 *   Finish filling in sections of the [Genomic research white paper](genomic-notes.md). Add Test set for Daily stock bar data.  Where we add a column which is a SMA(x) where X defaults to 30 days. and features are the slope of the SMA(X) when comparing current bar to SMA(x) at some number of days in past create.  In a stock scenario  you would have a goal EG: A Bar for a symbol where price rose by P% within N days without dropping by more than Q% before it reached P%.  Those that meet the rule get a class of 1 while those that fail get a class of 0.       
 
-          ​
+    ​
 
 # Completed Items Phase 1 #
 
-* DONE:2017-01-20: Implement the TLearn / Tensorflow equivelant of
+* DONE:JOE:2017-01-24: Support -class versus -test option as input to classifyFiles
 
-    classify files.  It could be named CNNClassifyFiles
-    since the first implementation would use a convoluted
-    neural network.
+* > - DONE:JOE:2017-01-24: Implement -class option for 3rd input file in classifyFiles
+  > - DONE:JOE:2017-01-24: Classify Files needs to support both the test mode and a classify mode.
+  > - DONE:JOE:2017-01-24: Should generate the correct output .test.out or .class.out
+  >
+  >
+  > - DONE:JOE:2017-01-24: Added command line parser library to support more complex command line needed to support optimizer. 
+  >
+* DONE:JOE:2017-01-24: Add descriptions to file names in readme.md where they do not already exist or remove those files.
 
-* > DONE:2018-01-18: Add Command Parser to TLearn/CNNClassify.py so it can be driven externally by command line parameters.
+* DONE:JOE:2017-01-24: Add links to bat files for new test data structures. 
+
+* DONE:JOE:2017-01-24: Add the call to setGoEnv to all BAT that build the GO libraries.
+
+* SKIP:JOE:2017-01-24: Modify the CSV parser to use the [faster binary Bulk IO method that I tested with the GO](https://github.com/joeatbayes/StockCSVAndSMAPerformanceComparison) performance test.     
+
+* DONE:JOE:2017-01-24: Test the relative performance of reading the CSV line by line using their built in method while appending parsed rows rows to a slice versus scanning the file to count the number of lines then pre-allocating the slice at the correct size and grabbing the rows out of a memory byte level memory buffer.  JOE: Read by line using new buffered IO class is just as fastDONE:2017-01-20: Implement the TLearn / Tensorflow equivelant of
+  >     classify files.  It could be named CNNClassifyFiles
+  >     since the first implementation would use a convoluted
+  >     neural network.
+
+* DONE:2018-01-18: Add Command Parser to TLearn/CNNClassify.py so it can be driven externally by command line parameters.
 
   ​
 

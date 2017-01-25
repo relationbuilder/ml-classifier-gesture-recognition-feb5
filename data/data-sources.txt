@@ -65,4 +65,42 @@ Dermatology
   only 366 rows but a large set of attributes to test. 
  http://archive.ics.uci.edu/ml/machine-learning-databases/dermatology/ http://archive.ics.uci.edu/ml/machine-learning-databases/dermatology/dermatology.names
   
+twitterTextEmotion.csv
+  https://www.crowdflower.com/data-for-everyone/
+  https://www.crowdflower.com/wp-content/uploads/2016/07/text_emotion.csv
+
+FullEconomicNews.csv
+  https://www.crowdflower.com/data-for-everyone/
+  https://www.crowdflower.com/wp-content/uploads/2016/03/Full-Economic-News-DFE-839861.csv
+
+twitterAppleSentiment.csv
+  https://www.crowdflower.com/data-for-everyone/
+  https://www.crowdflower.com/wp-content/uploads/2016/03/Apple-Twitter-Sentiment-DFE.csv
+  Added: December 28, 2014 by CrowdFlower | Data Rows: 3969
+
+twitterClaritinOctSideEffects.csv
+  https://www.crowdflower.com/data-for-everyone/
+  https://www.crowdflower.com/wp-content/uploads/2016/03/1384367161_claritin_october_twitter_side_effects-1.csv
+  Added: November 13, 2013 by Dave Oleson | Data Rows: 4900
+
+twitterJudgeProductCompany.csv
+  https://www.crowdflower.com/data-for-everyone/
+  https://www.crowdflower.com/wp-content/uploads/2016/03/judge-1377884607_tweet_product_company.csv
+  Added: August 30, 2013 by Kent Cavender-Bares | Data Rows: 9093
+
+twitterGlobalWarmingSentiment.csv
+  https://www.crowdflower.com/data-for-everyone/
+  https://www.crowdflower.com/wp-content/uploads/2016/03/1377884570_tweet_global_warming.csv
+  Added: August 30, 2013 by Kent Cavender-Bares | Data Rows: 6090
+
+twiterAirlineSentiment.csv
+  https://www.crowdflower.com/data-for-everyone/
+  https://www.crowdflower.com/wp-content/uploads/2016/03/Airline-Sentiment-2-w-AA.csv
+
+News Aggregator
+  https://archive.ics.uci.edu/ml/datasets/News+Aggregator
+  https://archive.ics.uci.edu/ml/machine-learning-databases/00359/
+
+Commerce Reviews 
+  https://archive.ics.uci.edu/ml/datasets/Amazon+Commerce+reviews+set
   
