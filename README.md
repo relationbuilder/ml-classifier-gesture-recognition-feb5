@@ -46,20 +46,7 @@ Please send me data sets you would like to add  to the test.
 >Whenever using statistical techniques outliers in the data can yeild a negative impact on classification accuracy.  In a quantized engine outlier values affect results because quanta ID are computed based on the absolute range of training data.  This can cause values in the center of the distribution to be forced into a smaller number of quanta which reduces the discrimination the majority data that also tends to be closer to the center of the distribution.   The Quantized classifier handels this by computing an effective range for the values in each Quanta.   The effective range is determined by removing 1.5% of the training values from the low and high end and then computing the range between min and max for the remaining records.  We use a clever mechanism for outlier removal that avoids the need to sort the values because we wanted to handle training sets larger than physical memory.    The quanta are indexed in a sparse matrix so outlier values still get their own quanta and can participate in classification but the effective range mechanism prevents outliers from negatively affecting precision for the majority dataset. 
 >
 
->> 
 
-###ASP (American Sign Language) Gesture classifier###
-This engine started as a classifier designed to classify Static Gestures for VR with the idea we may be able to produce a useful tool for classifying  ASL using VR input devices.  That is still a primary focus but the core algorithms can be more broadly applied.
-
-See **[Overview.pdf](docs/Overview.pdf)** in this repository for conceptual overview of
-the approach when using this kind of classifier for gesture recognition.
-
-This repository includes code written to test ideas for static gesture recognition. 
-
-It also includes samples of the classifiers in python that cope
-well with smaller training data sets and demonstrate using 
-the Quantized classifier approach.  They also handle
-massive training data sets with minimal memory.    
 ##Metadata##
 
 * Version: 0.15
@@ -274,7 +261,15 @@ TensorFlow Deep Learning is the newest buzz term so I am evaluating it's perform
 #### Quantized Classifier not designed for image classification 
 > Quantized classifier is designed specifically for data sets where the value of a feature column describes the same measurement for all rows.    For pictures subject moves around within the frame.  This movement essentially changes the meaning of the feature column.   The simplistic approach to feeding image data into the Quantized classifier is to flatten the data into a single long array of int.    This means the quantized classifier is measuring the pixel per pixel comparison of pixel brightness.  This works in some conditions but breaks down when lighting conditions change or the subject moves in the frame.   There are image preprocessing techniques that [extract feature data from images](https://en.wikipedia.org/wiki/Feature_extraction) such as [feature detection](https://en.wikipedia.org/wiki/Feature_detection) and [blob extraction](https://en.wikipedia.org/wiki/Connected-component_labeling).  The Quantized engine would be able to process the extracted features better since they can be scaled to a common scale. Some [Neural Nets](http://rodrigob.github.io/are_we_there_yet/build/classification_datasets_results.html) have better ability to cope with raw image data when the subject moves or is variable sized but image pre-processing seems like a better approach for many image classification.    There are a variety of ways to improve the ML Classifier performance on images using pre-processors such as [Edge Detection](https://en.wikipedia.org/wiki/Edge_detection), [Corner Detection](https://en.wikipedia.org/wiki/Corner_detection), [Ridge Detection](https://en.wikipedia.org/wiki/Ridge_detection), [Despeckle](https://books.google.com/books?id=EVoNLGlAbnkC&pg=PA1&lpg=PA1&dq=despeckle+meaning&source=bl&ots=02HMQnlVDU&sig=lFSTXzy2s6_vMAeI6uYWIm7EuJA&hl=en&sa=X&ved=0ahUKEwinpeeOi9TRAhVV8mMKHd8FAPAQ6AEIZjAO#v=onepage&q=despeckle%20meaning&f=false), [Binarization](http://felixniklas.com/imageprocessing/binarization) and [layout analysis](https://en.wikipedia.org/wiki/Document_layout_analysis) on images but we choose to focus on classification jobs where the meaning of the measurement for a given column remains constant.   
 
-#  
+### ASP (American Sign Language) Gesture classifier
+
+> The Quantized Classifier started as a classifier designed to classify Static Gestures for VR with the idea we may be able to produce a useful tool for classifying  ASL using VR input devices.  That is still a primary focus but the core algorithms can be more broadly applied.
+>
+> See **[Overview.pdf](docs/Overview.pdf)** in this repository for conceptual overview of the approach when using this kind of classifier for gesture recognition.
+>
+> This repository includes code written to test ideas for static gesture recognition. 
+>
+> It also includes samples of the classifiers in python that cope well with smaller training data sets and demonstrate using  the Quantized classifier approach.  They also handle massive training data sets with minimal memory. 
 
 ### See Also [bibliography.md](bibliography.md)
 
