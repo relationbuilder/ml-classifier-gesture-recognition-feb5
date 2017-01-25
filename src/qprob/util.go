@@ -5,18 +5,24 @@ import (
 	"strconv"
 	s "strings"
 
-	//"bufio"
-	//"fmt"
+	"bufio"
+	"fmt"
 	//"io"
 	//"io/ioutil"
-	//"log"
+	"log"
 	//"net/http"
-	//"os"
+	"os"
 	//"os/exec"
 )
 
-// TODO: Move these to a common utility
-// module.
+func check(msg string, e error) {
+	if e != nil {
+		fmt.Println("ERROR:")
+		fmt.Println(e)
+		panic(e)
+	}
+}
+
 func MaxI16(x, y int16) int16 {
 	if x > y {
 		return x
@@ -115,4 +121,32 @@ func ParseStrAsArrFloat32(astr string) []float32 {
 		wrkArr[fc] = f32
 	}
 	return wrkArr
+}
+
+func LoadCSVRows(fiName string) (string, [][]float32) {
+	rows := make([][]float32, 0, 1)
+	fiIn, err := os.Open(fiName)
+	check("opening file", err)
+	if err != nil {
+		log.Fatal(err)
+	}
+	scanner := bufio.NewScanner(fiIn)
+	defer fiIn.Close()
+
+	// Copy of header to both files
+	scanner.Scan() // skip headers
+	headTxt := s.TrimSpace(scanner.Text())
+
+	for scanner.Scan() {
+		txt := s.TrimSpace(scanner.Text())
+
+		if err := scanner.Err(); err != nil {
+			log.Fatal(err)
+		}
+
+		flds := ParseStrAsArrFloat32(txt)
+		rows = append(rows, flds)
+
+	} // for row
+	return headTxt, rows
 }

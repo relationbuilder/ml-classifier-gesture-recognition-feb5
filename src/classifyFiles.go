@@ -38,6 +38,8 @@ type ClassifyFilesRequest struct {
 	WriteDetails bool
 	WriteFullCSV bool
 	DetToStdOut  bool
+
+	Header string
 }
 
 func (req *ClassifyFilesRequest) toJSON() string {
@@ -68,38 +70,10 @@ func MakeEmptyClassifyFilesRequest() *ClassifyFilesRequest {
 	return tout
 }
 
-func LoadCSVRows(fiName string) [][]float32 {
-	rows := make([][]float32, 0, 1)
-	fiIn, err := os.Open(fiName)
-	check("opening file", err)
-	if err != nil {
-		log.Fatal(err)
-	}
-	scanner := bufio.NewScanner(fiIn)
-	defer fiIn.Close()
-
-	// Copy of header to both files
-	scanner.Scan() // skip headers
-	//headTxt := s.TrimSpace(scanner.Text())
-
-	for scanner.Scan() {
-		txt := s.TrimSpace(scanner.Text())
-
-		if err := scanner.Err(); err != nil {
-			log.Fatal(err)
-		}
-
-		flds := qprob.ParseStrAsArrFloat32(txt)
-		rows = append(rows, flds)
-
-	} // for row
-	return rows
-}
-
-func ProcessRowsRows(fier *qprob.Classifier, req *ClassifyFilesRequest, rows [][]float32, outBaseName string, asTest bool) {
+func ProcessRowsRows(fier *qprob.Classifier, req *ClassifyFilesRequest, rows [][]float32, inName string, outBaseName string, asTest bool) {
 	fmt.Println("\nfinished build Now Try to classify")
 	detRows, sumRows := fier.ClassifyRows(rows)
-
+	classCol := fier.ClassCol
 	//
 	fmt.Printf("num deRows=%v\n", len(detRows))
 	fmt.Printf("num sumRows.Precis=%v\n", sumRows.Precis)
@@ -132,6 +106,10 @@ func ProcessRowsRows(fier *qprob.Classifier, req *ClassifyFilesRequest, rows [][
 		fmt.Printf("write CSV sum rows to %s\n", outFileName)
 		ioutil.WriteFile(outFileName, sb.Bytes(), 0644)
 		if req.DetToStdOut {
+			// TODO: Need to re-read actual string values
+			// from the input CSV rather than the parsed value
+			// otherwise those that did not have valid numbers
+			// do not work.
 			fmt.Printf("As Disp Str\n%s\n", sb.String())
 			failCnt := sumRows.TotCnt - sumRows.SucCnt
 			failP := 1.0 - sumRows.Precis
@@ -142,6 +120,49 @@ func ProcessRowsRows(fier *qprob.Classifier, req *ClassifyFilesRequest, rows [][
 		// add class probability output
 
 		// add detailed probability output
+	}
+
+	if req.WriteFullCSV {
+		// copy the input CSV to output CSV
+		// changing only the class column to
+		// the predicted class
+		var sbb bytes.Buffer
+		sb := &sbb
+		fiIn, err := os.Open(inName)
+		check("opening file", err)
+		if err != nil {
+			log.Fatal(err)
+		}
+		scanner := bufio.NewScanner(fiIn)
+		defer fiIn.Close()
+
+		// Copy of header to both files
+		scanner.Scan() // skip headers
+		headTxt := s.TrimSpace(scanner.Text())
+		fmt.Fprintln(sb, headTxt)
+		rowndx := 0
+		for scanner.Scan() {
+			txt := s.TrimSpace(scanner.Text())
+
+			if err := scanner.Err(); err != nil {
+				log.Fatal(err)
+			}
+
+			flds := s.Split(txt, ",")
+			flds[classCol] = fmt.Sprintf("%v", sumRows.Rows[rowndx].BestClass)
+			rowstr := s.Join(flds, ",")
+			fmt.Fprintln(sb, rowstr)
+			rowndx += 1
+		} // for row
+
+		outFileName := s.Replace(outBaseName, ".csv", ".out.csv", -1)
+		outFileName = s.Replace(outFileName, ".out.out", ".out", -1)
+		fmt.Printf("write CSV detail rows to %s\n", outFileName)
+		ioutil.WriteFile(outFileName, sb.Bytes(), 0644)
+		if req.DetToStdOut {
+			fmt.Println("Original CSV with Class Column changed to predicted class")
+			fmt.Println(sb.String())
+		}
 	}
 }
 
@@ -163,6 +184,7 @@ func ClassifyTestFiles(req *ClassifyFilesRequest) {
 		req.TrainInFi, req.TestInFi, req.NumBuck)
 
 	fier := qprob.LoadClassifierTrainFile(req.TrainInFi, "test", req.NumBuck)
+
 	fmt.Println("constructor complete")
 	//fmt.Println(fier.String())
 
@@ -170,17 +192,20 @@ func ClassifyTestFiles(req *ClassifyFilesRequest) {
 	// save the output to represent it's results
 	if req.TestInFi != "" {
 		fmt.Printf("processing test data %s", req.TestInFi)
-		testRows := LoadCSVRows(req.TestInFi)
+		header, testRows := qprob.LoadCSVRows(req.TestInFi)
+		req.Header = header
 		fmt.Printf("Loaded %v rows\n", len(testRows))
-		ProcessRowsRows(fier, req, testRows, req.TestOutFi, true)
+		ProcessRowsRows(fier, req, testRows, req.TestInFi, req.TestOutFi, true)
+
 	}
 
 	// If we have a classification job then process it.
 	if req.ClassInFi != "" {
 		fmt.Printf("processing classify data %s", req.ClassInFi)
-		rows := LoadCSVRows(req.ClassInFi)
+		header, rows := qprob.LoadCSVRows(req.ClassInFi)
+		req.Header = header
 		fmt.Printf("Loaded %v rows\n", len(rows))
-		ProcessRowsRows(fier, req, rows, req.ClassOutFi, false)
+		ProcessRowsRows(fier, req, rows, req.ClassInFi, req.ClassOutFi, false)
 	}
 
 }
@@ -278,9 +303,10 @@ func printHelp() {
 					   all named output files should end with
 					   .out.csv. 
 	
-	-testout=finame    Write test output CSV file name to this file
-	                   instead of the default output file.   By convention
-					   all output files should end with .out.csv
+	-testout=finame    Write test output CSV file name to this 
+	                   file instead of the default output file.
+					   By convention all output files should 
+					   end with .out.csv
 					
 	-numBuck=10        Number of qanta buckets to use by default
 	                   for the model but the optimizer may change
@@ -299,16 +325,17 @@ func printHelp() {
 					   will be changed to the predicted class 
 					   defaults to false.
 					
-    -writeDetails=true Write files containing detailed probability
-	                   by row in addition to the summary information
-					   this shows the probability of each row belonging
-					   to each class. 
-					   file extensions will be .det added to path 
-					   name. 
+    -writeDetails=true Write files containing detailed 
+	                   probability by row in addition to the
+					   summary information this shows the
+					   probability of each row belonging
+					   to each class. file extensions will 
+					   be .det added to path  name. 
 					
-    -detToStdOut=false When true will print values saved in the generated
-	                   files to stdout as things are processed.  This consumes
-					   considerable time so turn of except when debugging. 
+    -detToStdOut=false When true will print values saved in the
+	                   generated files to stdout as things are
+					   processed.  This consumes  considerable
+					   time so turn of except when debugging. 
 					   defaults to true. 
 
   eg: classifyFiles -train=data/titanic.train.csv -test=data/titanic/test.csv -numBuck=6
@@ -317,7 +344,7 @@ func printHelp() {
      will report results of test versus repored class
 	 classifier will use numBuck buckets.
 	 classified test records will be written to data/titanic/test.out.csv 
-	 classified test summary will be written to data/titanic/test.meta.txt
+	 classified test summary will be written to data/titanic/test.out.meta.txt
 	
 	
   eg: classifyFiles -train=data/titanic.train.csv -class=data/toclassify.csv")
