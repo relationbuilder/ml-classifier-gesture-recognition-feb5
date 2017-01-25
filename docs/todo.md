@@ -18,13 +18,16 @@ There are several focus areas where I can invest time. Please let me know if you
 
 * Support -class versus -test option as input to classifyFiles
 
-* > Implement -class option for 3rd input file in classifyFiles
+* > - Implement -class option for 3rd input file in classifyFiles
   >
-  > Classify Files needs to support both the test mode and a classify mode.
+  > - Classify Files needs to support both the test mode and a classify mode.
   >
-  > Should generate the correct output .test.out or .class.out
+  > - Should generate the correct output .test.out or .class.out
   >
-  > Should generate meta statistics in separate file. 
+  > - Should generate meta statistics in separate file. 
+  >
+  >
+  > - DONE:JOE:2017-01-24: Added command line parser library to support more complex command line needed to support optimizer. 
   >
   > ​
 

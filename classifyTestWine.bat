@@ -1,2 +1,2 @@
 ::go build src/classifyFiles.go
-classifyFiles data/wine.data.usi.train.csv  data/wine.data.usi.test.csv 10 
+classifyFiles -train=data/wine.data.usi.train.csv  -test=data/wine.data.usi.test.csv -numBuck=10 -testout=tmpout/wine.tst.out.csv

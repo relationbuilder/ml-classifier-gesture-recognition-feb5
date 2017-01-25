@@ -1,3 +1,3 @@
 ::rm classifyFiles.exe
 ::go build src/classifyFiles.go
-classifyFiles data/diabetes.train.csv data/diabetes.test.csv 30
+classifyFiles -train=data/diabetes.train.csv -test=data/diabetes.test.csv -numBuck=30 -testOut=tmpout/diabetes.test.csv

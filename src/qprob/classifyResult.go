@@ -7,6 +7,8 @@
 package qprob
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"math"
 )
@@ -39,6 +41,7 @@ type ResultForFeat struct {
 type ResultForRow struct {
 	BestClass int16
 	BestProb  float32
+	ActClass  int16 // actual class when known -9999 when not known
 	Classes   map[int16]ResultItem
 	Features  []ResultForFeat
 }
@@ -46,13 +49,57 @@ type ResultForRow struct {
 // Structures to support most basic
 // classify save of chosen class and
 // basic probability for that choice
-type simpResRow struct {
-	bestClass int16
-	bestProb  float32
+type SimpResRow struct {
+	BestClass int16
+	BestProb  float32
+	ActClass  int16
 }
 
-type simpResults struct {
-	rows []simpResRow
+type SimpResults struct {
+	TotCnt int32
+	SucCnt int32
+	Precis float32
+	Rows   []SimpResRow
+}
+
+// Save simple results as if running validation test
+func (sr *SimpResults) AsStrToBuffTest(sb *bytes.Buffer) {
+	fmt.Fprintln(sb, "ndx,bestClass,bestProb,actClass,status")
+	for ndx, row := range sr.Rows {
+		stat := "ok"
+		if row.BestClass != row.ActClass {
+			stat = "fail"
+		}
+		fmt.Fprintf(sb, "%v,%v,%v,%v,%s\n",
+			ndx, row.BestClass, row.BestProb, row.ActClass, stat)
+	}
+
+}
+
+// Save simple results as if classifying request
+func (sr *SimpResults) AsStrToBuffClass(sb *bytes.Buffer) {
+	fmt.Fprintln(sb, "ndx,bestClass,bestProb")
+	for ndx, row := range sr.Rows {
+
+		fmt.Fprintf(sb, "%v,%v,%v\n",
+			ndx, row.BestClass, row.BestProb)
+	}
+}
+
+func (sr *SimpResults) ToDispStr() string {
+	var sbb bytes.Buffer
+	sb := &sbb
+	sr.AsStrToBuffTest(sb)
+	failCnt := sr.TotCnt - sr.SucCnt
+	failP := 1.0 - sr.Precis
+	fmt.Fprintf(sb, "numRow=%v  sucCnt=%v precis=%v failCnt=%v failPort=%v\n",
+		sr.TotCnt, sr.SucCnt, sr.Precis, failCnt, failP)
+	return sb.String()
+}
+
+func (sr *SimpResults) ToJSON() []byte {
+	ba, _ := json.Marshal(sr)
+	return ba
 }
 
 func (fier *Classifier) ClassRowStr(astr string) *ResultForRow {
@@ -139,11 +186,59 @@ func (fier *Classifier) ClassRow(drow []float32) *ResultForRow {
 			bestProb = classWrk.Prob
 			tout.BestProb = classWrk.Prob
 			tout.BestClass = classId
+			tout.ActClass = -9999
 		}
 	}
 
 	return tout
 } // func
+
+/* Classify a array of rows returns the analyzed
+rows and the Test summary results.  */
+func (fier *Classifier) ClassifyRows(rows [][]float32) ([]ResultForRow, *SimpResults) {
+	numRow := len(rows)
+	tout := make([]ResultForRow, numRow)
+
+	//sucessCnt := 0
+	//rowCnt := 0
+	resRows := new(SimpResults)
+	resRows.TotCnt = int32(numRow)
+	resRows.Rows = make([]SimpResRow, numRow)
+
+	for ndx := 0; ndx < numRow; ndx++ {
+		rowIn := rows[ndx]
+
+		cres := fier.ClassRow(rowIn)
+		cres.ActClass = int16(rowIn[fier.ClassCol])
+
+		// Copy into Simplified structure
+		// for use generating the output
+		// CSV.   We also need this one to
+		// generate the simplified version
+		// of the JSON
+		rrow := &resRows.Rows[ndx]
+		rrow.BestClass = cres.BestClass
+		rrow.BestProb = cres.BestProb
+		rrow.ActClass = cres.ActClass
+		if rrow.BestClass == rrow.ActClass {
+			resRows.SucCnt += 1
+		}
+		//if cres.actClass == cres.BestClass {
+		//	sucessCnt += 1
+		//}
+		// TODO: We want to track sucess by class
+		// TODO: Build the Result Records here
+		// TODO: Return them as a separate set of parms
+		//rowCnt += 1
+
+	} // for row
+	resRows.Precis = float32(resRows.SucCnt) / float32(resRows.TotCnt)
+	//percCorr := (float32(sucessCnt) / float32(rowCnt)) * float32(100.0)
+	//percFail := 100.0 - percCorr
+
+	return tout, resRows
+
+}
 
 // NOTE: Consider just writing the formatting from JSON results
 //   save the JSON results and make it easily read by ajax

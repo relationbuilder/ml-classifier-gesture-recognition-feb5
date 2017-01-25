@@ -1,6 +1,6 @@
 # ML Quantized classifier in GO#
 
-A general purpose, high performance machine learning classifier. 
+A general purpose, high performance machine learning classifier.    [wiki](https://bitbucket.org/joexdobs/ml-classifier-gesture-recognition/wiki/Home)
 
 #### Basic Test results
 
@@ -78,6 +78,7 @@ massive training data sets with minimal memory.
 * [Install GO](https://golang.org/doc/install)
 
 * **setGoEvn.bat** - will set the GOHOME directory to current working directory  in a command prompt.  This is required for the GO compiler to find the  source code. 
+
   Tested on windows 10 but should be similar on linux.
 
 * **[makeGO.bat](makeGO.bat)** - First install GO and ensure it has  been added to PATH.  Open a command line at  the base directory containing makeGO.bat and run it. It will build the executables based on GO that are needed to run  the tests. Tested on windows 10 but should be similar on linux.
@@ -203,9 +204,12 @@ TensorFlow Deep Learning is the newest buzz term so I am evaluating it's perform
 > One goal of this project was to compare the classification and machine performance of Quantized Classifier against Tensorflow when ran against the same data.    This repository includes TensorFlow Deep Learning implementation of classifiers. [readme](tlearn)  
 
 > [CNNClassify.py](tlearn/CNNClassify.py) Provides Python code that will read our [Machine learning CSV Files](data) and produce classification output without changing the code.  It provides a nice way to think about generalized use of Tensorflow.
->
-> > ##### Quantized Classifier not designed for image classification 
-> >
-> > Quantized classifier is designed specifically for data sets where the value of a feature column describes the same measurement for all rows.    For pictures subject moves around within the frame.  This movement essentially changes the meaning of the feature column.   The simplistic approach to feeding image data into the Quantized classifier is to flatten the data into a single long array of int.    This means the quantized classifier is measuring the pixel per pixel comparison of pixel brightness.  This works in some conditions but breaks down when lighting conditions change or the subject moves in the frame.   There are image preprocessing techniques that [extract feature data from images](https://en.wikipedia.org/wiki/Feature_extraction) such as [feature detection](https://en.wikipedia.org/wiki/Feature_detection) and [blob extraction](https://en.wikipedia.org/wiki/Connected-component_labeling).  The Quantized engine would be able to process the extracted features better since they can be scaled to a common scale. Some [Neural Nets](http://rodrigob.github.io/are_we_there_yet/build/classification_datasets_results.html) have better ability to cope with raw image data when the subject moves or is variable sized but image pre-processing seems like a better approach for many image classification.    There are a variety of ways to improve the ML Classifier performance on images using pre-processors such as [Edge Detection](https://en.wikipedia.org/wiki/Edge_detection), [Corner Detection](https://en.wikipedia.org/wiki/Corner_detection), [Ridge Detection](https://en.wikipedia.org/wiki/Ridge_detection), [Despeckle](https://books.google.com/books?id=EVoNLGlAbnkC&pg=PA1&lpg=PA1&dq=despeckle+meaning&source=bl&ots=02HMQnlVDU&sig=lFSTXzy2s6_vMAeI6uYWIm7EuJA&hl=en&sa=X&ved=0ahUKEwinpeeOi9TRAhVV8mMKHd8FAPAQ6AEIZjAO#v=onepage&q=despeckle%20meaning&f=false), [Binarization](http://felixniklas.com/imageprocessing/binarization) and [layout analysis](https://en.wikipedia.org/wiki/Document_layout_analysis) on images but we choose to focus on classification jobs where the meaning of the measurement for a given column remains constant.   
-> >
 > > For large data sets the Tensorflow demo speed improved substantially.   This seems to indicate that the CUDA version of Tensorflow we are using has a high startup overhead but runs well one loaded.    With the 500 Mb cifar dataset the Tensorflow CNN was 15%  slower than quantized classier with n_epoch=8.   When n_epoch was increased to 150 to maximize precision of CNN classification it was  over 10X slower.  The CNN substantially outperformed in the MNIST image classification with 91% versus 52% precision at 100% recall.   Even though it is slower the CNN is still better for image classification. 
+
+#### Quantized Classifier not designed for image classification 
+> Quantized classifier is designed specifically for data sets where the value of a feature column describes the same measurement for all rows.    For pictures subject moves around within the frame.  This movement essentially changes the meaning of the feature column.   The simplistic approach to feeding image data into the Quantized classifier is to flatten the data into a single long array of int.    This means the quantized classifier is measuring the pixel per pixel comparison of pixel brightness.  This works in some conditions but breaks down when lighting conditions change or the subject moves in the frame.   There are image preprocessing techniques that [extract feature data from images](https://en.wikipedia.org/wiki/Feature_extraction) such as [feature detection](https://en.wikipedia.org/wiki/Feature_detection) and [blob extraction](https://en.wikipedia.org/wiki/Connected-component_labeling).  The Quantized engine would be able to process the extracted features better since they can be scaled to a common scale. Some [Neural Nets](http://rodrigob.github.io/are_we_there_yet/build/classification_datasets_results.html) have better ability to cope with raw image data when the subject moves or is variable sized but image pre-processing seems like a better approach for many image classification.    There are a variety of ways to improve the ML Classifier performance on images using pre-processors such as [Edge Detection](https://en.wikipedia.org/wiki/Edge_detection), [Corner Detection](https://en.wikipedia.org/wiki/Corner_detection), [Ridge Detection](https://en.wikipedia.org/wiki/Ridge_detection), [Despeckle](https://books.google.com/books?id=EVoNLGlAbnkC&pg=PA1&lpg=PA1&dq=despeckle+meaning&source=bl&ots=02HMQnlVDU&sig=lFSTXzy2s6_vMAeI6uYWIm7EuJA&hl=en&sa=X&ved=0ahUKEwinpeeOi9TRAhVV8mMKHd8FAPAQ6AEIZjAO#v=onepage&q=despeckle%20meaning&f=false), [Binarization](http://felixniklas.com/imageprocessing/binarization) and [layout analysis](https://en.wikipedia.org/wiki/Document_layout_analysis) on images but we choose to focus on classification jobs where the meaning of the measurement for a given column remains constant.   
+
+#  
+
+### See Also [bibliography.md](bibliography.md)
+

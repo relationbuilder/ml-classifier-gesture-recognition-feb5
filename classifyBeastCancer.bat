@@ -6,7 +6,7 @@
 ::     a new CSV file the same as original except the 
 ::     class has been changed to the predicted class. 
 ::
-classifyFiles -train=data/breast-cancer-wisconsin.adj.data.train.csv -class=data/breast-cancer-wisconsin.adj.data.class.csv -numBuck=10 -WriteJSON=true -classOut=tmpout/breast-cancer.class.out.csv  -WriteFullCSV=true  -DetToStdOut=false
+classifyFiles -train=data/breast-cancer-wisconsin.adj.data.train.csv -class=data/breast-cancer-wisconsin.adj.data.class.csv -numBuck=10 -WriteJSON=true -classOut=tmpout/breast-cancer.class.out.csv  -WriteFullCSV=true  
 
 :: Try with -detToStdOut=false to supress some of details being 
 ::    written to stdout

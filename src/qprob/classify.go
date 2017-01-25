@@ -26,6 +26,9 @@ const (
 )
 
 type QuantType uint8
+type TQIndex int16  // type index into Quant Buckets
+type TQCnt int32    // type Counts made for Quant Buckets
+type TQProb float32 // type for Probability compute
 
 // contains the count for each class
 // identfied as having at least one row.
@@ -418,4 +421,26 @@ func LoadClassifierTrainFile(fiName string, label string, numBuck int16) *Classi
 
 }
 
+/* Retrains a given feature.  This is used to support
+the optimizer which is able to change the number of buckets
+for a given feature.  */
+func (fier *Classifier) RetrainFeature(fe *Feature) {
+
+}
+
 // Function Describe Training Result Finding by Class
+
+// Saves the model wide parameters in INI file key=value
+// parameters in file fiName.model.txt  Saves the feature
+// defenitions in CSV format.
+// featureNum, NumBuck, FeatWeight, TotCnt, Bucket1Id, Bucket1Cnt, Buck1EffMinVal, Buck1MaxVal, Bucket1AbsMinVAl, Bucket1AbsMaxVal
+// Where each of the Bucket1* features are repeated for 1..N buckets.
+// This should give us everything we need to restore a model with
+// all of it's optimized settings intack.  It also gives us a nice
+// representation to support the discovery aspects of the system.
+// TODO:  Make a brower display utility.
+// function SaveModel
+
+// Loads the previously saved model so it can process classification
+// results.
+// function LoadModel

@@ -48,3 +48,14 @@ type summaryResult struct {
 func TestClassifyAnal() {
 	fmt.Println("Hello World!")
 }
+
+// Function Create Summary Results
+func (fier *Classifier) createSummaryResults(astr string) *summaryResult {
+	// NOTE: Some of this code already exists in ClassifyFiles
+	return nil
+}
+
+func (sumRes *summaryResult) ToSimpleRowCSV(fier *Classifier) string {
+	return ""
+
+}
