@@ -48,16 +48,16 @@ An alternate way of thinking about this to leverage our Bucket Id concept where 
 >
 > Both of the Stanford  [Basic parser](http://nlp.stanford.edu:8080/parser/index.jsp)  and their  [Parser with openie](http://corenlp.run/) struggled with the following phrase  "The water heater apple plumbing installed worked great"  but the basic parser did find interesting groupings words under compound and xcomp.    Here is an excerpt:
 >
-> > ```
-> > det(plumbing-5, The-1)
-> > compound(plumbing-5, water-2)
-> > compound(plumbing-5, heater-3)
-> > compound(plumbing-5, apple-4)
-> > nsubj(worked-7, plumbing-5)
-> > acl(plumbing-5, installed-6)
-> > root(ROOT-0, worked-7)
-> > xcomp(worked-7, great-8)
-> > ```
+> >     ```
+> >     det(plumbing-5, The-1)
+> >     compound(plumbing-5, water-2)
+> >     compound(plumbing-5, heater-3)
+> >     compound(plumbing-5, apple-4)
+> >     nsubj(worked-7, plumbing-5)
+> >     acl(plumbing-5, installed-6)
+> >     root(ROOT-0, worked-7)
+> >     xcomp(worked-7, great-8)
+> >     ```
 >
 > The  numbers are the relative position in the sentance.   "compound(plumbing-5, apple-4)"  means apple occured as word 4 and plumbing occured as word 5.     The parser failed to identify "Apple Plumbing"  or "water heater" as substantive topics which leads some suspicion to its usefulness but  if we  took this in a relatively simple approach we would order the words it grouped in document order and then use a value as the number of words separating the pairs.  This would give us "water plumbing" = 3,  "heater plumbing" = 2,  "apple plumbing"=1,  "plumbing installed"=1, "worked great"=1.
 >
@@ -97,7 +97,7 @@ I think it is worth supporting both approaches by adding a applyIDF option flag.
 
 ### Improved results with topic extraction
 
-> In the example above a more sophisticated parser able to identify  "apple retailers"  and "good service" as discrete topics it would work even better.  ![open-ie-phrase-map](open-id-phrase-map.jpg)  This example from [Stanfords online NLP parser](http://corenlp.run/) correctly identified "good service" and "apple retailer" as topics using the [Open IE annotation](http://nlp.stanford.edu/software/openie.html).   I suspect that building on that will provide  improved text classification results compared to mapping "good" and "service" as speparate terms. 
+> In the example above a more sophisticated parser able to identify  "apple retailers"  and "good service" as discrete topics it would work even better.  ![open-ie-phrase-map.jpg](open-ie-phrase-map.jpg)  This example from [Stanfords online NLP parser](http://corenlp.run/) correctly identified "good service" and "apple retailer" as topics using the [Open IE annotation](http://nlp.stanford.edu/software/openie.html).   I suspect that building on that will provide  improved text classification results compared to mapping "good" and "service" as speparate terms. 
 
 
 
