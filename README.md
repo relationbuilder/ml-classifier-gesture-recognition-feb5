@@ -49,7 +49,7 @@ Please send me data sets you would like to add  to the test.
 
 ##Metadata##
 
-* Version: 0.15
+* Version: 0.16
 * License: [MIT](https://opensource.org/licenses/MIT) I reserve the right to change the license in the future but you will always be able to continue using the version you downloaded under the MIT version using the MIT license. 
 * **We sell consulting services http://BayesAnalytic.com/contact**
 * Dependencies: 
@@ -62,7 +62,7 @@ Please send me data sets you would like to add  to the test.
 
 ## How to Use ##
 
-* [Install GO](https://golang.org/doc/install)
+* [**Install GO**](https://golang.org/doc/install)
 
 * **[setGoEvn.bat](setGOEnv.bat)** - will set the GOHOME directory to current working directory  in a command prompt.  This is required for the GO compiler to find the  source code. 
 
@@ -175,8 +175,8 @@ Please send me data sets you would like to add  to the test.
 * [Install TensorFlow](https://www.tensorflow.org/get_started/os_setup), [TFLearn](http://tflearn.org/installation/) and     run their basic tests to ensure they    run correctly.  This may also require installing CUDA depending on  whether you want to use the GPU version of TensorFlow.  TFLearn requires      Python we tested ours with python 3.5.2.   Not needed if you only want      to run our GO based classier engines. 
 
 
-* ​
-  ​       
+​       
+
 ## Basic Contents ##
 Not all files are listed here. The intent is to help you find those files that are most likley to be helpful. when learning the sysem.
 
@@ -185,25 +185,21 @@ Not all files are listed here. The intent is to help you find those files that a
 
 ### GO Based Classifier ###
 
-* [src/splitCSVFile.go](src/splitCSVFile.go) - Utility to split input CSV files into two separate files one for training and one for testing.
 * [src/qprob/classify.go](src/qprob/classify.go) Main Classifier data structures along with training logic.
+* [src/qprob/classifyResult.go](src/qprob/classifyResult.go) - Performs the basic classify operations and includes data structures for the classify result. 
+* [src/qprob/classifyAnal.go](src/qprob/classifyOptimizer.go) - Adds basic Analysis functions to the results such as providing statistics by class. 
+* [src/qprob/classifyOptimizer.go](src/qprob/classifyOptimizer.go) - Implements the optimizer 
+* [src/qutil/commandLineParser.go](src/qutil/commandLineParser.go) - Utility to parse command line into easy to access components.
 * [src/classifyFiles.go](src/classifyFiles.go) Main file driver interface for classifier.  A good set of example code if you want to use the classifier library from GO source code. 
 * [src/qprob/csvInfo.go](src/qprob/csvInfo.go)  Utility library to parse CSV files including finding min, max values,  determining which columns are valid numbers, etc. 
 * [src/qprob/util.go](src/qprob/util.go) Utility library adding silly things that should have been built in like a Max that works type safe with int32 and split a string into array of float.
-* ​
-* ​
+* [src/splitCSVFile.go](src/splitCSVFile.go) - Utility to split input CSV files into two separate files one for training and one for testing.
 
 ### Idea Test Sample Code ###
 * Original Proof of theory samples
   - [Install python](https://www.python.org/downloads/release/python-352/). We  tested 3.5.2 but should work with newer versions.    Only needed if you want to run the Python samples we supplied.
   - **python [quant_filt.py](quant_filt.py)** - Runs test on gesture classification data.   Shows how quantized concept can be used to implement    splay like search trees.  It acts something like a decision    tree and something like a multi layer CNN.     The more quant buckets used the more precise.  This is an    alternative to the probability  model and can provide superior results in some   instances.  Machine learning Quantized filter classifier.  This system can provide  fast classification with moderate memory use and is easy to see how likely the match is to be accurate.
   - **python [quant_prob.py](quant_prob.py)** - Runs a test on  gesture classification data demonstrates quantized probability theory in smallest possible piece of python code.  A more   complete version is implemented in classify.go Machine learning Quantized probability classifier. Not quite as precise under some conditions and quant_filt.py but it can cope with greater amounts of training noise while still delivering good results with moderate amounts of training data.  
-
-
-###DATA FILES###
-* **data/data-sources.txt** - Explains sources for the included data files some data files are not included and will have to be donwloaded from those sources if the usage license was unclear or restrictive.
-
-* **data/train/gest_train_ratio2.csv** - Input training data used for these tests.  We need thousands additional training samples feel free to volunteer after your read overview.pdf in this repository.
 
 
 
@@ -228,6 +224,11 @@ Not all files are listed here. The intent is to help you find those files that a
 
 
 > This work actually includes two classifiers.  The first one is the Quantized Probability classifier.  The other is a Quantized Filter classifier.  Both can classify but they tend to be optimized for different use cases.    I will add additional documenation for the Quantized Filter as it matures but wanted to finish the optimizer and web interface for the Quantized probability engine first.
+
+### DATA FILES
+
+- **data/data-sources.txt** - Explains sources for the included data files some data files are not included and will have to be donwloaded from those sources if the usage license was unclear or restrictive.
+- **data/train/gest_train_ratio2.csv** - Input training data used for these tests.  We need thousands additional training samples feel free to volunteer after your read overview.pdf in this repository.
 
 ### Why another Classifier
 
