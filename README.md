@@ -87,27 +87,100 @@ massive training data sets with minimal memory.
 
 * **go build src/classifyFiles.go**   builds executable classifyFiles from GO source.     This is done automatically by makeGO.bat but  replicated here to show how to do it manually    
 
-* **classifyFiles TrainingFileName TestFileName numQuanta -class inputFiName outFiName -o1 -o2 -o3**   This command is ran automatically by the various classify* bat files.  Shown here to make it easy to run against custom data sets.   The ClassifyFiles code for this uses underlying quantized classifier library so it is feasible to write a version that uses completely different interface while continuing to use the same underlying library. 
+* [classifyBreastCancer.bat](classifyBreastCancer.bat)
 
-* > > > **-class InputFileName OutputFile**  -class is optional but when present it must be followed by name of a input file that contains records to be classified.  The results will be written as a CSV into OutputFileName.  The input file name must have same number of columns as traing data but the contents of the first column class will be ignored and replaced with the systems specified class.   TBD
-  > > >
-  > > > **-o3, -o2, -o1** - The -o options are optional and specify the level of optimization to be completed before the system attempts to classify based on the TestFileName and before it runs the optional classify step.  o1 - perform light optimization,   o2 - perform medium optimization,  o3 - perform heavy optimization TBD
-  > > >
-  > > > ​
+  > > ```
+  > > classifyFiles -train=data/breast-cancer-wisconsin.adj.data.train.csv -class=data/breast-cancer-wisconsin.adj.data.class.csv -numBuck=10 -WriteJSON=false -classOut=tmpout/breast-cancer.class.out.csv  -WriteFullCSV=true  -detToStdOut=true
+  > > ```
+  > >
+  > > The classify request was triggered instead of the test because -class was used as the second set of input data rather than -test that normally specifies test input. 
+  > >
+  > > The main difference between the classify and Test is that classify ignores the value in the class column and generates a less complex file that contains less data.   It can also re-write a copy of the source CSV with the class replaced with the predicted class. 
+  > >
+  > > Sample data in tmpout/breast-cancer.class.out.sum.csv This is the short version 
+  > >
+  > > ```
+  > > ndx,bestClass,bestProb
+  > > 0,2,0.78951055
+  > > 1,4,0.6948877
+  > > 2,2,0.78734744
+  > > 3,4,0.7989442
+  > > 4,2,0.7599269
+  > > 5,4,0.664731
+  > > 6,4,0.46487543
+  > > 7,2,0.5792924
+  > > ```
 
-* > **classifyFiles data/breast-cancer-wisconsin.adj.data.train.csv   data/breast-cancer-wisconsin.adj.data.test.csv 10**  will run the GO based classifier built in GO using the first named file for training and the second named file for testing will print out results of how well classification matches actual source data class.   This is called automatically by classifyTestBCancer.bat.   Output will be written to stdout.
+* > > **ClassifyFiles**  This following is printed by the classify files when incorrect parameters are entered. 
 
-* > **classifyFiles data/titanic.train.csv data/titanic.test.csv 6**  will run the GO based classifier against the two input files  this test attempts to predict mortality and will print out      quality of predictions from classifier compared to known  result.   This is called automatically by classifyTestTitanic.bat 
+  > > ```
+  > > -train=finame      file containing training data
+  > >                    optional when model input is specified
+  > >
+  > > -test=finame       file containing data to use to test model
+  > >                    file must exist when specified.
+  > >                    optional when -class is specified.
+  > >
+  > > -class=finame      name of file containing data to classify
+  > >                    must exist is specified.   Optional when
+  > >                    -test is specified.  By convention class
+  > >                    is set to -1 in input class files but the
+  > >                    system doese not care.
+  > >
+  > > -classout=finame   name of file to write classify results to
+  > >                    will be written in csv format.  If not
+  > >                    specified default name  will be name
+  > >                    specified by -class with .csv
+  > >                    replaced with .out.csv.  By convention
+  > >                    all named output files should end with
+  > >                   .out.csv.
+  > >
+  > > -testout=finame    Write test output CSV file name to this file
+  > >                    instead of the default output file.   By convention
+  > >                    all output files should end with .out.csv
+  > >                    if not set will write data into same
+  > >                    directory as test input file with differnt
+  > >                    extensions to protect orginal data.
+  > >
+  > > -numBuck=10        Number of qanta buckets to use by default
+  > >                    for the model but the optimizer may change
+  > >                    this on a feature by feature basis
+  > >
+  > > -writeJSON=true    if present then write results to JSON files
+  > >                    otherwise will only generate CSV.
+  > >
+  > > -writeCSV=true     Will write output in CSV form which will
+  > >                    require multiple files in some instances
+  > >                    or supress some explanatory information
+  > >                    defaults to true if not specified.
+  > >
+  > >  -writeFullcsv=false Write the original CSV with all columns
+  > >                   the same except for the class column values
+  > >                   will be changed to the predicted class
+  > >                   defaults to false.
+  > >
+  > >  -writeDetails=true Write files containing detailed probability
+  > >                     by row in addition to the summary information
+  > >                     this shows the probability of each row belonging
+  > >                     to each class.
+  > >                     file extensions will be .det added to path
+  > >                     name.
+  > >
+  > >  -detToStdOut=false When true will print values saved in the generated
+  > >                   files to stdout as things are processed.  This consumes
+  > >                   considerable time so turn of except when debugging.
+  > >                   defaults to true.
+  > > ```
 
-* > **classifyTestBCancer.bat** - Runs classifyFiles on breast cancer data set.  Writes output to classifyTestBCanser.out.txt. 
+* > **classifyTestBCancer.bat** - Runs classifyFiles on breast cancer data set.   Look in tmpout for generated files.
 
-* > **classifyTestDiabetes.bat** - Runs classifyFiles on diabetes data set. Writes output to stdout
+* > **classifyTestDiabetes.bat** - Runs classifyFiles on diabetes data set. Look in tmpout for generated files.
 
-* > **classifyTestLiverDisorder.bat** - Runs classifyFiles on Liver disorder data set.  Writes output to classifyTestLiverDisorder.out.txt
+* > **classifyTestLiverDisorder.bat** - Runs classifyFiles on Liver disorder data set.  Look in tmpout for generated files.
 
-* > **classifyTestTitanic.bat** - Runs classifyFiles on Titanic survial data set.  Writes output to classifyTestTitanic.out.txt
+* > **classifyTestTitanic.bat** - Runs classifyFiles on Titanic survial data set.  Look in tmpout for generated files.
   >
-  > **classifyWine.bat** - runs classifyFiles on the Wine taste prediction data set.
+  > **classifyWine.bat** - runs classifyFiles on the Wine taste prediction data set. Look in tmpout for generated files.
 
 ####For the Tensorflow tests###
 * See [TensorFlow Demo][tlearn]
