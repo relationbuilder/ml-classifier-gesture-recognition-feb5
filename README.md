@@ -62,6 +62,9 @@ Please send me data sets you would like to add  to the test.
 
 ## How to Use ##
 
+* On my machine I have cygwin installed and added to PATH so I can use most linux commands from DOS shells.   You will notice that I use some linux commands like rm instead of the DOS equivalent.  You can edit the BAT to make the windows specific without cygwin but I prefer them the way they are because it allows the Linux shell to execute them once chmod +x is added to the .bat files.  
+
+
 * [**Install GO**](https://golang.org/doc/install)
 
 * **[setGoEvn.bat](setGOEnv.bat)** - will set the GOHOME directory to current working directory  in a command prompt.  This is required for the GO compiler to find the  source code.   *Tested on windows 10 but should be similar on linux if chmod is set to 777*.
@@ -79,7 +82,7 @@ Please send me data sets you would like to add  to the test.
 
 * **[splitData.bat](splitData.bat)** - Creates sub .train.csv and  test.csv files for the files used in the classifier tests. Uses splitCSVFile.exe which is built by makeGo.  Run this before  attempting to run the classifier to ensure proper data is present.
 
-* [**classifyBreastCancer.bat**](classifyBreastCancer.bat)
+* [**classifyBeastCancer.bat**](classifyBeastCancer.bat)
 
   > > ```
   > > classifyFiles -train=data/breast-cancer-wisconsin.adj.data.train.csv -class=data/breast-cancer-wisconsin.adj.data.class.csv -numBuck=10 -WriteJSON=false -classOut=tmpout/breast-cancer.class.out.csv  -WriteFullCSV=true  -detToStdOut=true
@@ -93,7 +96,7 @@ Please send me data sets you would like to add  to the test.
   > >
   > > Sample data in tmpout/breast-cancer.class.out.sum.csv.   This is the short version  of results that gives the caller just enough information to map the predicted class up with the original classification request.  There are also options to generate the original CSV with the class column updated to reflect the predictions. 
 
-  
+
   > >     ndx,bestClass,bestProb
   > >     0,2,0.78951055
   > >     1,4,0.6948877
@@ -103,7 +106,7 @@ Please send me data sets you would like to add  to the test.
   > >     5,4,0.664731
   > >     6,4,0.46487543
   > >     7,2,0.5792924
-  > > 
+  > >
 
 >> * **ClassifyFiles**  This following is printed by the classify files when incorrect parameters are entered. 
 >> ```
