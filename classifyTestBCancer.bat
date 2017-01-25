@@ -1,2 +1,2 @@
 ::go build src/classifyFiles.go
-classifyFiles data/breast-cancer-wisconsin.adj.data.train.csv data/breast-cancer-wisconsin.adj.data.test.csv 10 > classifyTestBCanser.out.txt
+classifyFiles -train=data/breast-cancer-wisconsin.adj.data.train.csv -test=data/breast-cancer-wisconsin.adj.data.test.csv -numBuck=10 -WriteJSON=true -classOut=tmpout/breast-cancer.class.csv -testOut=tmpout/breast-cancer.test.out.csv
