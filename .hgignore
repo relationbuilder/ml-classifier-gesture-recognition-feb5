@@ -24,3 +24,4 @@ breast*train.csv
 breast*test.csv
 breast-cancer-wisconsin.adj.data.test.csv
 breast-cancer-wisconsin.adj.data.train.csv
+tmpout/*.out*

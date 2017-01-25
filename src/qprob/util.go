@@ -98,3 +98,21 @@ func ParseStrAsArrFloat(astr string) []float32 {
 	}
 	return wrkArr
 }
+
+/* Any values that failed to parse will contain
+math.MaxFloat32 as error indicator */
+func ParseStrAsArrFloat32(astr string) []float32 {
+	a := s.Split(astr, ",")
+	numCol := len(a)
+	wrkArr := make([]float32, numCol)
+	for fc := 0; fc < numCol; fc++ {
+		ctxt := s.TrimSpace(a[fc])
+		f64, err := strconv.ParseFloat(ctxt, 32)
+		f32 := float32(f64)
+		if err != nil {
+			f32 = math.MaxFloat32
+		}
+		wrkArr[fc] = f32
+	}
+	return wrkArr
+}

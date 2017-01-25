@@ -165,6 +165,18 @@ func (parg *ParsedCommandArgs) Sval(name string, defaultVal string) string {
 	}
 }
 
+// return boolean equivelant of parameter value specified or
+// default if not specified.
+func (parg *ParsedCommandArgs) Bval(name string, defaultVal bool) bool {
+	val, found := parg.NamedInt[name]
+	//fmt.Printf("Bval name=%s val=%v  found=%v", name, val, found)
+	if found {
+		return val == 1
+	} else {
+		return defaultVal
+	}
+}
+
 func CommandLineParserTest() {
 	args := os.Args
 	fmt.Println("CommandLineParserTest()\n")
