@@ -105,9 +105,9 @@ Please send me data sets you would like to add  to the test.
      7,2,0.5792924
 
 
-* > > **ClassifyFiles**  This following is printed by the classify files when incorrect parameters are entered. 
+* >>**ClassifyFiles**  This following is printed by the classify files when incorrect parameters are entered. 
 
-
+>>```
     -train=finame      file containing training data
                       optional when model input is specified
     -test=finame       file containing data to use to test model
@@ -163,8 +163,7 @@ Please send me data sets you would like to add  to the test.
                        files to stdout as things are processed.  This consumes
                        considerable time so turn of except when debugging.
                        defaults to true.
->>```
->>
+
 >>```
 
 
