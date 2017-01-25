@@ -84,7 +84,9 @@ Please send me data sets you would like to add  to the test.
   > >
   > > The main difference between the classify and Test is that classify ignores the value in the class column and generates a less complex file that contains less data.   It can also re-write a copy of the source CSV with the class replaced with the predicted class. 
   > >
-  > > Sample data in tmpout/breast-cancer.class.out.sum.csv This is the short version 
+  > > ##### Sample Classification Output
+  > >
+  > > Sample data in tmpout/breast-cancer.class.out.sum.csv.   This is the short version  of results that gives the caller just enough information to map the predicted class up with the original classification request.  There are also options to generate the original CSV with the class column updated to reflect the predictions. 
   > >
   > > ```
   > > ndx,bestClass,bestProb
@@ -174,8 +176,6 @@ Please send me data sets you would like to add  to the test.
 * [Install python](https://www.python.org/downloads/release/python-352/). We   tested 3.5.2 but should work with newer versions. Onlyneeded if you want to run TensorFlow or Python samples we supplied.
 * [Install TensorFlow](https://www.tensorflow.org/get_started/os_setup), [TFLearn](http://tflearn.org/installation/) and     run their basic tests to ensure they    run correctly.  This may also require installing CUDA depending on  whether you want to use the GPU version of TensorFlow.  TFLearn requires      Python we tested ours with python 3.5.2.   Not needed if you only want      to run our GO based classier engines. 
 
-
-​       
 
 ## Basic Contents ##
 Not all files are listed here. The intent is to help you find those files that are most likley to be helpful. when learning the sysem.
