@@ -64,15 +64,20 @@ Please send me data sets you would like to add  to the test.
 
 * [**Install GO**](https://golang.org/doc/install)
 
-* **[setGoEvn.bat](setGOEnv.bat)** - will set the GOHOME directory to current working directory  in a command prompt.  This is required for the GO compiler to find the  source code. 
-
-  Tested on windows 10 but should be similar on linux.
+* **[setGoEvn.bat](setGOEnv.bat)** - will set the GOHOME directory to current working directory  in a command prompt.  This is required for the GO compiler to find the  source code.   *Tested on windows 10 but should be similar on linux if chmod is set to 777*.
 
 * **[makeGO.bat](makeGO.bat)** - First install GO and ensure it has  been added to PATH.  Open a command line at  the base directory containing makeGO.bat and run it. It will build the executables based on GO that are needed to run  the tests. Tested on windows 10 but should be similar on linux.
 
-* **[splitData.bat](splitData.bat)** - Creates sub .train.csv and  test.csv files for the files used in the classifier tests. Uses splitCSVFile.exe which is built by makeGo.  Run this before  attempting to run the classifier to ensure proper data is present.
+* > ```
+  > go build src/classifyFiles.go   
+  >  
+  >   Builds executable classifyFiles from GO source.
+  >   This is done automatically by makeGO.bat but
+  >   replicated here to show how to do it manually    
+  >   
+  > ```
 
-* **go build src/classifyFiles.go**   builds executable classifyFiles from GO source.     This is done automatically by [makeGO.bat](makeGo.bat) but  replicated here to show how to do it manually    
+* **[splitData.bat](splitData.bat)** - Creates sub .train.csv and  test.csv files for the files used in the classifier tests. Uses splitCSVFile.exe which is built by makeGo.  Run this before  attempting to run the classifier to ensure proper data is present.
 
 * [**classifyBreastCancer.bat**](classifyBreastCancer.bat)
 
@@ -87,79 +92,81 @@ Please send me data sets you would like to add  to the test.
   > > ##### Sample Classification Output
   > >
   > > Sample data in tmpout/breast-cancer.class.out.sum.csv.   This is the short version  of results that gives the caller just enough information to map the predicted class up with the original classification request.  There are also options to generate the original CSV with the class column updated to reflect the predictions. 
-  > >
-  > > ```
-  > > ndx,bestClass,bestProb
-  > > 0,2,0.78951055
-  > > 1,4,0.6948877
-  > > 2,2,0.78734744
-  > > 3,4,0.7989442
-  > > 4,2,0.7599269
-  > > 5,4,0.664731
-  > > 6,4,0.46487543
-  > > 7,2,0.5792924
-  > > ```
+
+
+     ndx,bestClass,bestProb
+     0,2,0.78951055
+     1,4,0.6948877
+     2,2,0.78734744
+     3,4,0.7989442
+     4,2,0.7599269
+     5,4,0.664731
+     6,4,0.46487543
+     7,2,0.5792924
+
 
 * > > **ClassifyFiles**  This following is printed by the classify files when incorrect parameters are entered. 
 
-  > > ```
-  > > -train=finame      file containing training data
-  > >                    optional when model input is specified
-  > >
-  > > -test=finame       file containing data to use to test model
-  > >                    file must exist when specified.
-  > >                    optional when -class is specified.
-  > >
-  > > -class=finame      name of file containing data to classify
-  > >                    must exist is specified.   Optional when
-  > >                    -test is specified.  By convention class
-  > >                    is set to -1 in input class files but the
-  > >                    system doese not care.
-  > >
-  > > -classout=finame   name of file to write classify results to
-  > >                    will be written in csv format.  If not
-  > >                    specified default name  will be name
-  > >                    specified by -class with .csv
-  > >                    replaced with .out.csv.  By convention
-  > >                    all named output files should end with
-  > >                   .out.csv.
-  > >
-  > > -testout=finame    Write test output CSV file name to this file
-  > >                    instead of the default output file.   By convention
-  > >                    all output files should end with .out.csv
-  > >                    if not set will write data into same
-  > >                    directory as test input file with differnt
-  > >                    extensions to protect orginal data.
-  > >
-  > > -numBuck=10        Number of qanta buckets to use by default
-  > >                    for the model but the optimizer may change
-  > >                    this on a feature by feature basis
-  > >
-  > > -writeJSON=true    if present then write results to JSON files
-  > >                    otherwise will only generate CSV.
-  > >
-  > > -writeCSV=true     Will write output in CSV form which will
-  > >                    require multiple files in some instances
-  > >                    or supress some explanatory information
-  > >                    defaults to true if not specified.
-  > >
-  > >  -writeFullcsv=false Write the original CSV with all columns
-  > >                   the same except for the class column values
-  > >                   will be changed to the predicted class
-  > >                   defaults to false.
-  > >
-  > >  -writeDetails=true Write files containing detailed probability
-  > >                     by row in addition to the summary information
-  > >                     this shows the probability of each row belonging
-  > >                     to each class.
-  > >                     file extensions will be .det added to path
-  > >                     name.
-  > >
-  > >  -detToStdOut=false When true will print values saved in the generated
-  > >                   files to stdout as things are processed.  This consumes
-  > >                   considerable time so turn of except when debugging.
-  > >                   defaults to true.
-  > > ```
+
+    -train=finame      file containing training data
+                      optional when model input is specified
+    -test=finame       file containing data to use to test model
+                      file must exist when specified.
+                      optional when -class is specified.
+    
+     -class=finame      name of file containing data to classify
+                        must exist is specified.   Optional when
+                        -test is specified.  By convention class
+                        is set to -1 in input class files but the
+                        system doese not care.
+      
+      -classout=finame   name of file to write classify results to
+                         will be written in csv format.  If not
+                         specified default name  will be name
+                         specified by -class with .csv
+                         replaced with .out.csv.  By convention
+                         all named output files should end with
+                         .out.csv.
+    
+     -testout=finame    Write test output CSV file name to this file
+                        instead of the default output file.   By convention
+                        all output files should end with .out.csv
+                        if not set will write data into same
+                        directory as test input file with differnt
+                        extensions to protect orginal data.
+    
+     -numBuck=10        Number of qanta buckets to use by default
+                        for the model but the optimizer may change
+                        this on a feature by feature basis
+         
+      -writeJSON=true    if present then write results to JSON files
+                         otherwise will only generate CSV.
+    
+     -writeCSV=true     Will write output in CSV form which will
+                        require multiple files in some instances
+                        or supress some explanatory information
+                        defaults to true if not specified.
+    
+     -writeFullcsv=false Write the original CSV with all columns
+                       the same except for the class column values
+                       will be changed to the predicted class
+                       defaults to false.
+    
+     -writeDetails=true Write files containing detailed probability
+                        by row in addition to the summary information
+                        this shows the probability of each row belonging
+                        to each class.
+                        file extensions will be .det added to path
+                        name.
+    
+     -detToStdOut=false When true will print values saved in the generated
+                       files to stdout as things are processed.  This consumes
+                       considerable time so turn of except when debugging.
+                       defaults to true.
+>>```
+>>
+>>```
+
 
 * > **[classifyTestBCancer.bat](classifyTestBCancer.bat)** - Runs classifyFiles on breast cancer data set.   Look in tmpout for generated files.
 
