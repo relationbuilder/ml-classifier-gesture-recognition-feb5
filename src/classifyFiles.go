@@ -196,7 +196,6 @@ func ClassifyTestFiles(req *ClassifyFilesRequest) {
 		req.Header = header
 		fmt.Printf("Loaded %v rows\n", len(testRows))
 		ProcessRowsRows(fier, req, testRows, req.TestInFi, req.TestOutFi, true)
-
 	}
 
 	// If we have a classification job then process it.
@@ -377,7 +376,8 @@ func printHelp() {
 					   generated when the training has been completed
 					   and after optimization passes.
 					
-		
+	-runOpt=true       If true will run the optimizer.  If false then
+	                   all optimizer settings are ignored. 	
 	
 					
     -optMinPrec=95     Will run optimizer cycles until a minimum 

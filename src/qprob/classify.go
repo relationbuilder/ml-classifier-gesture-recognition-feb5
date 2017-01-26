@@ -8,7 +8,7 @@ optimizers */
 import (
 	"bufio"
 	"fmt"
-	//"math"
+	"math"
 	"strconv"
 	s "strings"
 	//"io"
@@ -24,6 +24,7 @@ const (
 	QTInt    = 2 // Quantize with simple int index
 	QTText   = 3 // Quantize as tokenized text field
 )
+const MaxFloat32 = math.MaxFloat32
 
 type QuantType uint8
 type TQIndex int16  // type index into Quant Buckets
@@ -56,6 +57,14 @@ type Feature struct {
 	NumBuck        int16
 	NumBuckOveride bool
 	FeatWeight     float32
+	// Need the following as part of feature to support sparse
+	// feature matrix where not all rows have all featurs.
+	// an example would be text processing where  # feaures
+	// is # of unique phrases + # unique tokens but each
+	// row only contains a small words.
+	ClassCounts map[int16]int32   // total Count of all Records of Class
+	ClassProb   map[int16]float32 // Prob of any record being in class
+	NumRow      float32           // used to allow sparse feature matrix
 }
 
 // Includes the metadaa and classifer
@@ -278,6 +287,10 @@ func (cl *Classifier) makeFeature(col *CSVCol) *Feature {
 	afeat.NumBuckOveride = false
 	afeat.Buckets = make(map[int16]*QuantList)
 	afeat.FeatWeight = 1.0
+	afeat.NumRow = 0
+	afeat.ClassCounts = make(map[int16]int32)
+	afeat.ClassProb = make(map[int16]float32)
+
 	cl.updateStepValues(afeat)
 	return afeat
 }
@@ -304,17 +317,57 @@ func (fier *Classifier) updateClassProb() {
 	for classId, classCnt := range fier.ClassCounts {
 		fier.ClassProb[classId] = float32(classCnt) / float32(fier.NumTrainRow)
 	}
+
+	// TODO: Add  Feature Class Prob
 }
 
-/* For each value we retrive it's feature for
-that column.  Figure out which bucket the current
+/* Train a single feature with a single value for current class
+by computing which bucket the value would lie in.  */
+func (fier *Classifier) TrainRowFeat(feat *Feature, classId int16, fldVal float32) {
+	feat.NumRow += 1
+	// Update The Feaure Class Counts
+	_, found := feat.ClassCounts[classId]
+	if found == false {
+		feat.ClassCounts[classId] = 1
+	} else {
+		feat.ClassCounts[classId] += 1
+	}
+
+	// Update the feature Bucket Counts
+	buckets := feat.Buckets
+	buckId := feat.bucketId(fier, fldVal)
+	abuck, bexist := buckets[buckId]
+	if bexist == false {
+		abuck = new(QuantList)
+		abuck.Counts = make(map[int16]int32)
+		abuck.totCnt = 0
+		buckets[buckId] = abuck
+	}
+	_, cntExist := abuck.Counts[classId]
+	if cntExist == false {
+		abuck.Counts[classId] = 1
+	} else {
+		abuck.Counts[classId] += 1
+	}
+	abuck.totCnt += 1
+
+	//fmt.Printf("i=%v ctxt=%s f32=%v maxStr=%s minStr=%s\n", i, ctxt, f32, col.MaxStr, col.MinStr)
+}
+
+/* Train each feature with data for the current
+row.   Figure out which bucket the current
 value qualifies for and then update the count for
 that class within that bucket. Creats the bucket and
 the class if it is the first time we have seen them */
-func (fier *Classifier) TrainRow(row int, vals []string) {
+func (fier *Classifier) TrainRow(vals []float32) {
+	classCol := fier.ClassCol
 	fier.NumTrainRow += 1
-	classId := fier.classId(vals)
-	// Update Counts of all rows of
+	classIdF := vals[classCol] // Update Counts of all rows of
+	if classIdF == MaxFloat32 {
+		return // this row has invalid class
+	}
+	classId := int16(classIdF)
+
 	// class so we can compute probability
 	// of any row being of a given class
 	_, classFnd := fier.ClassCounts[classId]
@@ -325,57 +378,121 @@ func (fier *Classifier) TrainRow(row int, vals []string) {
 	}
 
 	for i := 0; i < fier.NumCol; i++ {
-		if i == fier.ClassCol {
+		if i == classCol {
 			continue // skip the class
 		}
-
-		col := fier.Info.Col[i]
 		feat := fier.ColDef[i]
-
 		if feat.Enabled == false {
 			continue // no need testing disabled features
 		}
 
-		buckets := feat.Buckets
-		ctxt := vals[i]
-		if col.CanParseFloat == false {
+		fldval := vals[i]
+		// We do not actually want to skip columns that have
+		// some rows hat can not be parsed because some
+		// columns have ocassional data values that are
+		// not valid such as ? What we want to do is
+		// skip parsing that feature for those rows.
+		if fldval == MaxFloat32 {
 			continue
 		}
 
-		// Record Min, Max Float
-		f64, err := strconv.ParseFloat(ctxt, 32)
-		if err != nil {
-			fmt.Printf("LoadClassifierTrain() Encountered float parsing error when not expected row=%v col=%v val=%v\n",
-				row, i, ctxt)
-			col.CanParseFloat = false
-		} else {
-			f32 := float32(f64)
-			// TODO: BuckId should be based on adjusted
-			// range after outliers removed Just using this
-			// for now to test the  rest.
-			// TODO: If BuckId outside adjusted range
-			// then may need to set to maxBuck, minBuck-1
-			buckId := feat.bucketId(fier, f32)
-			abuck, bexist := buckets[buckId]
-			if bexist == false {
-				abuck = new(QuantList)
-				abuck.Counts = make(map[int16]int32)
-				abuck.totCnt = 0
-				buckets[buckId] = abuck
-			}
-			_, cntExist := abuck.Counts[classId]
-			if cntExist == false {
-				abuck.Counts[classId] = 1
-			} else {
-				abuck.Counts[classId] += 1
-			}
-			abuck.totCnt += 1
-		}
-		//fmt.Printf("i=%v ctxt=%s f32=%v maxStr=%s minStr=%s\n", i, ctxt, f32, col.MaxStr, col.MinStr)
+		fier.TrainRowFeat(feat, classId, fldval)
+
 	} // for columns
+} // func
+
+// Retrains a single feature using the input training
+// data supplied in trainArr.
+//
+// Training by feature may be useful for
+// multi-threading since we could theroretically
+// use one core per feature since the feature
+// level status never affect each other.
+func (fier *Classifier) TrainFeature(featNum int16, trainArr [][]float32) {
+	feat := fier.ColDef[featNum]
+	classCol := fier.ClassCol
+	for _, row := range trainArr {
+		classIdF := row[classCol]
+		if classIdF == MaxFloat32 {
+			continue // this row has invalid class
+		}
+		classId := int16(classIdF)
+
+		fldval := row[featNum]
+		if fldval != math.MaxFloat32 {
+			fier.TrainRowFeat(feat, classId, fldval)
+		}
+	} // for
+} // func
+
+// Reset the training stats for a given feature
+// in preparation for retraining.  This is needed
+// for individual features to allow the optimizer
+// to only retrain a single feature when it
+// changes things.
+func (feat *Feature) clearFeatureForRetrain() {
+	feat.Buckets = make(map[int16]*QuantList)
+	feat.NumRow = 0
 }
 
-func LoadClassifierTrain(fier *Classifier, scanner *bufio.Scanner) {
+// Reset the training data to accept new training.
+// we will keep the effective range and other meta
+// data from the larger data set because this only
+// really used by the optimizer
+func (fier *Classifier) clearForRetrain() {
+	feats := fier.ColDef
+	for _, feat := range feats {
+		feat.clearFeatureForRetrain()
+	}
+}
+
+// Throw away current training model dataand
+// retrain it with the set of data passed in
+// the array rows must contain as many columns
+// as there are features.
+func (fier *Classifier) Retrain(rows [][]float32) {
+	fier.clearForRetrain()
+	//classCol := fier.ClassCol
+	for _, darr := range rows {
+		//classId := int16(darr[classCol])
+		fier.TrainRow(darr)
+	}
+}
+
+// Retrains a given feature.  This is used to support
+// the optimizer which is able to change the number of buckets
+// for a given feature.
+func (fier *Classifier) RetrainFeature(featNdx int16, dataArr [][]float32) {
+	feat := fier.ColDef[featNdx]
+	feat.clearFeatureForRetrain()
+	fier.TrainFeature(featNdx, dataArr)
+}
+
+// Load the entire training data file as a simple
+// [][]float and return in.   May actually want
+// to change the main parser / loader to use this
+// for performance since the CSV is currently read
+// 3 times and we could load it just once.  But
+// if we make that change we still need to be able
+// to revert revert to approach that will allow
+// training sets larger than physical ram.
+func (fier *Classifier) GetTrainRowsAsArr(maxBytes int64) [][]float32 {
+	_, rows := LoadCSVRows(fier.TrainFiName, maxBytes)
+	return rows
+}
+
+// Return an integer array containing all
+// currently used class ID
+func (fier *Classifier) ClassIds() []int16 {
+	cc := fier.ClassCounts
+	tout := make([]int16, 0, len(cc))
+	for key, _ := range cc {
+		tout = append(tout, key)
+	}
+	return tout
+}
+
+func LoadClassifierTrainStream(fier *Classifier, scanner *bufio.Scanner) {
 	rowCnt := 0
 	scanner.Scan() // skip headers
 	for scanner.Scan() {
@@ -383,11 +500,11 @@ func LoadClassifierTrain(fier *Classifier, scanner *bufio.Scanner) {
 		if err := scanner.Err(); err != nil {
 			log.Fatal(err)
 		}
-		a := s.Split(txt, ",")
+		a := ParseStrAsArrFloat32(txt)
 		if len(a) < fier.NumCol {
 			continue
 		}
-		fier.TrainRow(rowCnt, a)
+		fier.TrainRow(a)
 		rowCnt += 1
 	} // for row
 	fier.updateClassProb()
@@ -414,18 +531,10 @@ func LoadClassifierTrainFile(fiName string, label string, numBuck int16) *Classi
 	// Return the Header and use it's
 	// contents to create the columns
 	scanner := bufio.NewScanner(file)
-	LoadClassifierTrain(fier, scanner)
+	LoadClassifierTrainStream(fier, scanner)
 	fier.SetEffMinMaxPortSet(0.015) // remove 1.5% of outlier records from top and bottom
 	// when computing range.
 	return fier
-
-}
-
-/* Retrains a given feature.  This is used to support
-the optimizer which is able to change the number of buckets
-for a given feature.  */
-func (fier *Classifier) RetrainFeature(fe *Feature) {
-
 }
 
 // Function Describe Training Result Finding by Class

@@ -1,3 +1,8 @@
+/* CommandLineParser.go
+
+Parse command line parameters into easy to use format.
+
+*/
 package qutil
 
 import (

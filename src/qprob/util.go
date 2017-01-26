@@ -1,19 +1,31 @@
 package qprob
 
 import (
-	"math"
-	"strconv"
-	s "strings"
-
 	"bufio"
 	"fmt"
-	//"io"
-	//"io/ioutil"
 	"log"
-	//"net/http"
+	"math"
 	"os"
-	//"os/exec"
+	"strconv"
+	s "strings"
+	"time"
 )
+
+const OneK = 1024
+const OneMeg = OneK * OneK
+const OneGig = OneMeg * OneK
+const FiveGig = OneGig * 5
+
+func Nowms() float64 {
+	nn := time.Now()
+	return float64(nn.UnixNano()) / float64(time.Millisecond)
+}
+
+func Elap(msg string, beg_time float64, end_time float64) float64 {
+	elap := end_time - beg_time
+	fmt.Printf("ELAP %s = %12.3f ms\n", msg, elap)
+	return elap
+}
 
 func check(msg string, e error) {
 	if e != nil {
@@ -112,7 +124,8 @@ func ParseStrAsArrFloat32(astr string) []float32 {
 	numCol := len(a)
 	wrkArr := make([]float32, numCol)
 	for fc := 0; fc < numCol; fc++ {
-		ctxt := s.TrimSpace(a[fc])
+		//ctxt := s.TrimSpace(a[fc])
+		ctxt := a[fc]
 		f64, err := strconv.ParseFloat(ctxt, 32)
 		f32 := float32(f64)
 		if err != nil {
@@ -123,7 +136,9 @@ func ParseStrAsArrFloat32(astr string) []float32 {
 	return wrkArr
 }
 
-func LoadCSVRows(fiName string) (string, [][]float32) {
+// load CSV rows from file as array of float
+// stop when more than maxBytes have been read.
+func LoadCSVRows(fiName string, maxBytes int64) (string, [][]float32) {
 	rows := make([][]float32, 0, 1)
 	fiIn, err := os.Open(fiName)
 	check("opening file", err)
@@ -137,16 +152,19 @@ func LoadCSVRows(fiName string) (string, [][]float32) {
 	scanner.Scan() // skip headers
 	headTxt := s.TrimSpace(scanner.Text())
 
+	byteCnt := int64(0)
 	for scanner.Scan() {
-		txt := s.TrimSpace(scanner.Text())
-
+		txt := scanner.Text()
+		byteCnt += int64(len(txt))
 		if err := scanner.Err(); err != nil {
 			log.Fatal(err)
 		}
 
 		flds := ParseStrAsArrFloat32(txt)
 		rows = append(rows, flds)
-
+		if byteCnt >= maxBytes {
+			break
+		}
 	} // for row
 	return headTxt, rows
 }

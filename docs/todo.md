@@ -30,7 +30,7 @@ There are several focus areas where I can invest time. Please let me know if you
 
 * Add a function which reports by Class and for the entire set What is the minimum Prob Number needed to reach a given level of precision in 5% increments from the base sucess  rate to 100% sucess rate.    This should include the % of recall at each tier. This may be a alternative way to set the optimizer goal where we seek to maximize recall at the X% such as 95% precision. 
 
-* ​
+* Split the work for training and classification out to multiple cores.   May as well read X lines in chunks and allow each one to process the input.   Will be easy for classification but may require synchronizing the models for training to avoid two threads updating the same buckets simutaneously but could still have one core doing the load and split,  another core doing the convert to float and a 3rd core doing the document update.   Could also possibly have each core build their own model and merge the counts at the end which would scale better for a distributed architecture.     Another approach would be to switch the trainer so it is feature centric so they share a input set of rows but each process / core is only updating one feature which would remove the risk of overlapping count updates.  Also write a document on how this is approached for the Bayes blog. 
 
 * Add QProb optimizer that is allowed to change Feature weight and number of buckets.
 
@@ -48,6 +48,8 @@ There are several focus areas where I can invest time. Please let me know if you
   > * Optimizer needs ability to reserve some data from training data set to use for training.  It needs to periodically change which data is reserved.  EG: It may choose every 5th record for a while then switch to every 10th record.   It Also needs choice to use only last x% of set for optimizer setting when running with time series data.
   > * Optimizer rules.   Can keep change if precision increases while recall stays the same.  Can keep the change is recall rises while precision remains the same. Can keep change is both precision and recall rise.   Can keep change if precision rises but recall doesn't drop below a configured threashold.    When changing number of buckets must always try  1 bucket,  1/2 current number of buckets,  random number between 1 and max buckets.   When changing  priority of a feature it must first try a priority of 0,  then a priority of 1/2 current priority, then random number between 0  and maxPriority.   When changing features the system must ensure all features are checked so first try 3 random features then 1 feature from each end working from the end towards the other end.    
   > * ​
+
+* Write  a blog on bayes for approaching text classification.  Based on [Text classification overview](docs/text-classification/overview-classification.md) 
 
 * Add ability in CSV Files for command line parser to specify a column other than column #1 as the class.  
 
@@ -97,7 +99,7 @@ There are several focus areas where I can invest time. Please let me know if you
 
 *   Finish filling in sections of the [Genomic research white paper](genomic-notes.md). Add Test set for Daily stock bar data.  Where we add a column which is a SMA(x) where X defaults to 30 days. and features are the slope of the SMA(X) when comparing current bar to SMA(x) at some number of days in past create.  In a stock scenario  you would have a goal EG: A Bar for a symbol where price rose by P% within N days without dropping by more than Q% before it reached P%.  Those that meet the rule get a class of 1 while those that fail get a class of 0.       
 
-    ​
+      ​
 
 # Completed Items Phase 1 #
 

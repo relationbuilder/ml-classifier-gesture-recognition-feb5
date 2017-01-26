@@ -59,3 +59,6 @@ func (sumRes *summaryResult) ToSimpleRowCSV(fier *Classifier) string {
 	return ""
 
 }
+
+// function to build statistics by class
+// from a given result set.
