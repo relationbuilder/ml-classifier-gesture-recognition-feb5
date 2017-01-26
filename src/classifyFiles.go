@@ -192,7 +192,7 @@ func ClassifyTestFiles(req *ClassifyFilesRequest) {
 	// save the output to represent it's results
 	if req.TestInFi != "" {
 		fmt.Printf("processing test data %s", req.TestInFi)
-		header, testRows := qprob.LoadCSVRows(req.TestInFi)
+		header, testRows := qprob.LoadCSVRows(req.TestInFi, qprob.OneGig)
 		req.Header = header
 		fmt.Printf("Loaded %v rows\n", len(testRows))
 		ProcessRowsRows(fier, req, testRows, req.TestInFi, req.TestOutFi, true)
@@ -201,7 +201,7 @@ func ClassifyTestFiles(req *ClassifyFilesRequest) {
 	// If we have a classification job then process it.
 	if req.ClassInFi != "" {
 		fmt.Printf("processing classify data %s", req.ClassInFi)
-		header, rows := qprob.LoadCSVRows(req.ClassInFi)
+		header, rows := qprob.LoadCSVRows(req.ClassInFi, qprob.OneGig)
 		req.Header = header
 		fmt.Printf("Loaded %v rows\n", len(rows))
 		ProcessRowsRows(fier, req, rows, req.ClassInFi, req.ClassOutFi, false)

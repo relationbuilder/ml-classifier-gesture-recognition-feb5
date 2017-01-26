@@ -211,12 +211,9 @@ func (fier *Classifier) OptProcess(splitOneEvery int, maxTimeSec float64, target
 		// Need a way to test Ieterate through
 		// changes in the feature weight and
 		// numBuckets.
-		feat := fier.ColDef[featNdx]
-		newNumBuck := feat.NumBuck
-		newWeight := feat.FeatWeight * 0.5
-
-		newPrec, kept := fier.optRunOne(featNdx, newNumBuck, newWeight, lastPrec, trainRows, testRows)
-		fmt.Printf("newPrec=%v  kept=%v", newPrec, kept)
+		//feat := fier.ColDef[featNdx]
+		numKept, newPrec := fier.optRunOneFeat(featNdx, lastPrec, trainRows, testRows)
+		fmt.Printf("newPrec=%v  numKept=%v", newPrec, numKept)
 
 		elap := Nowms() - startTime
 		fmt.Printf(" elap=%v", elap)
