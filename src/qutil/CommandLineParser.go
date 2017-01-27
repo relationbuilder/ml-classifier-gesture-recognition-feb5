@@ -97,8 +97,10 @@ func ParseCommandLine(args []string) *ParsedCommandArgs {
 					if err == nil {
 						ival := int(i64)
 						tout.NamedInt[key] = ival
+						tout.NamedStr[key] = ptxt
 					} else {
 						tout.NamedStr[key] = ptxt
+
 					}
 				}
 			}
@@ -154,6 +156,38 @@ func (parg *ParsedCommandArgs) Ival(name string, defaultVal int) int {
 	val, found := parg.NamedInt[name]
 	if found {
 		return val
+	} else {
+		return defaultVal
+	}
+}
+
+// Return the named float 32 value or the specified default
+// if not found.
+func (parg *ParsedCommandArgs) Fval(name string, defaultVal float32) float32 {
+	val, found := parg.NamedStr[name]
+	if found {
+		f64, err := strconv.ParseFloat(val, 32)
+		if err != nil {
+			return defaultVal
+		} else {
+			return float32(f64)
+		}
+	} else {
+		return defaultVal
+	}
+}
+
+// Return the named float 32 value or the specified default
+// if not found.
+func (parg *ParsedCommandArgs) F64val(name string, defaultVal float64) float64 {
+	val, found := parg.NamedStr[name]
+	if found {
+		f64, err := strconv.ParseFloat(val, 64)
+		if err != nil {
+			return defaultVal
+		} else {
+			return f64
+		}
 	} else {
 		return defaultVal
 	}

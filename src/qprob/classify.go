@@ -84,6 +84,7 @@ type Classifier struct {
 	ClassCounts  map[int16]int32   // total Count of all Records of Class
 	ClassProb    map[int16]float32 // Prob of any record being in class
 	NumTrainRow  int32
+	Req          *ClassifyRequest
 }
 
 // A set of classifiers indexed by

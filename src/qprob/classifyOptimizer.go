@@ -7,6 +7,9 @@ import (
 	"qutil"
 )
 
+const OptMaxBuck = int16(500)
+const OptMaxWeight = float32(50.0)
+
 type OptFeature struct {
 	numQuant int16
 	priority float32
@@ -26,26 +29,48 @@ func testClassifyOpt() {
 	fmt.Println("Hello World!")
 }
 
+func addFeatNdx(targ []int16, aval int16, classCol int, numCol int) []int16 {
+	if aval != int16(classCol) && aval < int16(numCol) {
+		targ = append(targ, aval)
+	}
+	return targ
+}
+
 // Produce a semi random list of optimizer features
 // we can ieterate across when choosing features to
 // change.  It is only semi-random because we do want
 // to force every feature to tested.
 func (fier *Classifier) MakeOptFeatList(targLen int) []int16 {
-	rand.Seed(int64(Nowms()))
-	tout := make([]int16, targLen)
+	seed := int64(Nowms())
+	fmt.Printf("mak, seedeFeatSemiRand seed=%v\n")
+	r := rand.New(rand.NewSource(seed))
+	tout := make([]int16, 0, targLen)
 	numCol := len(fier.ColDef)
 	maxCol := numCol - 1
-	for len(tout) < targLen {
+	classCol := fier.ClassCol
+
+	for {
 		for off := 0; off < numCol; off++ {
 			maxOff := maxCol - off
-			rr := int16(rand.Int31n(int32(off)))
-			tout = append(tout, int16(rr))
+			if maxOff < 5 {
+				maxOff = numCol
+			}
+			if off < 5 {
+				off = numCol
+			}
+			fmt.Printf("off=%v maxOff=%v\n", off, maxOff)
+			rr := int16(r.Int31n(int32(off)))
+			fmt.Printf("off=%v maxOff=%v rr=%v ", off, maxOff, rr)
+			tout = addFeatNdx(tout, int16(rr), classCol, numCol)
 			rr = int16(rand.Int31n(int32(off)))
-			tout = append(tout, int16(rr))
-			tout = append(tout, int16(off))
+			tout = addFeatNdx(tout, int16(rr), classCol, numCol)
+			tout = addFeatNdx(tout, int16(off), classCol, numCol)
 			rr = int16(rand.Int31n(int32(maxOff)))
-			tout = append(tout, int16(rr))
-			tout = append(tout, int16(maxOff))
+			tout = addFeatNdx(tout, int16(rr), classCol, numCol)
+			tout = addFeatNdx(tout, int16(maxOff), classCol, numCol)
+		}
+		if len(tout) >= targLen {
+			break
 		}
 	}
 	return tout
@@ -59,22 +84,26 @@ func (fier *Classifier) optRunOne(featNdx int16, newNumBuck int16, newWeight flo
 	feat.FeatWeight = newWeight
 	feat.NumBuck = newNumBuck
 	currPrec := lastPrec
+	if oldWeight == newWeight && oldNumBuck == newNumBuck {
+		return lastPrec, false
+	}
 	if oldNumBuck != newNumBuck {
 		fier.RetrainFeature(featNdx, trainRows)
 	}
 	_, sumRows := fier.ClassifyRows(testRows)
-	fmt.Printf("lastPrec=%v  newPrec=%v", lastPrec, sumRows.Precis)
+	//fmt.Printf("lastPrec=%v  newPrec=%v\n", lastPrec, sumRows.Precis)
 	keepFlg := false
 	// This check is a little complex but if the precision improved
 	// we definitely want to keep the change. But we still want to
 	// keep the change as long as the precision didn't drop as long
 	// as the complexity measured in numBuck or Weight dropped.
-	if sumRows.Precis > lastPrec || (sumRows.Precis >= lastPrec && (newNumBuck < oldNumBuck || newWeight < oldWeight)) {
+	if sumRows.Precis > lastPrec || (sumRows.Precis >= lastPrec && newNumBuck < oldNumBuck) {
 		keepFlg = true
 		currPrec = sumRows.Precis
-		fmt.Printf(" keep newNumBuck=%v newWeight=%v\n", newNumBuck, newWeight)
+		fmt.Printf(" keep featNdx=%v oldPrec=%v newPrec=%v oldNumBuck=%v newNumBuck=%v oldWeight=%v newWeight=%v\n",
+			featNdx, lastPrec, sumRows.Precis, oldNumBuck, newNumBuck, oldWeight, newWeight)
 	} else {
-		fmt.Printf(" revers newNumBuck=%v newWeight=%v\n", newNumBuck, newWeight)
+		//fmt.Printf(" reverse newNumBuck=%v newWeight=%v\n", newNumBuck, newWeight)
 		feat.NumBuck = oldNumBuck
 		feat.FeatWeight = oldWeight
 		currPrec = lastPrec
@@ -94,7 +123,7 @@ func (fier *Classifier) optRunOneFeat(featNdx int16, lastPrec float32, trainRows
 	keepCnt := int16(0)
 
 	// Try set weight to random number smaller than current weight
-	if feat.FeatWeight > 0.0 {
+	if feat.NumBuck > 1 && feat.FeatWeight > 0.0 {
 		adjWeight := feat.FeatWeight * rand.Float32()
 		currPrec, kept = fier.optRunOne(featNdx, feat.NumBuck, adjWeight, currPrec, trainRows, testRows)
 		if kept {
@@ -107,11 +136,21 @@ func (fier *Classifier) optRunOneFeat(featNdx int16, lastPrec float32, trainRows
 		}
 	}
 
-	// Try set Weight to random number between 0 and maxWeight
-	adjWeight := (100.0 * rand.Float32())
-	currPrec, kept = fier.optRunOne(featNdx, feat.NumBuck, adjWeight, currPrec, trainRows, testRows)
-	if kept {
-		keepCnt++
+	if feat.NumBuck > 1 {
+		// Try set Weight to random number between 0 and maxWeight
+		adjWeight := (100.0 * rand.Float32())
+		currPrec, kept = fier.optRunOne(featNdx, feat.NumBuck, adjWeight, currPrec, trainRows, testRows)
+		if kept {
+			keepCnt++
+		}
+	}
+
+	// Try Num Buck to 1
+	if feat.FeatWeight > 0.0 {
+		currPrec, kept = fier.optRunOne(featNdx, 1, feat.FeatWeight, currPrec, trainRows, testRows)
+		if kept {
+			keepCnt++
+		}
 	}
 
 	// Try Num Buck to 2
@@ -146,7 +185,7 @@ func (fier *Classifier) optRunOneFeat(featNdx int16, lastPrec float32, trainRows
 	// Try first set weight and adjNum buck to random values
 	if feat.FeatWeight != 0 {
 		adjNumBuck := int16(rand.Int31n(int32(255)))
-		adjWeight = (50.0 * rand.Float32())
+		adjWeight := (50.0 * rand.Float32())
 		if adjNumBuck > 2 {
 			currPrec, kept = fier.optRunOne(featNdx, adjNumBuck, adjWeight, currPrec, trainRows, testRows)
 			if kept {
@@ -156,13 +195,27 @@ func (fier *Classifier) optRunOneFeat(featNdx int16, lastPrec float32, trainRows
 		}
 	}
 
-	// Try set Weight to to 0
-	currPrec, kept = fier.optRunOne(featNdx, feat.NumBuck, 0, currPrec, trainRows, testRows)
+	// Try set numBuck  to to 1
+	currPrec, kept = fier.optRunOne(featNdx, 1, 0.0, currPrec, trainRows, testRows)
 	if kept {
 		keepCnt++
 	}
 
 	return keepCnt, currPrec
+}
+
+//func saveOptSettings()
+// func recordOptSettings()
+// func loadOptSettings()
+
+// Randomise the feature settings prior to starting
+// the optimizer.   Will need this for Genetic algorithm
+// latter.
+func (fier *Classifier) RandomizeOptSettings() {
+	for _, feat := range fier.ColDef {
+		feat.FeatWeight = rand.Float32() * OptMaxWeight
+		feat.NumBuck = int16(rand.Int31n(int32(OptMaxBuck)))
+	}
 }
 
 /* Each optimizer run must only use data from the test data set.
@@ -190,36 +243,61 @@ number of Buckets and try to keep priority close as possible to the
 default priority of 1. The least complex system would have one
 feature enabled with 2 buckets */
 func (fier *Classifier) OptProcess(splitOneEvery int, maxTimeSec float64, targetPrecis float32) {
-	fmt.Println("\nOptProcess label=%s TrainFi=%s")
+	fmt.Printf("\nOptProcess label=%s TrainFi=%s\n", fier.Label, fier.TrainFiName)
 	startTime := Nowms()
 	//classes := fier.ClassIds()
 	origTrainRows := fier.GetTrainRowsAsArr(OneGig)
 	splitSkipPrefix := 1
-
+	fmt.Printf("Opt num Training rows=%v\n", len(origTrainRows))
 	trainRows, testRows := qutil.SplitFloatArrOneEvery(origTrainRows, splitSkipPrefix, splitOneEvery)
 	fier.Retrain(trainRows)
-	//keepRunning := true
+	keepRunning := true
 	featLst := fier.MakeOptFeatList(500)
+	if fier.Req.OptPreRandomize {
+		fmt.Printf("OptProcess if Randomizing before running optimizer")
+		fier.RandomizeOptSettings()
+	}
+
+	fmt.Printf("OptProcess len featLst=%v", featLst)
 	_, lastSum := fier.ClassifyRows(testRows)
 	lastPrec := lastSum.Precis
+	fmt.Printf("opt numTrainRow=%v, numTestRow=%v origPrec=%v\n ", len(trainRows), len(testRows), lastPrec)
 	classCol := int16(fier.ClassCol)
-
-	for _, featNdx := range featLst {
-		if featNdx == classCol {
-			continue
+	numCol := int16(len(fier.ColDef))
+	currPrec := lastSum.Precis
+	for keepRunning {
+		for _, featNdx := range featLst {
+			if featNdx == classCol || featNdx >= numCol {
+				continue
+			}
+			// Need a way to test Ieterate through
+			// changes in the feature weight and
+			// numBuckets.
+			//feat := fier.ColDef[featNdx]
+			numKept, newPrec := fier.optRunOneFeat(featNdx, currPrec, trainRows, testRows)
+			if numKept > 0 {
+				fmt.Printf("opProcess featNdx=%v oldPrec=%v newPrec=%v  numKept=%v\n", featNdx, currPrec, newPrec, numKept)
+				currPrec = newPrec
+			}
+		} // for featNdx
+		splitSkipPrefix += 1
+		if int16(splitSkipPrefix) > 2 {
+			splitSkipPrefix = 0
+			splitOneEvery -= 1
+			if splitOneEvery < 1 {
+				splitOneEvery = 5
+			}
 		}
-		// Need a way to test Ieterate through
-		// changes in the feature weight and
-		// numBuckets.
-		//feat := fier.ColDef[featNdx]
-		numKept, newPrec := fier.optRunOneFeat(featNdx, lastPrec, trainRows, testRows)
-		fmt.Printf("newPrec=%v  numKept=%v", newPrec, numKept)
+		trainRows, testRows = qutil.SplitFloatArrOneEvery(origTrainRows, splitSkipPrefix, splitOneEvery)
 
 		elap := Nowms() - startTime
-		fmt.Printf(" elap=%v", elap)
+		fmt.Printf("optProces=%v elap=%v", maxTimeSec, elap)
 		if elap > maxTimeSec {
+			//trainRows, testRows = qutil.SplitFloatArrOneEvery(origTrainRows, 0, 1)
+			//numKept, newPrec := fier.optRunOneFeat(featNdx, currPrec, trainRows, testRows)
 			break
 		}
 
-	} // for
+	} // for keep running
+	fier.Retrain(origTrainRows)
 }
