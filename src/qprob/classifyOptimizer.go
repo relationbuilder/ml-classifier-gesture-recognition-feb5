@@ -116,7 +116,7 @@ func (fier *Classifier) optRunOne(featNdx int16, newNumBuck int16, newWeight flo
 		if currPrec > lastPrec {
 			// Precision improved
 			keepFlg = true
-		} else if optClass.Recall > lastRecall && (optClass.Prec >= lastPrec || currRecall < 0.16) {
+		} else if optClass.Recall > lastRecall && (optClass.Prec >= lastPrec || currRecall < 0.22) {
 			// TODO: currRecall < 0.2 should be set from command line as minRecall.
 			// Recall improved while precsion was not hurt
 			keepFlg = true
