@@ -1,4 +1,4 @@
-# https://code.google.com/p/yahoo-finance-managed/wiki/csvHistQuotesDownload
+# Documentation https://code.google.com/p/yahoo-finance-managed/wiki/csvHistQuotesDownload
 # updated for python 3.5
 # Months are 0..11
 
@@ -19,7 +19,7 @@ def fetchYahoo(symbol, begYear, begMonth, begDay,  endYear, endMonth, endDay):
   return data1
   
   
-
+#           symbol begin     End
 fetchYahoo("SPY",  2010,0,1, 2017,1,27)
 
 
