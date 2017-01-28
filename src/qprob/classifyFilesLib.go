@@ -357,6 +357,14 @@ func printClassifyFilesHelp() {
 	                   all optimizer settings are ignored. 	 Defaults
 					   to false
 				
+	-OptClassId=1      A integer ID that maps to one class.  The Optimizer
+	                   run compare the results for this class to try and
+					   increase recall and precsion rather than improving
+					   precision for the entire set.  This is used for
+					   things like stocks where I really want to be more
+					   accurate when picking bars that will increase in 
+					   price and earn a profit.
+					
 	-OptPreRandomize=true If true will randomize all feature settings 
 	                   before starting optimize settings.  This can 
 					   help discover new paths but is really in place
@@ -438,6 +446,7 @@ func ParseClassifyFileCommandParms(args []string) *ClassifyRequest {
 	aReq.DoOpt = parms.Bval("doopt", false)
 	aReq.OptPreRandomize = parms.Bval("optrandomize", false)
 	aReq.OptMaxTime = parms.F64val("optmaxtime", 2.0) * 1000.0
+	aReq.OptClassId = int16(parms.Ival("optclassid", -9999))
 	aReq.OkToRun = false
 
 	if aReq.TrainInFi == "" && aReq.ModelFi == "" {
