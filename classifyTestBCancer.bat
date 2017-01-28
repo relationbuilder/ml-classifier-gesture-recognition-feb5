@@ -1,2 +1,2 @@
 ::go build src/classifyFiles.go
-classifyFiles -train=data/breast-cancer-wisconsin.adj.data.train.csv -test=data/breast-cancer-wisconsin.adj.data.test.csv -numBuck=10 -WriteJSON=true  -testOut=tmpout/breast-cancer.test.out.csv -doOpt=1
+classifyFiles -train=data/breast-cancer-wisconsin.adj.data.train.csv -test=data/breast-cancer-wisconsin.adj.data.test.csv -numBuck=10 -WriteJSON=true  -testOut=tmpout/breast-cancer.test.out.csv -doOpt=false -optrandomize=true -optMaxTime=4

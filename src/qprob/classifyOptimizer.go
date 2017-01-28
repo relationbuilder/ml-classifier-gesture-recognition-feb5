@@ -58,9 +58,9 @@ func (fier *Classifier) MakeOptFeatList(targLen int) []int16 {
 			if off < 5 {
 				off = numCol
 			}
-			fmt.Printf("off=%v maxOff=%v\n", off, maxOff)
+			//fmt.Printf("off=%v maxOff=%v\n", off, maxOff)
 			rr := int16(r.Int31n(int32(off)))
-			fmt.Printf("off=%v maxOff=%v rr=%v ", off, maxOff, rr)
+			//fmt.Printf("off=%v maxOff=%v rr=%v ", off, maxOff, rr)
 			tout = addFeatNdx(tout, int16(rr), classCol, numCol)
 			rr = int16(rand.Int31n(int32(off)))
 			tout = addFeatNdx(tout, int16(rr), classCol, numCol)
@@ -114,7 +114,7 @@ func (fier *Classifier) optRunOne(featNdx int16, newNumBuck int16, newWeight flo
 	return currPrec, keepFlg
 }
 
-func (fier *Classifier) optRunOneFeat(featNdx int16, lastPrec float32, trainRows [][]float32, testRows [][]float32) (int16, float32) {
+func (fier *Classifier) optRunOneFeatOneChange(changeSel int32, featNdx int16, lastPrec float32, trainRows [][]float32, testRows [][]float32) (int16, float32) {
 	// We can depend on optRunOne to reset the feature to
 	// it's original value if there was no improvement.
 	feat := fier.ColDef[featNdx]
@@ -122,85 +122,130 @@ func (fier *Classifier) optRunOneFeat(featNdx int16, lastPrec float32, trainRows
 	kept := false
 	keepCnt := int16(0)
 
-	// Try set weight to random number smaller than current weight
-	if feat.NumBuck > 1 && feat.FeatWeight > 0.0 {
-		adjWeight := feat.FeatWeight * rand.Float32()
-		currPrec, kept = fier.optRunOne(featNdx, feat.NumBuck, adjWeight, currPrec, trainRows, testRows)
-		if kept {
-			keepCnt++
+	switch changeSel {
+	case 0:
+		// Try set weight to random number smaller than current weight
+		if feat.FeatWeight > 0.0 {
+			adjWeight := feat.FeatWeight * rand.Float32()
+			currPrec, kept = fier.optRunOne(featNdx, feat.NumBuck, adjWeight, currPrec, trainRows, testRows)
+			if kept {
+				keepCnt++
+			}
+		} else {
+			currPrec, kept = fier.optRunOne(featNdx, feat.NumBuck, 1.0, currPrec, trainRows, testRows)
+			if kept {
+				keepCnt++
+			}
 		}
-	} else {
-		currPrec, kept = fier.optRunOne(featNdx, feat.NumBuck, 1.0, currPrec, trainRows, testRows)
-		if kept {
-			keepCnt++
-		}
-	}
 
-	if feat.NumBuck > 1 {
+	case 1:
+
+		if feat.FeatWeight > 0.0 {
+			// Try Turn feature off by setting both weight to zero and buckets to 1
+			currPrec, kept = fier.optRunOne(featNdx, 1.0, 0.0, currPrec, trainRows, testRows)
+			if kept {
+				// If we turned it off then see if it still likes the class as a single
+				currPrec, kept = fier.optRunOne(featNdx, 1.0, 1.0, currPrec, trainRows, testRows)
+				keepCnt++
+			}
+		} else {
+			// try set feat Weight to 0
+			currPrec, kept = fier.optRunOne(featNdx, feat.NumBuck, OptMaxWeight, currPrec, trainRows, testRows)
+			if kept {
+				keepCnt++
+			}
+		}
+
+	case 2:
+
 		// Try set Weight to random number between 0 and maxWeight
-		adjWeight := (100.0 * rand.Float32())
+		adjWeight := (OptMaxWeight * rand.Float32())
 		currPrec, kept = fier.optRunOne(featNdx, feat.NumBuck, adjWeight, currPrec, trainRows, testRows)
 		if kept {
 			keepCnt++
 		}
-	}
 
-	// Try Num Buck to 1
-	if feat.FeatWeight > 0.0 {
-		currPrec, kept = fier.optRunOne(featNdx, 1, feat.FeatWeight, currPrec, trainRows, testRows)
-		if kept {
-			keepCnt++
-		}
-	}
+	case 3:
 
-	// Try Num Buck to 2
-	if feat.FeatWeight > 0.0 {
-		currPrec, kept = fier.optRunOne(featNdx, 2, feat.FeatWeight, currPrec, trainRows, testRows)
-		if kept {
-			keepCnt++
-		}
-	}
-
-	// Try Set Num Buck to 1/2 current number
-	if (feat.FeatWeight > 0.0) && (feat.NumBuck > 6) {
-		adjNumBuck := feat.NumBuck / 2
-		currPrec, kept = fier.optRunOne(featNdx, adjNumBuck, feat.FeatWeight, currPrec, trainRows, testRows)
-		if kept {
-			keepCnt++
+		// Try Num Buck to Max Buckets
+		if feat.FeatWeight > 0.0 {
+			currPrec, kept = fier.optRunOne(featNdx, OptMaxBuck, feat.FeatWeight, currPrec, trainRows, testRows)
+			if kept {
+				keepCnt++
+			}
 		}
 
-	}
+	case 4:
+		// Try Num Buck to 2
+		if feat.FeatWeight > 0.0 {
+			currPrec, kept = fier.optRunOne(featNdx, 2, feat.FeatWeight, currPrec, trainRows, testRows)
+			if kept {
+				keepCnt++
+			}
+		}
 
-	// Try set NumBuck to a random value
-	if feat.FeatWeight != 0 {
-		adjNumBuck := int16(rand.Int31n(int32(500)))
-		if adjNumBuck > 2 {
+	case 5:
+		// Try Set Num Buck to 1/2 current number
+		if (feat.FeatWeight > 0.0) && (feat.NumBuck > 6) {
+			adjNumBuck := feat.NumBuck / 2
 			currPrec, kept = fier.optRunOne(featNdx, adjNumBuck, feat.FeatWeight, currPrec, trainRows, testRows)
 			if kept {
 				keepCnt++
 			}
-		}
-	}
 
-	// Try first set weight and adjNum buck to random values
-	if feat.FeatWeight != 0 {
-		adjNumBuck := int16(rand.Int31n(int32(255)))
-		adjWeight := (50.0 * rand.Float32())
-		if adjNumBuck > 2 {
-			currPrec, kept = fier.optRunOne(featNdx, adjNumBuck, adjWeight, currPrec, trainRows, testRows)
-			if kept {
-				keepCnt++
+		}
+
+	case 6:
+		// Try set NumBuck to a random value
+		if feat.FeatWeight != 0 {
+			adjNumBuck := int16(rand.Int31n(int32(500)))
+			if adjNumBuck > 2 {
+				currPrec, kept = fier.optRunOne(featNdx, adjNumBuck, feat.FeatWeight, currPrec, trainRows, testRows)
+				if kept {
+					keepCnt++
+				}
 			}
+		}
 
+	case 7:
+		// Try first set weight and adjNum buck to random values
+		if feat.FeatWeight != 0 {
+			adjNumBuck := int16(rand.Int31n(int32(255)))
+			adjWeight := (OptMaxWeight * rand.Float32())
+			if adjNumBuck > 2 {
+				currPrec, kept = fier.optRunOne(featNdx, adjNumBuck, adjWeight, currPrec, trainRows, testRows)
+				if kept {
+					keepCnt++
+				}
+
+			}
+		}
+
+	default:
+		// Try set numBuck  to to 2 with default weight
+		currPrec, kept = fier.optRunOne(featNdx, 2, 1.0, currPrec, trainRows, testRows)
+		if kept {
+			keepCnt++
 		}
 	}
+	return keepCnt, currPrec
+}
 
-	// Try set numBuck  to to 1
-	currPrec, kept = fier.optRunOne(featNdx, 1, 0.0, currPrec, trainRows, testRows)
-	if kept {
-		keepCnt++
+func (fier *Classifier) optRunOneFeat(featNdx int16, lastPrec float32, trainRows [][]float32, testRows [][]float32) (int16, float32) {
+
+	changeSel := rand.Int31n(4)
+	currPrec := lastPrec
+	keepCnt := int16(0)
+	switch changeSel {
+	case 1:
+		// every so often try all the changes
+		for trySel := 1; trySel < 9; trySel++ {
+			keepCnt, currPrec = fier.optRunOneFeatOneChange(int32(trySel), featNdx, lastPrec, trainRows, testRows)
+		}
+	default:
+		trySel := rand.Int31n(9)
+		keepCnt, currPrec = fier.optRunOneFeatOneChange(trySel, featNdx, lastPrec, trainRows, testRows)
 	}
-
 	return keepCnt, currPrec
 }
 
@@ -252,13 +297,13 @@ func (fier *Classifier) OptProcess(splitOneEvery int, maxTimeSec float64, target
 	trainRows, testRows := qutil.SplitFloatArrOneEvery(origTrainRows, splitSkipPrefix, splitOneEvery)
 	fier.Retrain(trainRows)
 	keepRunning := true
-	featLst := fier.MakeOptFeatList(500)
+	featLst := fier.MakeOptFeatList(400)
 	if fier.Req.OptPreRandomize {
 		fmt.Printf("OptProcess if Randomizing before running optimizer")
 		fier.RandomizeOptSettings()
 	}
 
-	fmt.Printf("OptProcess len featLst=%v", featLst)
+	//fmt.Printf("OptProcess len featLst=%v", featLst)
 	_, lastSum := fier.ClassifyRows(testRows)
 	lastPrec := lastSum.Precis
 	fmt.Printf("opt numTrainRow=%v, numTestRow=%v origPrec=%v\n ", len(trainRows), len(testRows), lastPrec)
@@ -276,17 +321,19 @@ func (fier *Classifier) OptProcess(splitOneEvery int, maxTimeSec float64, target
 			//feat := fier.ColDef[featNdx]
 			numKept, newPrec := fier.optRunOneFeat(featNdx, currPrec, trainRows, testRows)
 			if numKept > 0 {
-				fmt.Printf("opProcess featNdx=%v oldPrec=%v newPrec=%v  numKept=%v\n", featNdx, currPrec, newPrec, numKept)
+				//fmt.Printf("opProcess featNdx=%v oldPrec=%v newPrec=%v  numKept=%v\n", featNdx, currPrec, newPrec, numKept)
 				currPrec = newPrec
 			}
 		} // for featNdx
+
+		splitOneEvery -= 1
+		if splitOneEvery < 1 {
+			splitOneEvery = 3
+		}
+		splitOneEvery = 3
 		splitSkipPrefix += 1
-		if int16(splitSkipPrefix) > 2 {
+		if int16(splitSkipPrefix) > 3 {
 			splitSkipPrefix = 0
-			splitOneEvery -= 1
-			if splitOneEvery < 1 {
-				splitOneEvery = 5
-			}
 		}
 		trainRows, testRows = qutil.SplitFloatArrOneEvery(origTrainRows, splitSkipPrefix, splitOneEvery)
 

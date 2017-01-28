@@ -152,11 +152,11 @@ func (fier *Classifier) ClassRow(drow []float32) *ResultForRow {
 				// Ieterate over the classes that match
 				// and record them for latter use.
 				fBuckWrk := new(ResultItem)
-				//classProb := fier.ClassProb[classId]
 				baseProb := float32(classCnt) / float32(buck.totCnt)
-				//workProb := baseProb * classProb
+				classProb := fier.ClassProb[classId]
+				//workProb := baseProb / classProb
 				//fBuckWrk.Prob = workProb
-				fBuckWrk.Prob = baseProb
+				fBuckWrk.Prob = baseProb - classProb
 				fwrk.TotCnt += classCnt
 				fwrk.Cls[classId] = *fBuckWrk
 				clswrk, clsFound := clsm[classId]
@@ -180,7 +180,8 @@ func (fier *Classifier) ClassRow(drow []float32) *ResultForRow {
 	// and select best item
 	bestProb := float32(0.0)
 	for classId, classWrk := range clsm {
-		classWrk.Prob = classWrk.Prob / float32(fier.totFeatWeight())
+		//classWrk.Prob = classWrk.Prob / float32(fier.totFeatWeight())
+		classWrk.Prob = classWrk.Prob / float32(len(fier.ColDef))
 		tout.Classes[classId] = *classWrk
 		if bestProb < classWrk.Prob {
 			bestProb = classWrk.Prob

@@ -16,6 +16,12 @@ There are several focus areas where I can invest time. Please let me know if you
 
 ##Roughly prioritized Feature Work##
 
+* If we want to use Optimizer for data importance discovery then we should consider tracking weights by bucket ID rather than the feature level.  That way if we boost  the weight of a given bucket it gives us a direct signal on the value of that data element.   
+
+* When optimizing if we divide by tot feature weight then increasing value of a column then for buckets that have a low score we are essentially reducing the input from other high scoring columns.  If we divide by numCol or columns providing input then we avoid this complication which would make it difficult to determine what is really important.
+
+* Need to think about how to allow medium probability for a given feature when multiplied ot have a postive effect but for low probability when multiplied we actually want a negative effect. 
+
 * Create ClassifyAnal module to create output Statistics
 
   * Output should include Add recall, precision by class in classifyFiles

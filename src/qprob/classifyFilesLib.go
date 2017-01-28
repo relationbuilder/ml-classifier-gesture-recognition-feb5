@@ -164,7 +164,7 @@ func ClassifyTestFiles(req *ClassifyRequest) {
 		fmt.Printf("Loaded %v rows\n", len(testRows))
 
 		if req.DoOpt {
-			fier.OptProcess(1, req.OptMaxTime, 1.0)
+			fier.OptProcess(1, req.OptMaxTime, 3.0)
 		}
 		ProcessRowsRows(fier, req, testRows, req.TestInFi, req.TestOutFi, true)
 	}
@@ -431,7 +431,7 @@ func ParseClassifyFileCommandParms(args []string) *ClassifyRequest {
 	aReq.DetToStdOut = parms.Bval("dettostdout", true)
 	aReq.DoOpt = parms.Bval("doopt", false)
 	aReq.OptPreRandomize = parms.Bval("optrandomize", false)
-	aReq.OptMaxTime = parms.F64val("optmaxtime ", 1.0) * 1000.0
+	aReq.OptMaxTime = parms.F64val("optmaxtime", 2.0) * 1000.0
 	aReq.OkToRun = false
 
 	if aReq.TrainInFi == "" && aReq.ModelFi == "" {
