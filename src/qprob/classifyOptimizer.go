@@ -91,6 +91,8 @@ func (fier *Classifier) optRunOne(featNdx int16, newNumBuck int16, newWeight flo
 		fier.RetrainFeature(featNdx, trainRows)
 	}
 	_, sumRows := fier.ClassifyRows(testRows)
+	//clasSum := fier.MakeByClassStats(sumRows)
+	//fmt.Printf("sucCnt=%v\n", clasSum.SucCnt)
 	//fmt.Printf("lastPrec=%v  newPrec=%v\n", lastPrec, sumRows.Precis)
 	keepFlg := false
 	// This check is a little complex but if the precision improved

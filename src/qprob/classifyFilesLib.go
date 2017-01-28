@@ -130,6 +130,12 @@ func ProcessRowsRows(fier *Classifier, req *ClassifyRequest, rows [][]float32, i
 			fmt.Println(sb.String())
 		}
 	}
+	fmt.Printf("\nSummary By Class\n")
+	clasSum := fier.MakeByClassStats(sumRows)
+	fier.PrintTrainClassProb()
+	fmt.Printf("\nRESULTS FOR TEST DATA\n")
+	fier.PrintResultsByClass(clasSum)
+	// TODO: Print this out nicely
 }
 
 /*

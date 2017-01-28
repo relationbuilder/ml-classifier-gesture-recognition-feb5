@@ -62,6 +62,24 @@ type SimpResults struct {
 	Rows   []SimpResRow
 }
 
+type ResByClass struct {
+	ClassId   int16
+	ClassCnt  int32
+	ClassProb float32
+	FoundCnt  int32
+	SucCnt    int32
+	Recall    float32
+	Prec      float32
+	Lift      float32
+}
+
+type ResByClasses struct {
+	ByClass map[int16]*ResByClass
+	TotCnt  int32
+	SucCnt  int32
+	Prec    float32
+}
+
 // Save simple results as if running validation test
 func (sr *SimpResults) AsStrToBuffTest(sb *bytes.Buffer) {
 	fmt.Fprintln(sb, "ndx,bestClass,bestProb,actClass,status")
@@ -239,6 +257,83 @@ func (fier *Classifier) ClassifyRows(rows [][]float32) ([]ResultForRow, *SimpRes
 
 	return tout, resRows
 
+}
+
+/*
+type ResByClass struct {
+	ClassId      int16
+	ClassCnt     int32
+	ClassProb    float32
+	FoundCnt     int32
+	SucCnt       int32
+	Recall       float32
+	Prec         float32
+	Lift         float32
+}
+
+type ResByClasses struct {
+	ByClass    map[int16]*ResByClass
+	TotCnt   int32
+	SucCnt int32
+	Prec  float32
+}
+
+} */
+
+func (fier *Classifier) MakeByClassStats(sr *SimpResults) *ResByClasses {
+	tout := new(ResByClasses)
+	tout.Prec = sr.Precis
+	tout.TotCnt = sr.TotCnt
+	tout.SucCnt = sr.SucCnt
+	tout.ByClass = make(map[int16]*ResByClass)
+	byClass := tout.ByClass
+	numRow := len(sr.Rows)
+
+	// for accurate recall we need the count of rows
+	// by actual class for the test rows.
+	for _, row := range sr.Rows {
+		classId := row.BestClass
+
+		// Update Acutal Counts by Class
+		actClassId := row.ActClass
+		actClass, ccfnd := byClass[actClassId]
+		if ccfnd == false {
+			actClass = new(ResByClass)
+			actClass.ClassId = actClassId
+			actClass.ClassCnt = 1
+			byClass[classId] = actClass
+		} else {
+			actClass.ClassCnt += 1
+		}
+
+		// Update Counts by Predicted Class
+		bclass, found := byClass[classId]
+		if found == false {
+			bclass = new(ResByClass)
+			bclass.ClassId = row.BestClass
+			byClass[classId] = bclass
+		}
+		bclass.FoundCnt += 1
+		if row.BestClass == row.ActClass {
+			bclass.SucCnt += 1
+		}
+	}
+	// Update final stats for each class
+	for _, bclass := range byClass {
+		bclass.Prec = float32(bclass.SucCnt) / float32(bclass.FoundCnt)
+		bclass.Recall = float32(bclass.SucCnt) / float32(bclass.ClassCnt)
+		bclass.ClassProb = float32(bclass.ClassCnt) / float32(numRow)
+		bclass.Lift = bclass.Prec - bclass.ClassProb
+	}
+	return tout
+}
+
+func (fier *Classifier) PrintResultsByClass(rbc *ResByClasses) {
+	// Update final stats for each class
+	for classId, bclass := range rbc.ByClass {
+		fmt.Printf("class=%v ClassCnt=%v classProb=%v, Predicted=%v Correct=%v  recall=%v  Prec=%v Lift=%v\n",
+			classId, bclass.ClassCnt, bclass.ClassProb, bclass.FoundCnt, bclass.SucCnt, bclass.Recall, bclass.Prec, bclass.Lift)
+	}
 }
 
 // NOTE: Consider just writing the formatting from JSON results

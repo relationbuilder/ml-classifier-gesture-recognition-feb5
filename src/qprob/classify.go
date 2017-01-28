@@ -95,6 +95,14 @@ type Classifiers struct {
 	classifiers map[string]*Classifier
 }
 
+func (fier *Classifier) PrintTrainClassProb() {
+	fmt.Printf("Train Probability of being in any class\n")
+	for classId, prob := range fier.ClassProb {
+		fmt.Printf("class=%v,  cnt=%v  prob=%v\n", classId, fier.ClassCounts[classId], prob)
+	}
+	fmt.Printf("Num Train Row=%v NumCol=%v\n", fier.NumRow, fier.NumCol)
+}
+
 /* Determines reasonable effective Min/Max value range for
 the statistically significant values that represent the bulk
 of the data.  Without this feature the quantize process can
