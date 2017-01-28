@@ -280,7 +280,7 @@ type ResByClasses struct {
 
 } */
 
-func (fier *Classifier) MakeByClassStats(sr *SimpResults) *ResByClasses {
+func (fier *Classifier) MakeByClassStats(sr *SimpResults, tstdta [][]float32) *ResByClasses {
 	tout := new(ResByClasses)
 	tout.Prec = sr.Precis
 	tout.TotCnt = sr.TotCnt
@@ -289,22 +289,39 @@ func (fier *Classifier) MakeByClassStats(sr *SimpResults) *ResByClasses {
 	byClass := tout.ByClass
 	numRow := len(sr.Rows)
 
-	// for accurate recall we need the count of rows
-	// by actual class for the test rows.
-	for _, row := range sr.Rows {
-		classId := row.BestClass
-
-		// Update Acutal Counts by Class
-		actClassId := row.ActClass
+	// We must update actual Counts by Class from the
+	// source test data rather than classified results
+	// because otherwise if the classifer didn't classify
+	// anything belonging to a given class it would
+	// be supressed from the results.
+	//
+	// TODO: Sort the ClassID before running
+	//  so we get them out of the dictionary
+	//  in sorted order latter.
+	//
+	// TODO: This will not change between runs
+	//   of the optimizer and it is called for
+	//   every one of the low level optimizer
+	//   runs so it should be computed once rather
+	//   than for every time we compute a result.
+	classCol := fier.ClassCol
+	for _, row := range tstdta {
+		actClassId := int16(row[classCol])
 		actClass, ccfnd := byClass[actClassId]
 		if ccfnd == false {
 			actClass = new(ResByClass)
 			actClass.ClassId = actClassId
 			actClass.ClassCnt = 1
-			byClass[classId] = actClass
+			byClass[actClassId] = actClass
 		} else {
 			actClass.ClassCnt += 1
 		}
+	}
+
+	// for accurate recall we need the count of rows
+	// by actual class for the test rows.
+	for _, row := range sr.Rows {
+		classId := row.BestClass
 
 		// Update Counts by Predicted Class
 		bclass, found := byClass[classId]
@@ -320,8 +337,16 @@ func (fier *Classifier) MakeByClassStats(sr *SimpResults) *ResByClasses {
 	}
 	// Update final stats for each class
 	for _, bclass := range byClass {
-		bclass.Prec = float32(bclass.SucCnt) / float32(bclass.FoundCnt)
-		bclass.Recall = float32(bclass.SucCnt) / float32(bclass.ClassCnt)
+		if bclass.FoundCnt > 0 {
+			bclass.Prec = float32(bclass.SucCnt) / float32(bclass.FoundCnt)
+		} else {
+			bclass.Prec = 0.0
+		}
+		if bclass.ClassCnt > 0 {
+			bclass.Recall = float32(bclass.SucCnt) / float32(bclass.ClassCnt)
+		} else {
+			bclass.Prec = 1.0
+		}
 		bclass.ClassProb = float32(bclass.ClassCnt) / float32(numRow)
 		bclass.Lift = bclass.Prec - bclass.ClassProb
 	}

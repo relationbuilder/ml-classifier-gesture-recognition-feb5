@@ -131,9 +131,9 @@ func ProcessRowsRows(fier *Classifier, req *ClassifyRequest, rows [][]float32, i
 		}
 	}
 	fmt.Printf("\nSummary By Class\n")
-	clasSum := fier.MakeByClassStats(sumRows)
+	clasSum := fier.MakeByClassStats(sumRows, rows)
 	fier.PrintTrainClassProb()
-	fmt.Printf("\nRESULTS FOR TEST DATA\n")
+	fmt.Printf("\nRESULTS FOR TEST DATA\n  Num Train Rows=%v\n", len(rows))
 	fier.PrintResultsByClass(clasSum)
 	// TODO: Print this out nicely
 }
@@ -436,7 +436,7 @@ func ParseClassifyFileCommandParms(args []string) *ClassifyRequest {
 	aReq.ModelFi = parms.Sval("model", aReq.TrainInFi)
 	aReq.ClassOutFi = parms.Sval("classout", defCSVOutName(aReq.ClassInFi))
 	aReq.TestOutFi = parms.Sval("testout", defCSVOutName(aReq.TestInFi))
-	aReq.NumBuck = int16(parms.Ival("numuck", 10))
+	aReq.NumBuck = int16(parms.Ival("numbuck", 10))
 	aReq.LoadModel = parms.Bval("loadModel", true)
 	aReq.WriteJSON = parms.Bval("writejson", false)
 	aReq.WriteCSV = parms.Bval("writeCSV", true)

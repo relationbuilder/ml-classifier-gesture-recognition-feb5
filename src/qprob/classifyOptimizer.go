@@ -76,6 +76,15 @@ func (fier *Classifier) MakeOptFeatList(targLen int) []int16 {
 	return tout
 }
 
+func (fier *Classifier) ChooseRandClassId() int16 {
+	// TODO: ClassIds should be cached once computed in fier
+	// so we do not have to recompute them every time.
+	classes := fier.ClassIds()
+	numClass := len(classes)
+	classPos := rand.Int31n(int32(numClass))
+	return classes[classPos]
+}
+
 // run one optimizer pass return new precision and if we kept it.
 func (fier *Classifier) optRunOne(featNdx int16, newNumBuck int16, newWeight float32, lastPrec float32, lastRecall float32, trainRows [][]float32, testRows [][]float32) (float32, float32, bool) {
 	feat := fier.ColDef[featNdx]
@@ -95,7 +104,7 @@ func (fier *Classifier) optRunOne(featNdx int16, newNumBuck int16, newWeight flo
 		fier.RetrainFeature(featNdx, trainRows)
 	}
 	_, sumRows := fier.ClassifyRows(testRows)
-	clasSum := fier.MakeByClassStats(sumRows)
+	clasSum := fier.MakeByClassStats(sumRows, testRows)
 	optClass, optClassFnd := clasSum.ByClass[optClassId]
 
 	//fmt.Printf("sucCnt=%v\n", clasSum.SucCnt)
@@ -105,18 +114,21 @@ func (fier *Classifier) optRunOne(featNdx int16, newNumBuck int16, newWeight flo
 	// we definitely want to keep the change. But we still want to
 	// keep the change as long as the precision didn't drop as long
 	// as the complexity measured in numBuck or Weight dropped.
-	if optClassFnd != true && (sumRows.Precis > lastPrec || (sumRows.Precis >= lastPrec && newNumBuck < oldNumBuck)) {
-		keepFlg = true
+	if optClassFnd != true {
+		if sumRows.Precis > lastPrec || (sumRows.Precis >= lastPrec && newNumBuck < oldNumBuck) {
+			keepFlg = true
+		}
 	} else if optClassFnd == true {
 		// If optimizing for a single class then we want
 		// to maximize both recall and precision
 		currPrec = optClass.Prec
 		currRecall = optClass.Recall
-
-		if currPrec > lastPrec {
+		if currRecall > lastRecall && lastRecall < 0.01 {
+			keepFlg = true
+		} else if currPrec > lastPrec {
 			// Precision improved
 			keepFlg = true
-		} else if optClass.Recall > lastRecall && (optClass.Prec >= lastPrec || currRecall < 0.22) {
+		} else if optClass.Recall > lastRecall && (optClass.Prec >= lastPrec || currRecall < 0.16) {
 			// TODO: currRecall < 0.2 should be set from command line as minRecall.
 			// Recall improved while precsion was not hurt
 			keepFlg = true
@@ -342,7 +354,7 @@ func (fier *Classifier) OptProcess(splitOneEvery int, maxTimeSec float64, target
 
 	// CHECK IN FOR OPTIMIZE FOR SINGLE CLASS
 	optClassId := fier.Req.OptClassId
-	clasSum := fier.MakeByClassStats(lastSum)
+	clasSum := fier.MakeByClassStats(lastSum, testRows)
 	optClass, optClassFnd := clasSum.ByClass[optClassId]
 	if optClassFnd {
 		lastRecall = optClass.Recall
@@ -357,11 +369,58 @@ func (fier *Classifier) OptProcess(splitOneEvery int, maxTimeSec float64, target
 	classCol := int16(fier.ClassCol)
 	numCol := int16(len(fier.ColDef))
 
+	classIds := fier.ClassIds()
+	if fier.Req.OptClassId != -9999 {
+		classIds = make([]int16, 1)
+		classIds[0] = fier.Req.OptClassId
+	}
+	currClassPos := 0
+	currClassId := classIds[currClassPos]
+	currClassCnt := 99
+
+	fmt.Println("Starting optimize with classId=%v\n", currClassId)
 	for keepRunning {
 		for _, featNdx := range featLst {
 			if featNdx == classCol || featNdx >= numCol {
 				continue
 			}
+
+			// Swap active optimization class once every
+			// 50 cycles if the user did not specify their
+			// own class to focus on.  We don't know what
+			// class is most important so we have to
+			// cycle through and work on all of them.
+			currClassCnt += 1
+			fier.Req.OptClassId = currClassId
+			if len(classIds) > 0 && currClassCnt > 5 {
+				_, lastSum := fier.ClassifyRows(testRows)
+				tmpSum := fier.MakeByClassStats(lastSum, testRows)
+
+				optClass, optClassFnd := tmpSum.ByClass[currClassId]
+				for {
+					currClassPos += 1
+					if currClassPos >= len(classIds) {
+						currClassPos = 0
+					}
+
+					currClassId = classIds[currClassPos]
+					optClass, optClassFnd = tmpSum.ByClass[currClassId]
+					if optClassFnd == false {
+						fmt.Printf("Class Id %v not found it test set\n", currClassId)
+					}
+					if optClassFnd == true && optClass.ClassCnt > 0 {
+						break
+					}
+				}
+				currClassCnt = 0
+				fier.Req.OptClassId = currClassId
+				// have to reset the stats to reflect current performance
+				// for that class.
+				currPrec = optClass.Prec
+				currRecall = optClass.Recall
+				fmt.Printf("Change to optimizing for class=%v  prec=%v recall=%v", currClassId, optClass.Prec, optClass.Recall)
+			}
+
 			// Need a way to test Ieterate through
 			// changes in the feature weight and
 			// numBuckets.
@@ -383,6 +442,7 @@ func (fier *Classifier) OptProcess(splitOneEvery int, maxTimeSec float64, target
 		if int16(splitSkipPrefix) > 3 {
 			splitSkipPrefix = 0
 		}
+
 		trainRows, testRows = qutil.SplitFloatArrOneEvery(origTrainRows, splitSkipPrefix, splitOneEvery)
 
 		elap := Nowms() - startTime
