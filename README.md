@@ -6,7 +6,7 @@ A general purpose, high performance machine learning classifier.    [wiki](https
 
 | Prediction Type                          | Quantized Classifier | Quant  time ms | Tensorflow CNN | TF time ms |
 | ---------------------------------------- | -------------------: | -------------: | -------------: | ---------: |
-| Classify breast cancer                   |               96.10% |             60 |         94.81% |      7,080 |
+| Classify breast cancer                   |               97.40% |             60 |         94.81% |      7,080 |
 | Predict death or survival of Titanic passengers |               80.90% |             80 |         77.53% |      5,520 |
 | Predict Diabetes                         |               69.41% |             80 |         65.89% |      7,330 |
 | Predict Liver disorder                   |               60.47% |             70 |         67.35% |      6,160 |
@@ -18,7 +18,13 @@ A general purpose, high performance machine learning classifier.    [wiki](https
 
 Please send me data sets you would like to add  to the test.
 
-**I Offer Consulting services see: http://BayesAnalytic.com/contact**  [Stock Price Prediction tutorial](https://bitbucket.org/joexdobs/ml-classifier-gesture-recognition/wiki/stock-example/predict-future-stock-price-using-machine-learning.md)
+**I Offer Consulting services see: http://BayesAnalytic.com/contact** 
+
+| [Stock Price Prediction tutorial](https://bitbucket.org/joexdobs/ml-classifier-gesture-recognition/wiki/stock-example/predict-future-stock-price-using-machine-learning.md) |      |      |
+| ---------------------------------------- | ---- | ---- |
+|                                          |      |      |
+|                                          |      |      |
+|                                          |      |      |
 
 ### Quantized Classifier ###
 >The Quantized classifier uses a clever grouping mechanism to identify similar groups of items for each feature.  This mechanism is very fast, yields good classification accurcy and delivers unique data discovery capabilities.  The design was  inspired by  KNN, Bayesian, K-Means, SVM and Ensemble techniques.  
