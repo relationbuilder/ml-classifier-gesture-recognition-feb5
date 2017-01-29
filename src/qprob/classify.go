@@ -128,44 +128,58 @@ func (fe *Feature) setFeatEffMinMax(fier *Classifier, numRemMin int, numRemMax i
 	csv := fe.Spec
 	dist := csv.distCounts
 	stepSize := csv.distStepSize
+	//fmt.Printf("setFeatEffMinMax numRemMin=%v  numRemMax=%v absMax=%v absMin=%v stepSize=%v\n", numRemMin, numRemMax, csv.MaxFlt, csv.MinFlt, stepSize)
 
 	// Scan from Bottom removing large numbers
 	// We look ahead 1 so if it would place us
 	// over our targetCnt then we abort.
-	bndx := -1
 	effMinVal := csv.MinFlt
-	for ; numRemMin > (minCnt+dist[bndx+1]) && bndx < 999; bndx++ {
-		//fmt.Printf("L144: bndx=%v effMinVal=%v minCnt=%v nextDist=%v numRemMin=%v\n",
-		//	bndx, effMinVal, minCnt, dist[bndx+1], numRemMin)
-		minCnt += dist[bndx+1]
+	for bndx := 0; bndx < 1000; bndx++ {
+		distNum := dist[bndx]
+		if (minCnt + distNum) >= numRemMin {
+			//fmt.Printf("L140: Set Min Next dist Num would overflow  minCnt=%v, distnum=%v numRemMin=%v\n", minCnt, distNum, numRemMin)
+			break
+		}
+		minCnt += distNum
 		effMinVal += stepSize
+		//fmt.Printf("L144: bndx=%v effMinVal=%v minCnt=%v distNum=%v numRemMin=%v\n",
+		//	bndx, effMinVal, minCnt, distNum, numRemMin)
 	}
 
 	// Scan From Top removing large numbers
 	// We look back by 1 so if that value would put us
 	// over target removed then abort based on curr Val.
-	tndx := 1000
 	effMaxVal := csv.MaxFlt
-	for ; numRemMax > (maxCnt+dist[tndx-1]) && tndx > 1; tndx-- {
-		maxCnt += dist[tndx-1]
-		//fmt.Printf("L155: tndx=%v effMaxVal=%v maxCnt=%v nextDist=%v numRemMax=%v\n",
-		//	tndx, effMaxVal, maxCnt, dist[tndx-1], numRemMax)
+
+	for tndx := 999; tndx >= 0; tndx-- {
+		distNum := dist[tndx]
+		if (maxCnt + distNum) > numRemMax {
+			//fmt.Printf("L157 setMax Next dist Num would overflow  maxCnt=%v, distnum=%v numRemMax=%v\n", maxCnt, distNum, numRemMax)
+			break
+		}
+
+		maxCnt += distNum
 		effMaxVal -= stepSize
+
+		//fmt.Printf("L155: tndx=%v effMaxVal=%v maxCnt=%v distNum=%v numRemMax=%v\n",
+		//	tndx, effMaxVal, maxCnt, distNum, numRemMax)
+
 	}
+
 	if effMaxVal > effMinVal {
 		fe.EffMinVal = effMinVal
 		fe.EffMaxVal = effMaxVal
 		fier.updateStepValues(fe)
 	} else {
-		//fmt.Printf("ERR effMax < effMin in setFeatEffMinMax")
+		fmt.Printf("\n\n\nERR effMax < effMin in setFeatEffMinMax\n\n\n")
 	}
+
 	return fe.EffMinVal, fe.EffMaxVal
 }
 
 // set Min Max Effective Range for every feature.
 func (fier *Classifier) SetEffMinMax(numRemMin int, numRemMax int) {
-	for cn := 0; cn < fier.NumCol; cn++ {
-		fe := fier.ColDef[cn]
+	for cn, fe := range fier.ColDef {
 		_, _ = fe.setFeatEffMinMax(fier, numRemMin, numRemMax)
 
 		csv := fe.Spec
@@ -179,6 +193,7 @@ func (fier *Classifier) SetEffMinMax(numRemMin int, numRemMax int) {
 // 0.0 and 1.0.  Applied to all features.
 func (fier *Classifier) SetEffMinMaxPortSet(portSet float32) {
 	numRemoveRec := int(float32(fier.NumRow) * portSet)
+	fmt.Printf("SetEffMinMaxPortSet portSet=%v  numToRem=%v\n", portSet, numRemoveRec)
 	fier.SetEffMinMax(numRemoveRec, numRemoveRec)
 }
 
@@ -240,10 +255,16 @@ func (fe *Feature) bucketId(fier *Classifier, dval float32) int16 {
 	//  above minimum value divided by step size. The step size
 	//  must be computed based on an effective range with
 	//  with outliers removed
+
+	//bucket := int16(fe.NumBuck)
+	//if dval < 1 {
+	//	bucket = int16(dval*float32(fe.NumBuck)) - int16(100.0)
+	//}
+
 	amtOverMin := dval - fe.Spec.MinFlt
 	bucket := int16(amtOverMin / float32(fe.BuckSize))
-	//fmt.Printf("dval=%v bucket=%v amtOverMin=%v effMinVal=%v\n",
-	//	dval, bucket, amtOverMin, fe.EffMinVal)
+	//fmt.Printf("dval=%v bucket=%v amtOverMin=%v effMinVal=%v  effMaxVal=%v effRange=%v absMaxVal=%v absMinVal=%v  absRange=%v numBuck=%v fe.BuckSize=%v\n",
+	//	dval, bucket, amtOverMin, fe.EffMinVal, fe.EffMaxVal, fe.EffRange, fe.Spec.MaxFlt, fe.Spec.MinFlt, fe.Spec.AbsRange, fe.NumBuck, fe.BuckSize)
 	return bucket
 }
 
@@ -541,7 +562,7 @@ func LoadClassifierTrainFile(fiName string, label string, numBuck int16) *Classi
 	// contents to create the columns
 	scanner := bufio.NewScanner(file)
 	LoadClassifierTrainStream(fier, scanner)
-	fier.SetEffMinMaxPortSet(0.015) // remove 1.5% of outlier records from top and bottom
+	fier.SetEffMinMaxPortSet(0.0014) // remove 1.5% of outlier records from top and bottom
 	// when computing range.
 	return fier
 }

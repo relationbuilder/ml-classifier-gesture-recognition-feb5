@@ -123,7 +123,11 @@ func (fier *Classifier) optRunOne(featNdx int16, newNumBuck int16, newWeight flo
 		// to maximize both recall and precision
 		currPrec = optClass.Prec
 		currRecall = optClass.Recall
-		if currRecall > lastRecall && lastRecall < 0.01 {
+		if currRecall > lastRecall && lastRecall < req.OptMinRecall {
+			// We want to be able to force the engine towards a minimum
+			// recall under some conditions.
+			keepFlg = true
+		} else if currPrec > req.OptMaxPrec && currRecall > lastRecall {
 			keepFlg = true
 		} else if currPrec > lastPrec {
 			// Precision improved

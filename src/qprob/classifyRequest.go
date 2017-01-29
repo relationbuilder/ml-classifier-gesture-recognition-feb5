@@ -29,6 +29,8 @@ type ClassifyRequest struct {
 	OptPreRandomize bool
 	OptMaxTime      float64
 	OptClassId      int16
+	OptMinRecall    float32
+	OptMaxPrec      float32
 
 	Header string
 }

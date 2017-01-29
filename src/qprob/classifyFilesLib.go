@@ -380,6 +380,17 @@ func printClassifyFilesHelp() {
 					   Defaults to 0.01 which means it will
 					   agressively seek to increase recall whenever
 					   recall is below 1%.
+					
+  -OptMaxPrec=0.95     When optimizing at the feature level the 
+                       system normally seeks to always increase
+					   precision but under some cases once we
+					   have good enough precision it is better 
+					   to increase recall.  Once the precision
+					   for a class exceeds this number the 
+					   optimizer will accept changes provided 
+					   they increase recall and do not reduce
+					   precision below this value.   Defaults
+					   to 0.95 if not set.
   
   -optRandomize=false  If true will randomize all current 
                        optimizer settings.  This can 
@@ -511,6 +522,8 @@ func ParseClassifyFileCommandParms(args []string) *ClassifyRequest {
 	aReq.OptPreRandomize = parms.Bval("optrandomize", false)
 	aReq.OptMaxTime = parms.F64val("optmaxtime", 2.0) * 1000.0
 	aReq.OptClassId = int16(parms.Ival("optclassid", -9999))
+	aReq.OptMinRecall = parms.Fval("optminrecall", 0.01)
+	aReq.OptMaxPrec = parms.Fval("optmaxprec", 0.95)
 	aReq.OkToRun = false
 
 	if aReq.TrainInFi == "" && aReq.ModelFi == "" {

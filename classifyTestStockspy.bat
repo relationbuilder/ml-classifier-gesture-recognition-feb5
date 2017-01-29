@@ -14,4 +14,17 @@
 :: then run utility to convert raw stock data into machine learning
 ::  data python stock-prep-sma.py then  you can run
 :: this module.
-classifyFiles -train=data/spy.slp30.train.csv -test=data/spy.slp30.test.csv -numBuck=30 -testOut=tmpout/spy.slp30.out.csv -doOpt=true -optrandomize=false -optMaxTime=9  -OptClassId=1
+classifyFiles -train=data/spy.slp30.train.csv -test=data/spy.slp30.test.csv -numBuck=140 -testOut=tmpout/spy.slp30.out.csv -doOpt=false -optrandomize=false -optMaxTime=1  -OptClassId=1 -OptMaxPrec=0.7 -OptMinRecall=0.001
+
+:: -optMaxTime=19   Number of seconds the optimer is allowed to run
+::
+:: -doOpt=true      Allows optimizer to run 
+::
+:: -optClassId=1    Tells optimizer to focus on improving results for class 1%
+::                  predicts stock will go up 1% before it drops by 1%
+:: 
+:: -OptMaxPrec=0.53 Tells optimizer to focus in improving Recall once 
+::                  precision exceeds 53%.  It will still accept changes
+::                  to improve accuracy but it will also accept changes 
+::                  that improve recall provided it does not reduce 
+::                  accuracy below 53%.

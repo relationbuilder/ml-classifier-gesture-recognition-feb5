@@ -151,11 +151,7 @@ func LoadCSVMetaData(scanner *bufio.Scanner) *CSVInfo {
 	for x := 0; x < tout.NumCol; x++ {
 		col := tout.Col[x]
 		col.AbsRange = col.MaxFlt - col.MinFlt
-		if col.IsInt && (col.AbsRange < 1000) {
-			col.distStepSize = 1.0
-		} else {
-			col.distStepSize = col.AbsRange / 1001
-		}
+		col.distStepSize = col.AbsRange / 1001
 	}
 	return tout
 }
