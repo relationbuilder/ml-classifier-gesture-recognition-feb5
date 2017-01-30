@@ -16,11 +16,17 @@ There are several focus areas where I can invest time. Please let me know if you
 
 ##Roughly prioritized Feature Work##
 
+* Fix the Breast Cancer demo that is currently reporting 75% accuracy.  The Bucket # seems to be messed up.  In a column with a value range from 1..10 and numBuck=10 it is assigning value 2 to bucket 92. 
+
 * If we want to use Optimizer for data importance discovery then we should consider tracking weights by bucket ID rather than the feature level.  That way if we boost  the weight of a given bucket it gives us a direct signal on the value of that data element.   
 
 * When optimizing if we divide by tot feature weight then increasing value of a column then for buckets that have a low score we are essentially reducing the input from other high scoring columns.  If we divide by numCol or columns providing input then we avoid this complication which would make it difficult to determine what is really important.
 
 * Need to think about how to allow medium probability for a given feature when multiplied ot have a postive effect but for low probability when multiplied we actually want a negative effect. 
+
+* Add a simple analysis component that shows the predictive value of each single feature.  eg: run the classifier for a single feature varying numBuck for that feature.
+
+* Add simple analysis component that shows predictive value of different groups of features compared to other groupings of features.   
 
 * Add a analysis component that analyzes predictive value of each feature column.    It should be able to measure the value for total precision of the set or for a combined input on predictive value by class.   It should seek to find a number of buckets for that feature that will maximize predictive value from that feature and be storable so the set of these values can be used to configure operation of the primary classifier.     
 
@@ -121,9 +127,13 @@ There are several focus areas where I can invest time. Please let me know if you
 
 *   Finish filling in sections of the [Genomic research white paper](genomic-notes.md). Add Test set for Daily stock bar data.  Where we add a column which is a SMA(x) where X defaults to 30 days. and features are the slope of the SMA(X) when comparing current bar to SMA(x) at some number of days in past create.  In a stock scenario  you would have a goal EG: A Bar for a symbol where price rose by P% within N days without dropping by more than Q% before it reached P%.  Those that meet the rule get a class of 1 while those that fail get a class of 0.       
 
-      ​
+        ​
 
 # Completed Items Phase 1 #
+
+* DONE:JOE:2017-01-29: Enhance quant_filt.py to support two file inputs one for train and one for class.  Also include set and by class analysis of results.
+
+* DONE:2017-01-29: Enhance quant_filt.py to support choosing the most precise answer in maxNumBuck it can for each row falling back to less precise numBuck as needed to find a answer.
 
 * DONE:JOE:2017-01-24: Support -class versus -test option as input to classifyFiles
 
@@ -134,6 +144,7 @@ There are several focus areas where I can invest time. Please let me know if you
   >
   > - DONE:JOE:2017-01-24: Added command line parser library to support more complex command line needed to support optimizer. 
   >
+
 * DONE:JOE:2017-01-24: Add descriptions to file names in readme.md where they do not already exist or remove those files.
 
 * DONE:JOE:2017-01-24: Add links to bat files for new test data structures. 

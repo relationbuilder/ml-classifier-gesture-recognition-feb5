@@ -103,6 +103,16 @@ func (fier *Classifier) PrintTrainClassProb() {
 	fmt.Printf("Num Train Row=%v NumCol=%v\n", fier.NumRow, fier.NumCol)
 }
 
+func (feat *Feature) printDistElem() {
+	csv := feat.Spec
+	fmt.Printf("L108: CSV Dist Elem absMin=%v absMax=%v absRange=%v csvStep=%v\n", csv.MinFlt, csv.MaxFlt, csv.AbsRange, csv.distStepSize)
+	for ndx, drow := range csv.distCounts {
+		if drow > 0 {
+			fmt.Printf("   L111: ndx=%v  cnt=%v\n", ndx, drow)
+		}
+	}
+}
+
 /* Determines reasonable effective Min/Max value range for
 the statistically significant values that represent the bulk
 of the data.  Without this feature the quantize process can
@@ -128,8 +138,8 @@ func (fe *Feature) setFeatEffMinMax(fier *Classifier, numRemMin int, numRemMax i
 	csv := fe.Spec
 	dist := csv.distCounts
 	stepSize := csv.distStepSize
-	//fmt.Printf("setFeatEffMinMax numRemMin=%v  numRemMax=%v absMax=%v absMin=%v stepSize=%v\n", numRemMin, numRemMax, csv.MaxFlt, csv.MinFlt, stepSize)
-
+	//fmt.Printf("L131: setFeatEffMinMax numRemMin=%v  numRemMax=%v absMax=%v absMin=%v stepSize=%v\n", numRemMin, numRemMax, csv.MaxFlt, csv.MinFlt, stepSize)
+	fe.printDistElem()
 	// Scan from Bottom removing large numbers
 	// We look ahead 1 so if it would place us
 	// over our targetCnt then we abort.
@@ -173,6 +183,7 @@ func (fe *Feature) setFeatEffMinMax(fier *Classifier, numRemMin int, numRemMax i
 	} else {
 		fmt.Printf("\n\n\nERR effMax < effMin in setFeatEffMinMax\n\n\n")
 	}
+	//fmt.Printf("L185: setFeatEffMinMax numRemMin=%v  numRemMax=%v absMax=%v absMin=%v stepSize=%v\n", numRemMin, numRemMax, csv.MaxFlt, csv.MinFlt, stepSize)
 
 	return fe.EffMinVal, fe.EffMaxVal
 }
@@ -562,7 +573,7 @@ func LoadClassifierTrainFile(fiName string, label string, numBuck int16) *Classi
 	// contents to create the columns
 	scanner := bufio.NewScanner(file)
 	LoadClassifierTrainStream(fier, scanner)
-	fier.SetEffMinMaxPortSet(0.0014) // remove 1.5% of outlier records from top and bottom
+	fier.SetEffMinMaxPortSet(0.015) // remove 1.5% of outlier records from top and bottom
 	// when computing range.
 	return fier
 }

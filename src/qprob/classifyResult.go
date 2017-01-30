@@ -160,7 +160,11 @@ func (fier *Classifier) ClassRow(drow []float32) *ResultForRow {
 		buckId := feat.bucketId(fier, dval)
 		buck, bfound := feat.Buckets[buckId]
 		if bfound != true {
-			fmt.Printf("L163: No Bucket found dval=%v buckId=%v fc=%v feat=%v spec=%v\n ", dval, buckId, fc, feat, feat.Spec)
+			spec := feat.Spec
+			fmt.Printf("L163: No Bucket found dval=%v buckId=%v fc=%v effMin=%v effMax=%v  effRange=%v numBuck=%v ",
+				dval, buckId, fc, feat.EffMinVal, feat.EffMaxVal, feat.EffRange, feat.NumBuck)
+			fmt.Printf("  minFlt=%v maxFlt=%v  absRange=%v\n",
+				spec.MinFlt, spec.MaxFlt, spec.AbsRange)
 		}
 
 		if bfound == true {
@@ -170,7 +174,7 @@ func (fier *Classifier) ClassRow(drow []float32) *ResultForRow {
 			// to the same bucket Id.
 
 			for classId, classCnt := range buck.Counts {
-				fmt.Printf("170:classId=%v classCnt=%v\n", classId, classCnt)
+				//fmt.Printf("170:classId=%v classCnt=%v\n", classId, classCnt)
 				// Ieterate over the classes that match
 				// and record them for latter use.
 				fBuckWrk := new(ResultItem)
@@ -190,8 +194,8 @@ func (fier *Classifier) ClassRow(drow []float32) *ResultForRow {
 				}
 				clswrk.Prob += workProb * feat.FeatWeight
 				//clswrk.Prob += baseProb * feat.FeatWeight
-				fmt.Printf("190: col%v val=%v buck=%v class=%v baseProb=%v outProb=%v\n",
-					fc, dval, buckId, classId, baseProb, fBuckWrk.Prob)
+				//fmt.Printf("190: col%v val=%v buck=%v class=%v baseProb=%v outProb=%v\n",
+				//	fc, dval, buckId, classId, baseProb, fBuckWrk.Prob)
 			} // for class
 		} // if buck exist
 	} // for feat
@@ -205,7 +209,7 @@ func (fier *Classifier) ClassRow(drow []float32) *ResultForRow {
 		}
 		//classWrk.Prob = classWrk.Prob / float32(fier.totFeatWeight())
 		classWrk.Prob = classWrk.Prob / float32(len(fier.ColDef))
-		fmt.Printf("L209: classId=%v prob=%v bestProb=%v classWrk=%v\n", classId, classWrk.Prob, bestProb, classWrk)
+		//fmt.Printf("L209: classId=%v prob=%v bestProb=%v classWrk=%v\n", classId, classWrk.Prob, bestProb, classWrk)
 		tout.Classes[classId] = *classWrk
 		if bestProb < classWrk.Prob {
 			bestProb = classWrk.Prob
@@ -235,7 +239,7 @@ func (fier *Classifier) ClassifyRows(rows [][]float32) ([]ResultForRow, *SimpRes
 
 		cres := fier.ClassRow(rowIn)
 		cres.ActClass = int16(rowIn[fier.ClassCol])
-		fmt.Printf("L239: cres=%v\n", cres)
+		//fmt.Printf("L239: cres=%v\n", cres)
 		// Copy into Simplified structure
 		// for use generating the output
 		// CSV.   We also need this one to
@@ -248,7 +252,7 @@ func (fier *Classifier) ClassifyRows(rows [][]float32) ([]ResultForRow, *SimpRes
 		if rrow.BestClass == rrow.ActClass {
 			resRows.SucCnt += 1
 		}
-		fmt.Printf("252: ndx=%v rrow=%v\n", ndx, rrow)
+		//fmt.Printf("252: ndx=%v rrow=%v\n", ndx, rrow)
 		//if cres.actClass == cres.BestClass {
 		//	sucessCnt += 1
 		//}

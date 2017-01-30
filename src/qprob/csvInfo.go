@@ -162,21 +162,17 @@ func LoadCSVMetaData(scanner *bufio.Scanner) *CSVInfo {
 // into 1 of 1000 discrete buckets of
 // even size.
 func (cc *CSVCol) buckId(vin float32) int16 {
-	if cc.IsInt && cc.AbsRange <= 1000 {
-		return int16(vin)
-	} else {
-		tout := int16((vin - cc.MinFlt) / cc.distStepSize)
-		if tout > 999 {
-			//fmt.Printf("buckId overeflow vin=%v tout=%v minFlt=%v maxFlt=%v stepSize=%v\n",
-			//	vin, tout, cc.MinFlt, cc.MaxFlt, cc.distStepSize)
-			tout = 999
-		} else if tout < 0 {
-			//fmt.Printf("buckId underflow vin=%v tout=%v minFlt=%v maxFlt=%v stepSize=%v\n",
-			//	vin, tout, cc.MinFlt, cc.MaxFlt, cc.distStepSize)
-			tout = 0
-		}
-		return tout
+	tout := int16((vin - cc.MinFlt) / cc.distStepSize)
+	if tout > 999 {
+		//fmt.Printf("buckId overeflow vin=%v tout=%v minFlt=%v maxFlt=%v stepSize=%v\n",
+		//	vin, tout, cc.MinFlt, cc.MaxFlt, cc.distStepSize)
+		tout = 999
+	} else if tout < 0 {
+		//fmt.Printf("buckId underflow vin=%v tout=%v minFlt=%v maxFlt=%v stepSize=%v\n",
+		//	vin, tout, cc.MinFlt, cc.MaxFlt, cc.distStepSize)
+		tout = 0
 	}
+	return tout
 }
 
 // Helper method to create the stream used to build
