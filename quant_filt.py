@@ -338,7 +338,7 @@ def analyzeTestRes(res):
   sucCnt = 0
   failRateCnt = 0
   byClass = {}
-  tout = { "recs" : rrecs, "byClass" : byClass, "noClass" : 0 }
+  tout = { "byClass" : byClass, "noClass" : 0 }
   
   for rrow in res:
     totCnt += 1
@@ -391,7 +391,7 @@ def analyzeTestRes(res):
     except ZeroDivisionError:
       aclass["recall"]
       
-  return tout
+  return tout, rrecs
     
     
     
@@ -403,22 +403,24 @@ def processTest(trainFiName, testFiName, maxNumBuck):
   qf.readTrainingData(trainFiName)
   
   tout = qf.readTestData(testFiName)
-  print (" tout=", tout)
+  #print (" tout=", tout)
 
-  analyzedRes = analyzeTestRes(tout)
+  analyzedRes, recs = analyzeTestRes(tout)
+  
+  #print ("\n\nAnalyzed recs=", recs)
   print ("\n\n\nAnalyzed\n", analyzedRes)
    
 ## ---- 
 ## -- MAIN
 ## ----
 
-GBLMaxNumBuck = 37 # Increase num buckets for max precision reduce for max recall
+GBLMaxNumBuck = 15 # Increase num buckets for max precision reduce for max recall
 
 #processTest('data/gest/gest_train_ratio2.csv', 'data/gest/gest_test_ratio2.csv', GBLMaxNumBuck)
 
 #processTest('data/breast-cancer-wisconsin.adj.data.train.csv', 'data/breast-cancer-wisconsin.adj.data.test.csv', GBLMaxNumBuck)
 
-process#Test('data/diabetes.train.csv', 'data/diabetes.test.csv', GBLMaxNumBuck)
+#processTest('data/diabetes.train.csv', 'data/diabetes.test.csv', GBLMaxNumBuck)
 
 #proces#Test('data/diabetes.train.csv', 'data/diabetes.test.csv', GBLMaxNumBuck)
 
