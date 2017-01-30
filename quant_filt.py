@@ -48,6 +48,7 @@
 
 import csv
 import sys
+import json
 
 class QuantTreeFilt:
   def __init__(self, classCol, maxNumBuck):
@@ -338,7 +339,7 @@ def analyzeTestRes(res):
   sucCnt = 0
   failRateCnt = 0
   byClass = {}
-  tout = { "byClass" : byClass, "noClass" : 0 }
+  tout = { "byClass" : byClass, "NoClass" : 0 }
   
   for rrow in res:
     totCnt += 1
@@ -350,7 +351,7 @@ def analyzeTestRes(res):
     byClass[actClass]["totCnt"] += 1
 
     if not "best" in rrow:
-      tout["noClass"] += 1
+      tout["NoClass"] += 1
       rrecs.append(rrow)
       byClass[actClass]["noClass"] += 1
       continue
@@ -369,18 +370,19 @@ def analyzeTestRes(res):
     trow = [cid, prob, actClass, stat]
     rrecs.append(trow)
 
-  tout["numRow"] = totCnt
-  tout["numPred"] = totCnt - tout["noClass"] 
-  prec = sucCnt / tout["numPred"] 
+  tout["NumRow"] = totCnt
+  tout["NumPred"] = totCnt - tout["NoClass"] 
+  prec = sucCnt / tout["NumPred"] 
   tout["SucessCnt"] = sucCnt
-  tout["FailCnt"] = tout["numPred"] - sucCnt 
-  tout["precision"] = prec  
-  tout["noClassRate"] = tout["noClass"] / totCnt
-  tout["totRecall"] = (totCnt - tout["noClass"]) / totCnt
+  tout["FailCnt"] = tout["NumPred"] - sucCnt 
+  tout["Precision"] = prec  
+  tout["NoClassRate"] = tout["NoClass"] / totCnt
+  tout["TotRecall"] = (totCnt - tout["NoClass"]) / totCnt
   
   for classId in byClass:
     aclass = byClass[classId]
     aclass["fail"] = aclass["taggedCnt"] - aclass["sucCnt"]
+    aclass["classProb"] = aclass["totCnt"] / totCnt
     try:
       aclass["precis"] = aclass["sucCnt"] / aclass["taggedCnt"]
     except ZeroDivisionError:
@@ -398,6 +400,7 @@ def analyzeTestRes(res):
   
       
 def processTest(trainFiName, testFiName, maxNumBuck):
+  print("trainFiName=", trainFiName, " testFiName=", testFiName, " maxNumBuck=", maxNumBuck)
   qf =  QuantTreeFilt(0, GBLMaxNumBuck)
   qf.readMinMax(trainFiName)
   qf.readTrainingData(trainFiName)
@@ -407,8 +410,9 @@ def processTest(trainFiName, testFiName, maxNumBuck):
 
   analyzedRes, recs = analyzeTestRes(tout)
   
+  print("trainFiName=", trainFiName, " testFiName=", testFiName, " maxNumBuck=", maxNumBuck)
   #print ("\n\nAnalyzed recs=", recs)
-  print ("\n\n\nAnalyzed\n", analyzedRes)
+  print ("\n\n\nAnalyzed\n", json.dumps(analyzedRes, sort_keys=True, indent=3))
    
 ## ---- 
 ## -- MAIN
@@ -418,11 +422,15 @@ GBLMaxNumBuck = 10 # Increase num buckets for max precision reduce for max recal
 
 #processTest('data/gest/gest_train_ratio2.csv', 'data/gest/gest_test_ratio2.csv', GBLMaxNumBuck)
 
-#processTest('data/breast-cancer-wisconsin.adj.data.train.csv', 'data/breast-cancer-wisconsin.adj.data.test.csv', GBLMaxNumBuck)
+processTest('data/breast-cancer-wisconsin.adj.data.train.csv', 'data/breast-cancer-wisconsin.adj.data.test.csv', 11)
 
 #processTest('data/diabetes.train.csv', 'data/diabetes.test.csv', GBLMaxNumBuck)
 
-#proces#Test('data/diabetes.train.csv', 'data/diabetes.test.csv', GBLMaxNumBuck)
+#processTest('data/liver-disorder.train.csv', 'data/liver-disorder.test.csv', GBLMaxNumBuck)
 
-processTest('BodyStateModel-paper_train.csv', 'BodyStateModel-paper_test.csv', GBLMaxNumBuck)
+#processTest('data/wine.data.usi.train.csv', 'data/wine.data.usi.test.csv', GBLMaxNumBuck)
+
+#processTest('data/spy.slp30.train.csv', 'data/spy.slp30.test.csv', 8)
+
+#processTest('BodyStateModel-paper_train.csv', 'BodyStateModel-paper_test.csv', 10)
 
