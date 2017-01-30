@@ -40,7 +40,16 @@ There are several focus areas where I can invest time. Please let me know if you
 
 * Add QProb optimizer that is allowed to change Feature weight and number of buckets.
 
-* > * Implement a option to allow the quantized classifier to store the entire array of training data in memory pre-converted to arrays of floats.  This will allow much faster re-train when changing the number number of buckets in the optimizer.    Also Requires Modify the classifier core to accept row with array of flow.  Separate the parsing / conversion form the training. 
+* > * List optimizer settings at end of run
+  > * Implment optimizer save and restore feature
+  > * implement optclear feature including delete existing opt settings file.
+  > * Implement -OptCycleClass
+  > * implement -optClear
+  > * implement -optSave
+  > * implement -optMinRecall
+  > * ​
+  > * DONE:JOE:2017-01-28 Add OptClassOption
+  > * Implement a option to allow the quantized classifier to store the entire array of training data in memory pre-converted to arrays of floats.  This will allow much faster re-train when changing the number number of buckets in the optimizer.    Also Requires Modify the classifier core to accept row with array of flow.  Separate the parsing / conversion form the training. 
   > > * Add Retrain from RAM option which causes CSV util to pre-parse float array.  Will need one fast scan to count lines.  Need to borrow the fast version of that I wrote to support the comparative testing.
   > > * Add ability for training and classify to be ran from an array of pre-parsed float.   Need this to support speed during optimizer runs.   Ideally if input file size is below a threshold we would retain in RAM otherwise we have to scan form disk to avoid consuming all available ram. 
 
@@ -79,6 +88,7 @@ There are several focus areas where I can invest time. Please let me know if you
     by feature it can keep the change provided it can  increase precision as long as recall does not decrease. Or it can increase recall as long as precision does not decrease recall.  We can discourage over learning by always trying a smaller number of buckets first in the optimizer.  A natural side effect of this is that the engine can turn off
     features that do not contribute either accuracy or recall.
     get. 
+  - The weakness of the current QuantFilt strategy is that it tries to find the most restrictive quant able to make a match but when it fails it moves to the next least restrictive set of quanta for the entire matching process.  What we really want is for it to back track only for the feature where the most restrictive match did not work reduce the restriction only for that feature and keep the more restrictive requirement for the others.   This is complex because overly restrictive setting at any feature can cause failure in all subsequent features the the back track has to work it's way back incrementally.  
 
 
 *   Modify Quant_prob run as server handler. 
