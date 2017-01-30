@@ -414,7 +414,7 @@ def processTest(trainFiName, testFiName, maxNumBuck):
 ## -- MAIN
 ## ----
 
-GBLMaxNumBuck = 15 # Increase num buckets for max precision reduce for max recall
+GBLMaxNumBuck = 10 # Increase num buckets for max precision reduce for max recall
 
 #processTest('data/gest/gest_train_ratio2.csv', 'data/gest/gest_test_ratio2.csv', GBLMaxNumBuck)
 
