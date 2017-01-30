@@ -22,6 +22,12 @@ There are several focus areas where I can invest time. Please let me know if you
 
 * Need to think about how to allow medium probability for a given feature when multiplied ot have a postive effect but for low probability when multiplied we actually want a negative effect. 
 
+* Add a analysis component that analyzes predictive value of each feature column.    It should be able to measure the value for total precision of the set or for a combined input on predictive value by class.   It should seek to find a number of buckets for that feature that will maximize predictive value from that feature and be storable so the set of these values can be used to configure operation of the primary classifier.     
+
+* Add analysis component that randomly combines feature combinations in twin and tripplets to see if we can find sets that provide good predictive value superior using features individually.   This should probably be done using the quant filter combination so each mini set is working as a mini decision tree.
+
+* Add Ability to include mini-feature sets groups of fields in the quant prob model.   This could either be done by the primary quant prob engine or possibly by an external component that essentially create the feature groups and takes the statistical output from them to build a new file which is fed into the quant prob engine.  This approach would help isolate complexity but may be slower.   For example  if we find that day of week + hour of day + % above Min represents a good feature group using the quant_filter aspect then comming out of that engine we know the relative probability by class.   May be able to combine this into a single feature using a range for each class but it may be easier to create a new column one for each class  that contains the probability the quant_filter found for that feature group for that class.  Then we could suppress the actual features in the input set.  In the short term the easiest way to run this would be to generate an intermediate file but if it works well should be done as virtually added columns. 
+
 * Create ClassifyAnal module to create output Statistics
 
   * Output should include Add recall, precision by class in classifyFiles
