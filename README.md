@@ -222,6 +222,7 @@ Not all files are listed here. The intent is to help you find those files that a
 * **[design-notes.md](docs/design-notes.md)** Engineering Design Notes and design thoughts.
 * **[genomic-notes.md](docs/genomic-notes.md)**
 * **[go-notes.html](docs/go-notes.html)** Notes and helpful links about GO that I recorded while working on the classifer.go
+* [**Background**](https://bitbucket.org/joexdobs/ml-classifier-gesture-recognition/wiki/background.md)   Includes documentation about a skewed population with overlapping values and how we are going to approach it.  It also introduced the Quantized Filter concept and how it helps deal with the skewed population problem
 * Writing tests
 * Code review
 * Other guidelines
@@ -275,7 +276,7 @@ TensorFlow Deep Learning is the newest buzz term so I am evaluating it's perform
 
 > The Quantized Classifier started as a classifier designed to classify Static Gestures for VR with the idea we may be able to produce a useful tool for classifying  ASL using VR input devices.  That is still a primary focus but the core algorithms can be more broadly applied.
 >
-> See **[Overview.pdf](docs/Overview.pdf)** in this repository for conceptual overview of the approach when using this kind of classifier for gesture recognition.
+> See **[Overview.pdf](docs/gest-rec-overview.pdf)** in this repository for conceptual overview of the approach when using this kind of classifier for gesture recognition.
 >
 > This repository includes code written to test ideas for static gesture recognition. 
 >
