@@ -47,7 +47,9 @@ Please send me data sets you would like to add  to the test.
 >
 >Quantizing the data allows a small memory foot print to deliver fast training and fast classification without the need to keep all the training records in memory. Retaining only the statistics allows very large training sets with moderate memory use.   The trade off is loosing KNN's ability to adjust the number of closest neighbors considered at runtime without retraining.  Memory use is so much smaller than KNN that we can afford to keep multiple models with different quanta sizes loaded and updated simultaneously. 
 >
->Choosing the number of quanta is important for choosing the best prediction results.  The default of 10 works for many applications but we have found situations where 90 quanta works better and there are a few where 5 quanta work better.   In general a larger number of quanta delivers more precise results at reduced recall.  There are applications where reducing the number of quanta improved precision because it was able to reduce the influence of noisy training data.    The Optimizer is allowed to change the number of quanta by feature to improve prediction accuracy. 
+>Choosing the number of max quanta is important for choosing the best prediction results.  The default of 10 works for many applications but we have found situations where 90 quanta works better and there are a few where 5 quanta work better.   In general a larger number of quanta delivers more precise results at reduced recall.  There are applications where reducing the number of quanta improved precision because it was able to reduce the influence of noisy training data.  
+>
+>> > * **The system automatically tries the to find a match for each feature using the most precise number of Quanta you allowed in the -maxBucket setting on the command line.   It will use less precise values working back to only 2 Quanta as needed.**
 >
 >Whenever using statistical techniques outliers in the data can yeild a negative impact on classification accuracy.  In a quantized engine outlier values affect results because quanta ID are computed based on the absolute range of training data.  This can cause values in the center of the distribution to be forced into a smaller number of quanta which reduces the discrimination the majority data that also tends to be closer to the center of the distribution.   The Quantized classifier handels this by computing an effective range for the values in each Quanta.   The effective range is determined by removing 1.5% of the training values from the low and high end and then computing the range between min and max for the remaining records.  We use a clever mechanism for outlier removal that avoids the need to sort the values because we wanted to handle training sets larger than physical memory.    The quanta are indexed in a sparse matrix so outlier values still get their own quanta and can participate in classification but the effective range mechanism prevents outliers from negatively affecting precision for the majority dataset. 
 >
@@ -143,9 +145,14 @@ Please send me data sets you would like to add  to the test.
 >>                        directory as test input file with differnt
 >>                        extensions to protect orginal data.
 >>
->>     -numBuck=10        Number of qanta buckets to use by default
->>                        for the model but the optimizer may change
->>                        this on a feature by feature basis
+>>     -maxBuck=10        Maximum Number of qanta buckets to use
+>>                        larger numbers allow more precise matching
+>>                        which can be helpful when lots of test data
+>>                        is available but it also consumes more time
+>>                        and RAM because the system builds multiple
+>>                        quant count models to allow fast fallback
+>>                        to less precise quanta if it fails to find
+>>                        a match using the most precise quanta available.            
 >>
 >>      -writeJSON=true    if present then write results to JSON files
 >>                         otherwise will only generate CSV.
