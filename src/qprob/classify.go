@@ -46,17 +46,16 @@ type QuantList struct {
 // data for 1 feature of data or in CSV this
 // would be 1 column of data.
 type Feature struct {
-	Buckets        map[int16]*QuantList
-	Spec           *CSVCol
-	Enabled        bool
-	ProcType       QuantType
-	EffMaxVal      float32
-	EffMinVal      float32
-	EffRange       float32
-	BuckSize       float32
-	NumBuck        int16
-	NumBuckOveride bool
-	FeatWeight     float32
+	Buckets       []map[int16]*QuantList
+	Spec          *CSVCol
+	Enabled       bool
+	ProcType      QuantType
+	EffMaxVal     float32
+	EffMinVal     float32
+	EffRange      float32
+	BuckSize      []float32
+	FeatWeight    float32
+	WeightByLevel []float32
 	// Need the following as part of feature to support sparse
 	// feature matrix where not all rows have all featurs.
 	// an example would be text processing where  # feaures
@@ -80,7 +79,7 @@ type Classifier struct {
 	NumCol       int
 	NumRow       int
 	ClassCol     int
-	NumBuck      int16
+	MaxNumBuck   int16
 	ClassCounts  map[int16]int32   // total Count of all Records of Class
 	ClassProb    map[int16]float32 // Prob of any record being in class
 	NumTrainRow  int32
@@ -229,51 +228,19 @@ to compute step size for bucket indexing.   */
 
 }*/
 
-// Change the number of buckets for every feature
-// where that feature has not already been overridden
-func (cl *Classifier) SetNumBuckDefault(nb int16) {
-	for a := 0; a < cl.NumCol; a++ {
-		feat := cl.ColDef[a]
-		if feat.NumBuckOveride == false {
-			feat.NumBuck = nb
-			cl.updateStepValues(feat)
-		}
-	}
-}
-
-// Set number of buckets for a feature and record
-// the fact it's number of buckets has been overridden
-// so we don't change it if the default numBuck for
-// the entire classifer is changed in the future.
-func (cl *Classifier) SetNumBuck(fe *Feature, nb int16) {
-	fe.NumBuck = nb
-	fe.NumBuckOveride = true
-	cl.updateStepValues(fe)
-}
-
 func (cl *Classifier) updateStepValues(afeat *Feature) {
-	afeat.EffRange = afeat.EffMaxVal - afeat.EffMinVal
-	afeat.BuckSize = afeat.EffRange / float32(afeat.NumBuck)
+	maxBuck := int(cl.MaxNumBuck)
+	for nb := 0; nb < maxBuck; nb++ {
+		afeat.EffRange = afeat.EffMaxVal - afeat.EffMinVal
+		afeat.BuckSize[nb] = afeat.EffRange / float32(nb)
+	}
 }
 
 // Compute BucketId for current data value for this
 // feature.
-func (fe *Feature) bucketId(fier *Classifier, dval float32) int16 {
-	// TODO: The simple multiplier process works when
-	//  the numeric values are gauranteed between 0.0 and 1.0
-	//  or are simple integer values.  A better
-	//  process  computes a step size based on the value
-	//  above minimum value divided by step size. The step size
-	//  must be computed based on an effective range with
-	//  with outliers removed
-
-	//bucket := int16(fe.NumBuck)
-	//if dval < 1 {
-	//	bucket = int16(dval*float32(fe.NumBuck)) - int16(100.0)
-	//}
-
+func (fe *Feature) bucketId(fier *Classifier, dval float32, numBuck int16) int16 {
 	amtOverMin := dval - fe.Spec.MinFlt
-	bucket := int16(amtOverMin / float32(fe.BuckSize))
+	bucket := int16(amtOverMin / float32(fe.BuckSize[numBuck]))
 	//fmt.Printf("dval=%v bucket=%v amtOverMin=%v effMinVal=%v  effMaxVal=%v effRange=%v absMaxVal=%v absMinVal=%v  absRange=%v numBuck=%v fe.BuckSize=%v\n",
 	//	dval, bucket, amtOverMin, fe.EffMinVal, fe.EffMaxVal, fe.EffRange, fe.Spec.MaxFlt, fe.Spec.MinFlt, fe.Spec.AbsRange, fe.NumBuck, fe.BuckSize)
 	return bucket
@@ -282,13 +249,13 @@ func (fe *Feature) bucketId(fier *Classifier, dval float32) int16 {
 /* separated out the makeEmptyClassifier so
 accessible by other construction techniques
 like from a string */
-func makEmptyClassifier(fiName string, label string, numBuck int16) *Classifier {
+func makEmptyClassifier(fiName string, label string, maxNumBuck int16) *Classifier {
 	fier := new(Classifier)
 	fier.TrainFiName = fiName
 	fier.Label = label
 	fier.ClassCol = 0
 	fier.NumTrainRow = 0
-	fier.NumBuck = numBuck
+	fier.MaxNumBuck = maxNumBuck
 	// can not set ColDef until we know how many
 	// colums to allocate space for.
 	//fier.ColDef = make([]*Feature, 0fier.Info.NumCol)
@@ -320,17 +287,20 @@ func (cl *Classifier) makeFeature(col *CSVCol) *Feature {
 	afeat := new(Feature)
 	afeat.Spec = col
 	afeat.Enabled = true
-	afeat.BuckSize = 1
+	afeat.BuckSize = make([]float32, cl.MaxNumBuck)
 	afeat.EffMaxVal = col.MaxFlt
 	afeat.EffMinVal = col.MinFlt
 	afeat.ProcType = QTBucket
-	afeat.NumBuck = cl.NumBuck
-	afeat.NumBuckOveride = false
-	afeat.Buckets = make(map[int16]*QuantList)
+	afeat.WeightByLevel = make([]float32, cl.MaxNumBuck)
+	afeat.Buckets = make([]map[int16]*QuantList, cl.MaxNumBuck)
 	afeat.FeatWeight = 1.0
 	afeat.NumRow = 0
 	afeat.ClassCounts = make(map[int16]int32)
 	afeat.ClassProb = make(map[int16]float32)
+	for nb := int16(0); nb < cl.MaxNumBuck; nb++ {
+		afeat.WeightByLevel[nb] = 1.0
+		afeat.Buckets[nb] = make(map[int16]*QuantList)
+	}
 
 	cl.updateStepValues(afeat)
 	return afeat
@@ -374,24 +344,27 @@ func (fier *Classifier) TrainRowFeat(feat *Feature, classId int16, fldVal float3
 		feat.ClassCounts[classId] += 1
 	}
 
-	// Update the feature Bucket Counts
-	buckets := feat.Buckets
-	buckId := feat.bucketId(fier, fldVal)
-	abuck, bexist := buckets[buckId]
-	if bexist == false {
-		abuck = new(QuantList)
-		abuck.Counts = make(map[int16]int32)
-		abuck.totCnt = 0
-		buckets[buckId] = abuck
-	}
-	_, cntExist := abuck.Counts[classId]
-	if cntExist == false {
-		abuck.Counts[classId] = 1
-	} else {
-		abuck.Counts[classId] += 1
-	}
-	abuck.totCnt += 1
+	maxNumBuck := int(fier.MaxNumBuck)
+	for nb := 1; nb < maxNumBuck; nb++ {
+		// Update the feature Bucket Counts
+		buckets := feat.Buckets[nb]
+		buckId := feat.bucketId(fier, fldVal, int16(nb))
+		abuck, bexist := buckets[buckId]
+		if bexist == false {
+			abuck = new(QuantList)
+			abuck.Counts = make(map[int16]int32)
+			abuck.totCnt = 0
+			buckets[buckId] = abuck
+		}
 
+		_, cntExist := abuck.Counts[classId]
+		if cntExist == false {
+			abuck.Counts[classId] = 1
+		} else {
+			abuck.Counts[classId] += 1
+		}
+		abuck.totCnt += 1
+	}
 	//fmt.Printf("i=%v ctxt=%s f32=%v maxStr=%s minStr=%s\n", i, ctxt, f32, col.MaxStr, col.MinStr)
 }
 
@@ -471,8 +444,11 @@ func (fier *Classifier) TrainFeature(featNum int16, trainArr [][]float32) {
 // for individual features to allow the optimizer
 // to only retrain a single feature when it
 // changes things.
-func (feat *Feature) clearFeatureForRetrain() {
-	feat.Buckets = make(map[int16]*QuantList)
+func (fier *Classifier) clearFeatureForRetrain(feat *Feature) {
+	feat.Buckets = make([]map[int16]*QuantList, fier.MaxNumBuck)
+	for nb := int16(0); nb <= fier.MaxNumBuck; nb++ {
+		feat.Buckets[nb] = make(map[int16]*QuantList)
+	}
 	feat.NumRow = 0
 }
 
@@ -483,7 +459,7 @@ func (feat *Feature) clearFeatureForRetrain() {
 func (fier *Classifier) clearForRetrain() {
 	feats := fier.ColDef
 	for _, feat := range feats {
-		feat.clearFeatureForRetrain()
+		fier.clearFeatureForRetrain(feat)
 	}
 }
 
@@ -505,7 +481,7 @@ func (fier *Classifier) Retrain(rows [][]float32) {
 // for a given feature.
 func (fier *Classifier) RetrainFeature(featNdx int16, dataArr [][]float32) {
 	feat := fier.ColDef[featNdx]
-	feat.clearFeatureForRetrain()
+	fier.clearFeatureForRetrain(feat)
 	fier.TrainFeature(featNdx, dataArr)
 }
 

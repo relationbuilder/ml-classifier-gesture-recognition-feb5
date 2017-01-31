@@ -157,14 +157,30 @@ func (fier *Classifier) ClassRow(drow []float32) *ResultForRow {
 		if feat.Enabled == false {
 			continue
 		}
-		buckId := feat.bucketId(fier, dval)
-		buck, bfound := feat.Buckets[buckId]
-		if bfound != true {
-			spec := feat.Spec
-			fmt.Printf("L163: No Bucket found dval=%v buckId=%v fc=%v effMin=%v effMax=%v  effRange=%v numBuck=%v ",
-				dval, buckId, fc, feat.EffMinVal, feat.EffMaxVal, feat.EffRange, feat.NumBuck)
-			fmt.Printf("  minFlt=%v maxFlt=%v  absRange=%v\n",
-				spec.MinFlt, spec.MaxFlt, spec.AbsRange)
+
+		// This is critical feature where we try to find the most
+		// precise bucket we can working backwards to less precise
+		// buckets until we know we will always find a bucket when
+		// it reaches 1 which is essentially the class probability
+		// but we will not use that one.
+		buckId := int16(-16001)
+		buck, bfound := feat.Buckets[0][buckId]
+		numBuck := fier.MaxNumBuck - 1
+		for ; numBuck > 1; numBuck-- {
+			buckId = feat.bucketId(fier, dval, numBuck)
+			buck, bfound = feat.Buckets[int16(numBuck)][buckId]
+			//fmt.Printf("L172: numBuck=%v dval=%v buckId=%v bfound=%v buck=%v\n", numBuck, dval, buckId, bfound, buck)
+
+			//if bfound != true {
+			//	spec := feat.Spec
+			//	fmt.Printf("L163: No Bucket found dval=%v numBuck=%v buckId=%v fc=%v effMin=%v effMax=%v  effRange=%v ",
+			//		dval, numBuck, buckId, fc, feat.EffMinVal, feat.EffMaxVal, feat.EffRange)
+			//	fmt.Printf("  minFlt=%v maxFlt=%v  absRange=%v\n",
+			//		spec.MinFlt, spec.MaxFlt, spec.AbsRange)
+			//}
+			if bfound == true {
+				break
+			}
 		}
 
 		if bfound == true {
@@ -192,6 +208,9 @@ func (fier *Classifier) ClassRow(drow []float32) *ResultForRow {
 					clswrk = new(ResultItem)
 					clsm[classId] = clswrk
 				}
+				// TODO: This should be done using
+				//  the WeightByLevel to allow the optimizer
+				//  more precise control.
 				clswrk.Prob += workProb * feat.FeatWeight
 				//clswrk.Prob += baseProb * feat.FeatWeight
 				//fmt.Printf("190: col%v val=%v buck=%v class=%v baseProb=%v outProb=%v\n",
@@ -315,6 +334,7 @@ func (fier *Classifier) MakeByClassStats(sr *SimpResults, tstdta [][]float32) *R
 	//   every one of the low level optimizer
 	//   runs so it should be computed once rather
 	//   than for every time we compute a result.
+	//fmt.Printf("L335: tout=%v\n  byClass=%v\n sr=%v\n  sr.Rows=%v\n", tout, byClass, sr, sr.Rows)
 	classCol := fier.ClassCol
 	for _, row := range tstdta {
 		actClassId := int16(row[classCol])
@@ -331,6 +351,7 @@ func (fier *Classifier) MakeByClassStats(sr *SimpResults, tstdta [][]float32) *R
 
 	// for accurate recall we need the count of rows
 	// by actual class for the test rows.
+	//fmt.Printf("L351: tout=%v\n  byClass=%v\n sr=%v\n  sr.Rows=%v\n", tout, byClass, sr, sr.Rows)
 	for _, row := range sr.Rows {
 		classId := row.BestClass
 

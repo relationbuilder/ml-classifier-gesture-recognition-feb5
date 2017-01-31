@@ -4,7 +4,7 @@ package qprob
 import (
 	"fmt"
 	rand "math/rand"
-	"qutil"
+	//"qutil"
 )
 
 const OptMaxBuck = int16(500)
@@ -76,6 +76,7 @@ func (fier *Classifier) MakeOptFeatList(targLen int) []int16 {
 	return tout
 }
 
+/*
 func (fier *Classifier) ChooseRandClassId() int16 {
 	// TODO: ClassIds should be cached once computed in fier
 	// so we do not have to recompute them every time.
@@ -84,8 +85,10 @@ func (fier *Classifier) ChooseRandClassId() int16 {
 	classPos := rand.Int31n(int32(numClass))
 	return classes[classPos]
 }
+*/
 
 // run one optimizer pass return new precision and if we kept it.
+/*
 func (fier *Classifier) optRunOne(featNdx int16, newNumBuck int16, newWeight float32, lastPrec float32, lastRecall float32, trainRows [][]float32, testRows [][]float32) (float32, float32, bool) {
 	feat := fier.ColDef[featNdx]
 	oldWeight := feat.FeatWeight
@@ -158,7 +161,9 @@ func (fier *Classifier) optRunOne(featNdx int16, newNumBuck int16, newWeight flo
 	} // reverse
 	return currPrec, currRecall, keepFlg
 }
+*/
 
+/*
 func (fier *Classifier) optRunOneFeatOneChange(changeSel int32, featNdx int16, lastPrec float32, lastRecall float32, trainRows [][]float32, testRows [][]float32) (float32, float32, int16) {
 	// We can depend on optRunOne to reset the feature to
 	// it's original value if there was no improvement.
@@ -276,7 +281,9 @@ func (fier *Classifier) optRunOneFeatOneChange(changeSel int32, featNdx int16, l
 	}
 	return currPrec, currRecall, keepCnt
 }
+*/
 
+/*
 func (fier *Classifier) optRunOneFeat(featNdx int16, lastPrec float32, lastRecall float32, trainRows [][]float32, testRows [][]float32) (float32, float32, int16) {
 
 	changeSel := rand.Int31n(4)
@@ -295,11 +302,13 @@ func (fier *Classifier) optRunOneFeat(featNdx int16, lastPrec float32, lastRecal
 	}
 	return currPrec, currRecall, keepCnt
 }
+*/
 
 //func saveOptSettings()
 // func recordOptSettings()
 // func loadOptSettings()
 
+/*
 // Randomise the feature settings prior to starting
 // the optimizer.   Will need this for Genetic algorithm
 // latter.
@@ -309,6 +318,7 @@ func (fier *Classifier) RandomizeOptSettings() {
 		feat.NumBuck = int16(rand.Int31n(int32(OptMaxBuck)))
 	}
 }
+*/
 
 /* Each optimizer run must only use data from the test data set.
 which means we must separate the test data into two sets so it
@@ -334,6 +344,7 @@ complexity which is Try to Turn features off,  Try to reduce
 number of Buckets and try to keep priority close as possible to the
 default priority of 1. The least complex system would have one
 feature enabled with 2 buckets */
+/*
 func (fier *Classifier) OptProcess(splitOneEvery int, maxTimeSec float64, targetPrecis float32) {
 	fmt.Printf("\nOptProcess label=%s TrainFi=%s\n", fier.Label, fier.TrainFiName)
 	startTime := Nowms()
@@ -460,3 +471,4 @@ func (fier *Classifier) OptProcess(splitOneEvery int, maxTimeSec float64, target
 	} // for keep running
 	fier.Retrain(origTrainRows)
 }
+*/

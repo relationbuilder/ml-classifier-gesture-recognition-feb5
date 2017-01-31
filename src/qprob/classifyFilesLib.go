@@ -152,10 +152,10 @@ func ProcessRowsRows(fier *Classifier, req *ClassifyRequest, rows [][]float32, i
 */
 func ClassifyTestFiles(req *ClassifyRequest) {
 
-	fmt.Printf("\rClassifyFiles\r  trainFiName=%s\r  testFiName=%s\r  numBuck=%v\n",
-		req.TrainInFi, req.TestInFi, req.NumBuck)
+	fmt.Printf("\rClassifyFiles\r  trainFiName=%s\r  testFiName=%s\r  maxNumBuck=%v\n",
+		req.TrainInFi, req.TestInFi, req.MaxNumBuck)
 
-	fier := LoadClassifierTrainFile(req.TrainInFi, "test", req.NumBuck)
+	fier := LoadClassifierTrainFile(req.TrainInFi, "test", req.MaxNumBuck)
 	fier.Req = req
 
 	fmt.Println("constructor complete")
@@ -169,9 +169,11 @@ func ClassifyTestFiles(req *ClassifyRequest) {
 		req.Header = header
 		fmt.Printf("Loaded %v rows\n", len(testRows))
 
-		if req.DoOpt {
-			fier.OptProcess(1, req.OptMaxTime, 3.0)
-		}
+		/*
+			if req.DoOpt {
+				fier.OptProcess(1, req.OptMaxTime, 3.0)
+			}
+		*/
 		ProcessRowsRows(fier, req, testRows, req.TestInFi, req.TestOutFi, true)
 	}
 
@@ -198,7 +200,7 @@ func ClassifyTestFilesLargeFile(req *ClassifyRequest) {
 	sb := &sbb
 	trainFiName := req.TrainInFi
 	testFiName := req.TestInFi
-	numBuck := req.NumBuck
+	numBuck := req.MaxNumBuck
 
 	fmt.Fprintf(sb, "\rClassifyFiles\r  trainFiName=%s\r  testFiName=%s\r  numBuck=%v\n",
 		trainFiName, testFiName, numBuck)
@@ -284,9 +286,12 @@ func printClassifyFilesHelp() {
 					   By convention all output files should 
 					   end with .out.csv
 					
-	-numBuck=10        Number of qanta buckets to use by default
-	                   for the model but the optimizer may change
-					   this on a feature by feature basis 
+	-maxBuck=10        Maximum number of buckets the system is 
+	                   allowed to use when computing quanta. This
+					   can significantly increase RAM and under
+					   some conditions it is desirable to limit
+					   maxNum to prevent too constrained of
+					   selection.  Defaults to 10
 	
 	-writeJSON=true    if present then write results to JSON files
 	                   otherwise will only generate CSV.
@@ -511,7 +516,7 @@ func ParseClassifyFileCommandParms(args []string) *ClassifyRequest {
 	aReq.ModelFi = parms.Sval("model", aReq.TrainInFi)
 	aReq.ClassOutFi = parms.Sval("classout", defCSVOutName(aReq.ClassInFi))
 	aReq.TestOutFi = parms.Sval("testout", defCSVOutName(aReq.TestInFi))
-	aReq.NumBuck = int16(parms.Ival("numbuck", 10))
+	aReq.MaxNumBuck = int16(parms.Ival("maxbuck", 10))
 	aReq.LoadModel = parms.Bval("loadModel", true)
 	aReq.WriteJSON = parms.Bval("writejson", false)
 	aReq.WriteCSV = parms.Bval("writeCSV", true)

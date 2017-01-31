@@ -14,7 +14,7 @@
 :: then run utility to convert raw stock data into machine learning
 ::  data python stock-prep-sma.py then  you can run
 :: this module.
-classifyFiles -train=data/spy.slp30.train.csv -test=data/spy.slp30.test.csv -numBuck=140 -testOut=tmpout/spy.slp30.out.csv -doOpt=false -optrandomize=false -optMaxTime=1  -OptClassId=1 -OptMaxPrec=0.7 -OptMinRecall=0.001
+classifyFiles -train=data/spy.slp30.train.csv -test=data/spy.slp30.test.csv -maxBuck=140 -testOut=tmpout/spy.slp30.out.csv -doOpt=false -optrandomize=false -optMaxTime=1  -OptClassId=1 -OptMaxPrec=0.7 -OptMinRecall=0.001
 
 :: -optMaxTime=19   Number of seconds the optimer is allowed to run
 ::

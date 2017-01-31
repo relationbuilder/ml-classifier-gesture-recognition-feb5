@@ -11,7 +11,7 @@ type ClassifyRequest struct {
 	TestInFi   string
 	ClassInFi  string
 	ClassOutFi string
-	NumBuck    int16
+	MaxNumBuck int16
 	ModelFi    string
 
 	TestOutFi string
