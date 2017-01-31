@@ -573,7 +573,7 @@ func LoadClassifierTrainFile(fiName string, label string, numBuck int16) *Classi
 	// contents to create the columns
 	scanner := bufio.NewScanner(file)
 	LoadClassifierTrainStream(fier, scanner)
-	fier.SetEffMinMaxPortSet(0.015) // remove 1.5% of outlier records from top and bottom
+	fier.SetEffMinMaxPortSet(0.000015) // remove 1.5% of outlier records from top and bottom
 	// when computing range.
 	return fier
 }

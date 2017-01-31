@@ -16,7 +16,9 @@ There are several focus areas where I can invest time. Please let me know if you
 
 ##Roughly prioritized Feature Work##
 
-* Fix the Breast Cancer demo that is currently reporting 75% accuracy.  The Bucket # seems to be messed up.  In a column with a value range from 1..10 and numBuck=10 it is assigning value 2 to bucket 92. 
+* Enhance QuantProb classifier so when classifying a given column we use the largest number of buckets possible then fall back for that column to a lesser number when we get a miss on the number of buckets.  This means we need to create the index for 2 to N buckets which means we need to add one more layer to the model builder.   This should allow us to use the most specific value match we can with reasonable fallback. 
+
+* DONE:JOE:2017-01-30: Fix the Breast Cancer demo that is currently reporting 75% accuracy.  The Bucket # seems to be messed up.  In a column with a value range from 1..10 and numBuck=10 it is assigning value 2 to bucket 92. 
 
 * If we want to use Optimizer for data importance discovery then we should consider tracking weights by bucket ID rather than the feature level.  That way if we boost  the weight of a given bucket it gives us a direct signal on the value of that data element.   
 
