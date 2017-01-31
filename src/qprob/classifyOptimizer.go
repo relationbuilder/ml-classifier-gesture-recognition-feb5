@@ -4,10 +4,9 @@ package qprob
 import (
 	"fmt"
 	rand "math/rand"
-	//"qutil"
+	"qutil"
 )
 
-const OptMaxBuck = int16(500)
 const OptMaxWeight = float32(50.0)
 
 type OptFeature struct {
@@ -76,7 +75,6 @@ func (fier *Classifier) MakeOptFeatList(targLen int) []int16 {
 	return tout
 }
 
-/*
 func (fier *Classifier) ChooseRandClassId() int16 {
 	// TODO: ClassIds should be cached once computed in fier
 	// so we do not have to recompute them every time.
@@ -85,16 +83,14 @@ func (fier *Classifier) ChooseRandClassId() int16 {
 	classPos := rand.Int31n(int32(numClass))
 	return classes[classPos]
 }
-*/
 
 // run one optimizer pass return new precision and if we kept it.
-/*
 func (fier *Classifier) optRunOne(featNdx int16, newNumBuck int16, newWeight float32, lastPrec float32, lastRecall float32, trainRows [][]float32, testRows [][]float32) (float32, float32, bool) {
 	feat := fier.ColDef[featNdx]
 	oldWeight := feat.FeatWeight
-	oldNumBuck := feat.NumBuck
+	oldNumBuck := feat.MaxNumBuck
 	feat.FeatWeight = newWeight
-	feat.NumBuck = newNumBuck
+	feat.MaxNumBuck = newNumBuck
 	currPrec := lastPrec
 	currRecall := lastRecall
 	req := fier.Req
@@ -103,9 +99,9 @@ func (fier *Classifier) optRunOne(featNdx int16, newNumBuck int16, newWeight flo
 	if oldWeight == newWeight && oldNumBuck == newNumBuck {
 		return lastPrec, lastRecall, false
 	}
-	if oldNumBuck != newNumBuck {
-		fier.RetrainFeature(featNdx, trainRows)
-	}
+	//if oldNumBuck != newNumBuck {
+	//	fier.RetrainFeature(featNdx, trainRows)
+	//}
 	_, sumRows := fier.ClassifyRows(testRows)
 	clasSum := fier.MakeByClassStats(sumRows, testRows)
 	optClass, optClassFnd := clasSum.ByClass[optClassId]
@@ -130,18 +126,18 @@ func (fier *Classifier) optRunOne(featNdx int16, newNumBuck int16, newWeight flo
 			// We want to be able to force the engine towards a minimum
 			// recall under some conditions.
 			keepFlg = true
-		} else if currPrec > req.OptMaxPrec && currRecall > lastRecall {
-			keepFlg = true
+			//} else if currPrec > req.OptMaxPrec && currRecall > lastRecall {
+			//	keepFlg = true
 		} else if currPrec > lastPrec {
 			// Precision improved
 			keepFlg = true
-		} else if optClass.Recall > lastRecall && (optClass.Prec >= lastPrec || currRecall < 0.16) {
+		} else if optClass.Recall > lastRecall && (optClass.Prec >= lastPrec) {
 			// TODO: currRecall < 0.2 should be set from command line as minRecall.
 			// Recall improved while precsion was not hurt
-			keepFlg = true
-		} else if optClass.Prec >= currPrec && optClass.Recall >= currRecall && newNumBuck < oldNumBuck {
+			//	keepFlg = true
+			//} else if optClass.Prec >= currPrec && optClass.Recall >= currRecall && newNumBuck < oldNumBuck {
 			// Reduced complexity without hurting precision or recall
-			keepFlg = true
+			//	keepFlg = true
 		}
 	}
 
@@ -152,18 +148,16 @@ func (fier *Classifier) optRunOne(featNdx int16, newNumBuck int16, newWeight flo
 			featNdx, lastPrec, currPrec, lastRecall, currRecall, oldNumBuck, newNumBuck, oldWeight, newWeight)
 	} else {
 		//fmt.Printf(" reverse newNumBuck=%v newWeight=%v\n", newNumBuck, newWeight)
-		feat.NumBuck = oldNumBuck
+		feat.MaxNumBuck = oldNumBuck
 		feat.FeatWeight = oldWeight
 		currPrec = lastPrec
-		if oldNumBuck != newNumBuck {
-			fier.RetrainFeature(featNdx, trainRows)
-		}
+		//if oldNumBuck != newNumBuck {
+		//	fier.RetrainFeature(featNdx, trainRows)
+		//}
 	} // reverse
 	return currPrec, currRecall, keepFlg
 }
-*/
 
-/*
 func (fier *Classifier) optRunOneFeatOneChange(changeSel int32, featNdx int16, lastPrec float32, lastRecall float32, trainRows [][]float32, testRows [][]float32) (float32, float32, int16) {
 	// We can depend on optRunOne to reset the feature to
 	// it's original value if there was no improvement.
@@ -174,83 +168,92 @@ func (fier *Classifier) optRunOneFeatOneChange(changeSel int32, featNdx int16, l
 	keepCnt := int16(0)
 
 	switch changeSel {
+	/*
+		case 0:
+			// Try set weight to random number smaller than current weight
+			if feat.FeatWeight > 0.0 {
+				adjWeight := feat.FeatWeight * rand.Float32()
+				currPrec, currRecall, kept = fier.optRunOne(featNdx, feat.MaxNumBuck, adjWeight, currPrec, currRecall, trainRows, testRows)
+				if kept {
+					keepCnt++
+				}
+			} else {
+				currPrec, currRecall, kept = fier.optRunOne(featNdx, feat.MaxNumBuck, 1.0, currPrec, currRecall, trainRows, testRows)
+				if kept {
+					keepCnt++
+				}
+			}
+
+		case 1:
+
+			if feat.FeatWeight > 0.0 {
+				// Try Turn feature off by setting both weight to zero and buckets to 1
+				currPrec, currRecall, kept = fier.optRunOne(featNdx, 3, 0.0, currPrec, currRecall, trainRows, testRows)
+				if kept {
+					// If we turned it off then see if it still likes the class as a single
+					currPrec, currRecall, kept = fier.optRunOne(featNdx, 3, 1.0, currPrec, currRecall, trainRows, testRows)
+					keepCnt++
+				}
+			} else {
+				// try set feat Weight to 0
+				currPrec, currRecall, kept = fier.optRunOne(featNdx, feat.MaxNumBuck, OptMaxWeight, currPrec, currRecall, trainRows, testRows)
+				if kept {
+					keepCnt++
+				}
+			}
+	*/
 	case 0:
-		// Try set weight to random number smaller than current weight
-		if feat.FeatWeight > 0.0 {
-			adjWeight := feat.FeatWeight * rand.Float32()
-			currPrec, currRecall, kept = fier.optRunOne(featNdx, feat.NumBuck, adjWeight, currPrec, currRecall, trainRows, testRows)
-			if kept {
-				keepCnt++
-			}
-		} else {
-			currPrec, currRecall, kept = fier.optRunOne(featNdx, feat.NumBuck, 1.0, currPrec, currRecall, trainRows, testRows)
-			if kept {
-				keepCnt++
-			}
-		}
-
-	case 1:
-
-		if feat.FeatWeight > 0.0 {
-			// Try Turn feature off by setting both weight to zero and buckets to 1
-			currPrec, currRecall, kept = fier.optRunOne(featNdx, 1.0, 0.0, currPrec, currRecall, trainRows, testRows)
-			if kept {
-				// If we turned it off then see if it still likes the class as a single
-				currPrec, currRecall, kept = fier.optRunOne(featNdx, 1.0, 1.0, currPrec, currRecall, trainRows, testRows)
-				keepCnt++
-			}
-		} else {
-			// try set feat Weight to 0
-			currPrec, currRecall, kept = fier.optRunOne(featNdx, feat.NumBuck, OptMaxWeight, currPrec, currRecall, trainRows, testRows)
-			if kept {
-				keepCnt++
-			}
-		}
-
-	case 2:
 
 		// Try set Weight to random number between 0 and maxWeight
 		adjWeight := (OptMaxWeight * rand.Float32())
-		currPrec, currRecall, kept = fier.optRunOne(featNdx, feat.NumBuck, adjWeight, currPrec, currRecall, trainRows, testRows)
+		if adjWeight < 0.01 {
+			adjWeight = 0.01
+		}
+		currPrec, currRecall, kept = fier.optRunOne(featNdx, feat.MaxNumBuck, adjWeight, currPrec, currRecall, trainRows, testRows)
 		if kept {
 			keepCnt++
 		}
 
-	case 3:
+		/*
+			case 3:
 
-		// Try Num Buck to Max Buckets
-		if feat.FeatWeight > 0.0 {
-			currPrec, currRecall, kept = fier.optRunOne(featNdx, OptMaxBuck, feat.FeatWeight, currPrec, currRecall, trainRows, testRows)
-			if kept {
-				keepCnt++
-			}
-		}
+				// Try Num Buck to Max Buckets
+				if feat.FeatWeight > 0.0 {
+					currPrec, currRecall, kept = fier.optRunOne(featNdx, fier.MaxNumBuck, feat.FeatWeight, currPrec, currRecall, trainRows, testRows)
+					if kept {
+						keepCnt++
+					}
+				}
 
-	case 4:
-		// Try Num Buck to 2
-		if feat.FeatWeight > 0.0 {
-			currPrec, currRecall, kept = fier.optRunOne(featNdx, 2, feat.FeatWeight, currPrec, currRecall, trainRows, testRows)
-			if kept {
-				keepCnt++
-			}
-		}
+			case 4:
+				// Try Num Buck to 2
+				if feat.FeatWeight > 0.0 {
+					currPrec, currRecall, kept = fier.optRunOne(featNdx, 3, feat.FeatWeight, currPrec, currRecall, trainRows, testRows)
+					if kept {
+						keepCnt++
+					}
+				}
 
-	case 5:
-		// Try Set Num Buck to 1/2 current number
-		if (feat.FeatWeight > 0.0) && (feat.NumBuck > 6) {
-			adjNumBuck := feat.NumBuck / 2
-			currPrec, currRecall, kept = fier.optRunOne(featNdx, adjNumBuck, feat.FeatWeight, currPrec, currRecall, trainRows, testRows)
-			if kept {
-				keepCnt++
-			}
+			case 5:
+				// Try Set Num Buck to 1/2 current number
+				if (feat.FeatWeight > 0.0) && (feat.MaxNumBuck > 6) {
+					adjNumBuck := feat.MaxNumBuck / 2
+					if adjNumBuck < 3 {
+						adjNumBuck = 3
+					}
+					currPrec, currRecall, kept = fier.optRunOne(featNdx, adjNumBuck, feat.FeatWeight, currPrec, currRecall, trainRows, testRows)
+					if kept {
+						keepCnt++
+					}
 
-		}
+				}
+		*/
 
-	case 6:
+	default:
 		// Try set NumBuck to a random value
 		if feat.FeatWeight != 0 {
-			adjNumBuck := int16(rand.Int31n(int32(500)))
-			if adjNumBuck > 2 {
+			adjNumBuck := int16(rand.Int31n(int32(fier.MaxNumBuck)))
+			if adjNumBuck > 3 {
 				currPrec, currRecall, kept = fier.optRunOne(featNdx, adjNumBuck, feat.FeatWeight, currPrec, currRecall, trainRows, testRows)
 				if kept {
 					keepCnt++
@@ -258,67 +261,64 @@ func (fier *Classifier) optRunOneFeatOneChange(changeSel int32, featNdx int16, l
 			}
 		}
 
-	case 7:
-		// Try first set weight and adjNum buck to random values
-		if feat.FeatWeight != 0 {
-			adjNumBuck := int16(rand.Int31n(int32(255)))
-			adjWeight := (OptMaxWeight * rand.Float32())
-			if adjNumBuck > 2 {
-				currPrec, currRecall, kept = fier.optRunOne(featNdx, adjNumBuck, adjWeight, currPrec, currRecall, trainRows, testRows)
+		/*
+			case 7:
+				// Try first set weight and adjNum buck to random values
+				if feat.FeatWeight != 0 {
+					adjNumBuck := int16(rand.Int31n(int32(fier.MaxNumBuck)))
+					adjWeight := (OptMaxWeight * rand.Float32())
+					if adjNumBuck < 3 {
+						adjNumBuck = 3
+					}
+					currPrec, currRecall, kept = fier.optRunOne(featNdx, adjNumBuck, adjWeight, currPrec, currRecall, trainRows, testRows)
+					if kept {
+						keepCnt++
+					}
+				}
+
+			default:
+				// Try set numBuck  to to 2 with default weight
+				currPrec, currRecall, kept = fier.optRunOne(featNdx, 3, 1.0, currPrec, currRecall, trainRows, testRows)
 				if kept {
 					keepCnt++
 				}
-
-			}
-		}
-
-	default:
-		// Try set numBuck  to to 2 with default weight
-		currPrec, currRecall, kept = fier.optRunOne(featNdx, 2, 1.0, currPrec, currRecall, trainRows, testRows)
-		if kept {
-			keepCnt++
-		}
+		*/
 	}
 	return currPrec, currRecall, keepCnt
 }
-*/
 
-/*
 func (fier *Classifier) optRunOneFeat(featNdx int16, lastPrec float32, lastRecall float32, trainRows [][]float32, testRows [][]float32) (float32, float32, int16) {
 
-	changeSel := rand.Int31n(4)
+	//changeSel := rand.Int31n(4)
 	currPrec := lastPrec
 	currRecall := lastRecall
 	keepCnt := int16(0)
-	switch changeSel {
-	case 1:
-		// every so often try all the changes
-		for trySel := 1; trySel < 9; trySel++ {
-			currPrec, currRecall, keepCnt = fier.optRunOneFeatOneChange(int32(trySel), featNdx, lastPrec, lastRecall, trainRows, testRows)
-		}
-	default:
-		trySel := rand.Int31n(9)
-		currPrec, currRecall, keepCnt = fier.optRunOneFeatOneChange(trySel, featNdx, lastPrec, lastRecall, trainRows, testRows)
-	}
+	//switch changeSel {
+	//case 1:
+	//	// every so often try all the changes
+	//	for trySel := 1; trySel < 9; trySel++ {
+	//		currPrec, currRecall, keepCnt = fier.optRunOneFeatOneChange(int32(trySel), featNdx, lastPrec, lastRecall, trainRows, testRows)
+	//	}
+	//default:
+	trySel := rand.Int31n(9)
+	currPrec, currRecall, keepCnt = fier.optRunOneFeatOneChange(trySel, featNdx, lastPrec, lastRecall, trainRows, testRows)
+	//}
 	return currPrec, currRecall, keepCnt
 }
-*/
 
 //func saveOptSettings()
 // func recordOptSettings()
 // func loadOptSettings()
 
-/*
 // Randomise the feature settings prior to starting
 // the optimizer.   Will need this for Genetic algorithm
 // latter.
 func (fier *Classifier) RandomizeOptSettings() {
 	for _, feat := range fier.ColDef {
 		feat.FeatWeight = rand.Float32() * OptMaxWeight
-		feat.NumBuck = int16(rand.Int31n(int32(OptMaxBuck)))
+		feat.MaxNumBuck = int16(rand.Int31n(int32(fier.MaxNumBuck)))
 	}
 }
-*/
 
 /* Each optimizer run must only use data from the test data set.
 which means we must separate the test data into two sets so it
@@ -344,7 +344,7 @@ complexity which is Try to Turn features off,  Try to reduce
 number of Buckets and try to keep priority close as possible to the
 default priority of 1. The least complex system would have one
 feature enabled with 2 buckets */
-/*
+
 func (fier *Classifier) OptProcess(splitOneEvery int, maxTimeSec float64, targetPrecis float32) {
 	fmt.Printf("\nOptProcess label=%s TrainFi=%s\n", fier.Label, fier.TrainFiName)
 	startTime := Nowms()
@@ -471,4 +471,3 @@ func (fier *Classifier) OptProcess(splitOneEvery int, maxTimeSec float64, target
 	} // for keep running
 	fier.Retrain(origTrainRows)
 }
-*/

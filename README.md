@@ -6,10 +6,10 @@ A general purpose, high performance machine learning classifier.    [wiki](https
 
 | Prediction Type                          | Quantized Classifier | Quant  time ms | Tensorflow CNN | TF time ms |
 | ---------------------------------------- | -------------------: | -------------: | -------------: | ---------: |
-| Classify breast cancer                   |               97.40% |             60 |         94.81% |      7,080 |
-| Predict death or survival of Titanic passengers |               80.90% |             80 |         77.53% |      5,520 |
-| Predict Diabetes                         |                69.4% |             80 |         65.89% |      7,330 |
-| Predict Liver disorder                   |                56.4% |             70 |         67.35% |      6,160 |
+| Classify breast cancer                   |               94.81% |             60 |         94.81% |      7,080 |
+| Predict death or survival of Titanic passengers |               82.00% |             80 |         77.53% |      5,520 |
+| Predict Diabetes                         |               70.58% |             80 |         65.89% |      7,330 |
+| Predict Liver disorder                   |                62.5% |             70 |         67.35% |      6,160 |
 
 > > * Tests measures Precision at 100% recall. Recall forced to 100% by choosing highest Prob Class from answer as the class chosen.
 > > * Tensorflow n_epoch = 30, batch=55.   Tensorflow CUDA = GeForce GTX 960M.  QuantProb is only using system CPU and uses no optimizer.

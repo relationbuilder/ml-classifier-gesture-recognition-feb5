@@ -169,11 +169,10 @@ func ClassifyTestFiles(req *ClassifyRequest) {
 		req.Header = header
 		fmt.Printf("Loaded %v rows\n", len(testRows))
 
-		/*
-			if req.DoOpt {
-				fier.OptProcess(1, req.OptMaxTime, 3.0)
-			}
-		*/
+		if req.DoOpt {
+			fier.OptProcess(1, req.OptMaxTime, 3.0)
+		}
+
 		ProcessRowsRows(fier, req, testRows, req.TestInFi, req.TestOutFi, true)
 	}
 

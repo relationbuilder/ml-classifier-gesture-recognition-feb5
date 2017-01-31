@@ -165,7 +165,7 @@ func (fier *Classifier) ClassRow(drow []float32) *ResultForRow {
 		// but we will not use that one.
 		buckId := int16(-16001)
 		buck, bfound := feat.Buckets[0][buckId]
-		numBuck := fier.MaxNumBuck - 1
+		numBuck := feat.MaxNumBuck - 1
 		for ; numBuck > 1; numBuck-- {
 			buckId = feat.bucketId(fier, dval, numBuck)
 			buck, bfound = feat.Buckets[int16(numBuck)][buckId]
@@ -224,7 +224,7 @@ func (fier *Classifier) ClassRow(drow []float32) *ResultForRow {
 	bestProb := float32(0.0)
 	for classId, classWrk := range clsm {
 		if classWrk.Prob <= 0.0 {
-			fmt.Print("ERR: Class Prob should not be 0 classWrk=%v\n", classWrk)
+			fmt.Printf("L227: ERR: Class Prob should not be 0 classId=%v classWrk=%v\n", classId, classWrk)
 		}
 		//classWrk.Prob = classWrk.Prob / float32(fier.totFeatWeight())
 		classWrk.Prob = classWrk.Prob / float32(len(fier.ColDef))

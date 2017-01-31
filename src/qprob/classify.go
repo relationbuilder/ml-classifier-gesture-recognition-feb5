@@ -46,16 +46,17 @@ type QuantList struct {
 // data for 1 feature of data or in CSV this
 // would be 1 column of data.
 type Feature struct {
-	Buckets       []map[int16]*QuantList
-	Spec          *CSVCol
-	Enabled       bool
-	ProcType      QuantType
-	EffMaxVal     float32
-	EffMinVal     float32
-	EffRange      float32
-	BuckSize      []float32
-	FeatWeight    float32
-	WeightByLevel []float32
+	Buckets    []map[int16]*QuantList
+	Spec       *CSVCol
+	Enabled    bool
+	ProcType   QuantType
+	EffMaxVal  float32
+	EffMinVal  float32
+	EffRange   float32
+	BuckSize   []float32
+	FeatWeight float32
+	//WeightByLevel []float32
+	MaxNumBuck int16
 	// Need the following as part of feature to support sparse
 	// feature matrix where not all rows have all featurs.
 	// an example would be text processing where  # feaures
@@ -291,14 +292,15 @@ func (cl *Classifier) makeFeature(col *CSVCol) *Feature {
 	afeat.EffMaxVal = col.MaxFlt
 	afeat.EffMinVal = col.MinFlt
 	afeat.ProcType = QTBucket
-	afeat.WeightByLevel = make([]float32, cl.MaxNumBuck)
-	afeat.Buckets = make([]map[int16]*QuantList, cl.MaxNumBuck)
+	//afeat.WeightByLevel = make([]float32, cl.MaxNumBuck)
+	afeat.Buckets = make([]map[int16]*QuantList, cl.MaxNumBuck+1)
+	afeat.MaxNumBuck = cl.MaxNumBuck
 	afeat.FeatWeight = 1.0
 	afeat.NumRow = 0
 	afeat.ClassCounts = make(map[int16]int32)
 	afeat.ClassProb = make(map[int16]float32)
-	for nb := int16(0); nb < cl.MaxNumBuck; nb++ {
-		afeat.WeightByLevel[nb] = 1.0
+	for nb := int16(0); nb <= cl.MaxNumBuck; nb++ {
+		//afeat.WeightByLevel[nb] = 1.0
 		afeat.Buckets[nb] = make(map[int16]*QuantList)
 	}
 
@@ -445,7 +447,7 @@ func (fier *Classifier) TrainFeature(featNum int16, trainArr [][]float32) {
 // to only retrain a single feature when it
 // changes things.
 func (fier *Classifier) clearFeatureForRetrain(feat *Feature) {
-	feat.Buckets = make([]map[int16]*QuantList, fier.MaxNumBuck)
+	feat.Buckets = make([]map[int16]*QuantList, fier.MaxNumBuck+1)
 	for nb := int16(0); nb <= fier.MaxNumBuck; nb++ {
 		feat.Buckets[nb] = make(map[int16]*QuantList)
 	}
