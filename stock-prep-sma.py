@@ -85,45 +85,52 @@ def findClass(currNdx, goalRisep, goalDropp, oClose, oHigh, oLow):
 def saveData(fiName):
   pass
 
-inName = "data/spy.csv"
-print("inName=", inName)
-oClose, oHigh, oLow = loadData(inName)
-smaLen = 30
-portSetTrain = 0.90
-print("smaLen=", smaLen)
-sma1 = sma(oClose, smaLen)
-numBar = len(oClose)
-newExt = ".slp" + str(smaLen) + ".csv"
-outName = inName.replace(".csv", newExt )
-outTrainName = outName.replace(".csv", ".train.csv")
-outTestName  = outName.replace(".csv", ".test.csv")
-
-numTrainRow = int((numBar - smaLen) *  portSetTrain)
-print("portion of set for Training=", portSetTrain, " #trainRows=", numTrainRow)
-print ("trainName=", outTrainName, " testName=", outTestName)
-
-def savePortSet(fiName, begNdx, endNdx):
-  with open(fiName, "w") as fout:
-    fout.write("class,sl3,sl6,sl12,sl20,sl30,sl60,sl90\n")
-    for ndx in range(begNdx,endNdx):
+def process(inName, amtRise, amtFall):
   
-      slope1 = slope(ndx,oClose,3)
-      slope2 = slope(ndx,oClose,6)
-      slope3 = slope(ndx,oClose,12)
-      slope4 = slope(ndx,oClose,20)
-      slope5 = slope(ndx,oClose,30)
-      slope6 = slope(ndx,oClose,60)
-      slope7 = slope(ndx,oClose,90)
-      bclass = findClass(ndx, 0.01, 0.01, oClose, oHigh, oLow)
-      tout = [str(bclass),str(slope1),str(slope2),str(slope3),str(slope4),str(slope5),str(slope6), str(slope7)]
-      ts = ",".join(tout)
-      print("ndx=",ndx, "s=", ts)
-      fout.write(ts)
-      fout.write("\n")
-  
-savePortSet(outTrainName, smaLen+1, smaLen + numTrainRow)
-savePortSet(outTestName,  smaLen+numTrainRow+1, numBar)
+  print("inName=", inName)
+  oClose, oHigh, oLow = loadData(inName)
+  smaLen = 30
+  portSetTrain = 0.80
+  print("smaLen=", smaLen)
+  sma1 = sma(oClose, smaLen)
+  numBar = len(oClose)
+  newExt = ".slp" + str(smaLen) + ".csv"
+  outName = inName.replace(".csv", newExt )
+  outTrainName = outName.replace(".csv", ".train.csv")
+  outTestName  = outName.replace(".csv", ".test.csv")
+
+  numTrainRow = int((numBar - smaLen) *  portSetTrain)
+  print("portion of set for Training=", portSetTrain, " #trainRows=", numTrainRow)
+  print ("trainName=", outTrainName, " testName=", outTestName)
+
+  def savePortSet(fiName, begNdx, endNdx):
+    with open(fiName, "w") as fout:
+      fout.write("class,sl3,sl6,sl12,sl20,sl30,sl60,sl90\n")
+      for ndx in range(begNdx,endNdx):
+    
+        slope1 = slope(ndx,oClose,3)
+        slope2 = slope(ndx,oClose,6)
+        slope3 = slope(ndx,oClose,12)
+        slope4 = slope(ndx,oClose,20)
+        slope5 = slope(ndx,oClose,30)
+        slope6 = slope(ndx,oClose,60)
+        slope7 = slope(ndx,oClose,90)
+        bclass = findClass(ndx, amtRise, amtFall, oClose, oHigh, oLow)
+        tout = [str(bclass),str(slope1),str(slope2),str(slope3),str(slope4),str(slope5),str(slope6), str(slope7)]
+        ts = ",".join(tout)
+        print("ndx=",ndx, "s=", ts)
+        fout.write(ts)
+        fout.write("\n")
+    
+  savePortSet(outTrainName, smaLen+1, smaLen + numTrainRow)
+  savePortSet(outTestName,  smaLen+numTrainRow+1, numBar)
 
 
+process("data/spy.csv", 0.01, 0.01)
 
+# Seek silver bars that rise more than 1.5% before
+# falling by 0.3%  This represents a 5X profit
+# compared to losses so a sucess rate above 0.2
+# is adequate. 
+process("data/slv.csv", 0.015, 0.003)
 

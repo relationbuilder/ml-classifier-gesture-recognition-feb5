@@ -422,13 +422,15 @@ GBLMaxNumBuck = 10 # Increase num buckets for max precision reduce for max recal
 
 #processTest('data/gest/gest_train_ratio2.csv', 'data/gest/gest_test_ratio2.csv', GBLMaxNumBuck)
 
-processTest('data/breast-cancer-wisconsin.adj.data.train.csv', 'data/breast-cancer-wisconsin.adj.data.test.csv', 11)
+#processTest('data/breast-cancer-wisconsin.adj.data.train.csv', 'data/breast-cancer-wisconsin.adj.data.test.csv', 11)
 
 #processTest('data/diabetes.train.csv', 'data/diabetes.test.csv', GBLMaxNumBuck)
 
 #processTest('data/liver-disorder.train.csv', 'data/liver-disorder.test.csv', GBLMaxNumBuck)
 
 #processTest('data/wine.data.usi.train.csv', 'data/wine.data.usi.test.csv', GBLMaxNumBuck)
+
+processTest('data/slv.slp30.train.csv', 'data/slv.slp30.test.csv', 500)
 
 #processTest('data/spy.slp30.train.csv', 'data/spy.slp30.test.csv', 8)
 
