@@ -21,5 +21,5 @@ def fetchYahoo(symbol, begYear, begMonth, begDay,  endYear, endMonth, endDay):
   
 #           symbol begin     End
 fetchYahoo("SPY",  2010,0,1, 2017,1,27)
-fetchYahoo("SLV",  2010,0,1, 2017,1,27)
+fetchYahoo("SLV",  2007,0,1, 2017,1,27)
 
