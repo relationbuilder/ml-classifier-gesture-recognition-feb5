@@ -40,6 +40,16 @@ func SplitFloatArrOneEvery(ain [][]float32, skipNumFirst int, oneEvery int) ([][
 	return mOut, auxOut
 }
 
-// TODO:  We will need a version of this for time series data
-//  that composes the Aux Array out of only rows at the end
-//  of the series.
+// Split the input array into two sets of rows.  Where the
+// second array is sized to be len * testPortion long.
+// Note: This is much faster than SplitFloatArrOneEvery because
+// it only has to allocate new pointers with no underlying
+// copy of the array elements
+func SplitFloatArrTail(ain [][]float32, testPortion float32) ([][]float32, [][]float32) {
+	arrLen := len(ain)
+	arr2Len := int(float32(arrLen) * testPortion)
+	arr1EndNdx := arrLen - arr2Len
+	arr1 := ain[:arr1EndNdx]
+	arr2 := ain[arr1EndNdx+1:]
+	return arr1, arr2
+}
