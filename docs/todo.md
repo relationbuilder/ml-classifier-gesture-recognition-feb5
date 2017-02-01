@@ -16,15 +16,13 @@ There are several focus areas where I can invest time. Please let me know if you
 
 ##Roughly prioritized Feature Work##
 
-* Enhance QuantProb classifier so when classifying a given column we use the largest number of buckets possible then fall back for that column to a lesser number when we get a miss on the number of buckets.  This means we need to create the index for 2 to N buckets which means we need to add one more layer to the model builder.   This should allow us to use the most specific value match we can with reasonable fallback. 
+* DONE:JOE:2017-01-30: Enhance QuantProb classifier so when classifying a given column we use the largest number of buckets possible then fall back for that column to a lesser number when we get a miss on the number of buckets.  This means we need to create the index for 2 to N buckets which means we need to add one more layer to the model builder.   This should allow us to use the most specific value match we can with reasonable fallback. 
 
 * DONE:JOE:2017-01-30: Fix the Breast Cancer demo that is currently reporting 75% accuracy.  The Bucket # seems to be messed up.  In a column with a value range from 1..10 and numBuck=10 it is assigning value 2 to bucket 92. 
 
+* Add by class reporting to tensorflow script results.
+
 * If we want to use Optimizer for data importance discovery then we should consider tracking weights by bucket ID rather than the feature level.  That way if we boost  the weight of a given bucket it gives us a direct signal on the value of that data element.   
-
-* When optimizing if we divide by tot feature weight then increasing value of a column then for buckets that have a low score we are essentially reducing the input from other high scoring columns.  If we divide by numCol or columns providing input then we avoid this complication which would make it difficult to determine what is really important.
-
-* Need to think about how to allow medium probability for a given feature when multiplied ot have a postive effect but for low probability when multiplied we actually want a negative effect. 
 
 * Add a simple analysis component that shows the predictive value of each single feature.  eg: run the classifier for a single feature varying numBuck for that feature.
 
@@ -48,7 +46,7 @@ There are several focus areas where I can invest time. Please let me know if you
 
 * Implement browser display utility to display in nice format data from saveModel
 
-* Add a function which reports by Class and for the entire set What is the minimum Prob Number needed to reach a given level of precision in 5% increments from the base sucess  rate to 100% sucess rate.    This should include the % of recall at each tier. This may be a alternative way to set the optimizer goal where we seek to maximize recall at the X% such as 95% precision. 
+* Add a function which reports by Class and for the entire set What is the minimum Prob Number needed to reach a given level of precision in 5% increments from the base sucess  rate to 100% success rate.    This should include the % of recall at each tier. This may be a alternative way to set the optimizer goal where we seek to maximize recall at the X% such as 95% precision. 
 
 * Split the work for training and classification out to multiple cores.   May as well read X lines in chunks and allow each one to process the input.   Will be easy for classification but may require synchronizing the models for training to avoid two threads updating the same buckets simutaneously but could still have one core doing the load and split,  another core doing the convert to float and a 3rd core doing the document update.   Could also possibly have each core build their own model and merge the counts at the end which would scale better for a distributed architecture.     Another approach would be to switch the trainer so it is feature centric so they share a input set of rows but each process / core is only updating one feature which would remove the risk of overlapping count updates.  Also write a document on how this is approached for the Bayes blog. 
 

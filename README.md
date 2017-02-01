@@ -4,12 +4,13 @@ A general purpose, high performance machine learning classifier.    [wiki](https
 
 #### Basic Test results
 
-| Prediction Type                          | Quantized Classifier | Quant  time ms | Tensorflow CNN | TF time ms |
-| ---------------------------------------- | -------------------: | -------------: | -------------: | ---------: |
-| Classify breast cancer                   |               94.81% |             60 |         94.81% |      7,080 |
-| Predict death or survival of Titanic passengers |               82.00% |             80 |         77.53% |      5,520 |
-| Predict Diabetes                         |               70.58% |             80 |         65.89% |      7,330 |
-| Predict Liver disorder                   |                62.5% |             70 |         67.35% |      6,160 |
+| Prediction Type                          | Quantized Classifier | Quant  time ms |        Tensorflow CNN | TF time ms |
+| ---------------------------------------- | -------------------: | -------------: | --------------------: | ---------: |
+| Classify breast cancer                   |               94.81% |             60 |                94.81% |      7,080 |
+| Predict death or survival of Titanic passengers |               82.00% |             80 |                77.53% |      5,520 |
+| Predict Diabetes                         |               70.58% |             80 |                65.89% |      7,330 |
+| Predict Liver disorder                   |                62.5% |             70 |                67.35% |      6,160 |
+| Stock SPY predict 1% rise before 1% drop. class=1 (success) only | 65.9%  at 24% recall |            390 | 71.43%  at 13% recall |     59,000 |
 
 > > * Tests measures Precision at 100% recall. Recall forced to 100% by choosing highest Prob Class from answer as the class chosen.
 > > * Tensorflow n_epoch = 30, batch=55.   Tensorflow CUDA = GeForce GTX 960M.  QuantProb is only using system CPU and uses no optimizer.
