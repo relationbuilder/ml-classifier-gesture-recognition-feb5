@@ -133,7 +133,7 @@ func ProcessRowsRows(fier *Classifier, req *ClassifyRequest, rows [][]float32, i
 	fmt.Printf("\nSummary By Class\n")
 	clasSum := fier.MakeByClassStats(sumRows, rows)
 	fier.PrintTrainClassProb()
-	fmt.Printf("\nRESULTS FOR TEST DATA\n  Num Train Rows=%v\n", len(rows))
+	fmt.Printf("\nRESULTS FOR TEST DATA\n  Num Test Rows=%v\n", len(rows))
 	fier.PrintResultsByClass(clasSum)
 	// TODO: Print this out nicely
 }

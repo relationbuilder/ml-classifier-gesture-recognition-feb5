@@ -48,3 +48,46 @@ func (sumRes *summaryResult) ToSimpleRowCSV(fier *Classifier) string {
 
 
 */
+
+type AnalResByClass struct {
+	FeatNdx     float32
+	minNumBuck  int16
+	maxNumBuck  int16
+	bestNumBuck int16
+	ByClasses   map[int16]*ResByClass
+}
+
+type AnalResByClassByCol struct {
+	Cols   []*AnalResByClass
+	TotCnt int32
+	SucCnt int32
+	Prec   float32
+	Recall float32
+}
+
+/*
+//If targClass is != -9999 then the results
+// for that class will be used as the driving input where
+// as long as precision is >= targPrecision then increasing
+// recall is chosen otherwise increasing precision is chosen.
+// when targClass == 999 then increasing precision for entire
+// data set is chosen.   This is used to pre-set the maxNumBuck
+// for each column. In some instances it could be used to set
+// MinNumBuck as well becaause if we know that a low number such
+// as 2 yeidls poor results for a given class we do not want to
+// allow the results module to fall back to those lower numbers
+func (fier *Classifier, targClass int16, targPrecis float32, trainRow [][]float32, testRow [][]float32) TestColumnNumBuck() []*AnalResNumBuck {
+	return nil
+}
+
+// Runs each feature independantly by the number of buckets
+// seeking the number of columns for this feature that return
+// the best results.
+func (fier *Classifier, targClass int16, targPrecis float32, trainRow [][]float32, testRow [][]float32) TestIndividualColumnsNB() []*AnalByClass {
+	// Question how do you quantify better.  If Precision is high
+	// but recall is very low then which is better.  Seems like you
+	// must set one as a minimum value and alllow the others to
+	// vary.
+	return nil
+}
+*/
