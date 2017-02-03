@@ -189,7 +189,7 @@ Please send me data sets you would like to add  to the test.
 
 * > **[classifyTestTitanic.bat](classifyTestTitanic.bat)** - Runs classifyFiles on Titanic survial data set.  Look in tmpout for generated files.
   >
-  > **[classifyWine.bat](classifyTestWine.bat)** - runs classifyFiles on the Wine taste prediction data set. Look in tmpout for generated files.
+  > **[classifyTestWine.bat](classifyTestWine.bat)** - runs classifyFiles on the Wine taste prediction data set. Look in tmpout for generated files.
 
 ####For the Tensorflow tests###
 * See [TensorFlow Demo][tlearn]
