@@ -127,14 +127,13 @@ func (fier *Classifier) ClassRowStr(astr string) *ResultForRow {
 			len(a), fier.NumCol, astr)
 		return nil
 	}
-	return fier.ClassRow(a)
+	return fier.ClassRow(a, fier.ColDef)
 }
 
-// Output is a structure that shows us the count
+//  Output is a structure that shows us the count
 //  for each class plust the prob for each class
 //  plus the chosen out
-
-func (fier *Classifier) ClassRow(drow []float32) *ResultForRow {
+func (fier *Classifier) ClassRow(drow []float32, feats []*Feature) *ResultForRow {
 	tout := new(ResultForRow)
 	tout.Classes = make(map[int16]ResultItem)
 	clsm := make(map[int16]*ResultItem)
@@ -143,7 +142,8 @@ func (fier *Classifier) ClassRow(drow []float32) *ResultForRow {
 		featOut[fc].Cls = make(map[int16]ResultItem)
 	}
 	tout.Features = featOut
-	for fc := 0; fc < fier.NumCol; fc++ {
+	for _, feat := range feats {
+		fc := feat.ColNum
 		dval := drow[fc]
 		feat := fier.ColDef[fc]
 		//cs := feat.Spec
@@ -165,8 +165,10 @@ func (fier *Classifier) ClassRow(drow []float32) *ResultForRow {
 		// but we will not use that one.
 		buckId := int16(-16001)
 		buck, bfound := feat.Buckets[0][buckId]
-		numBuck := feat.MaxNumBuck - 1
-		for ; numBuck > 1; numBuck-- {
+		maxBuck := feat.MaxNumBuck
+		minBuck := feat.MinNumBuck
+		numBuck := maxBuck
+		for ; numBuck >= minBuck; numBuck-- {
 			buckId = feat.bucketId(fier, dval, numBuck)
 			buck, bfound = feat.Buckets[int16(numBuck)][buckId]
 			//fmt.Printf("L172: numBuck=%v dval=%v buckId=%v bfound=%v buck=%v\n", numBuck, dval, buckId, bfound, buck)
@@ -242,8 +244,12 @@ func (fier *Classifier) ClassRow(drow []float32) *ResultForRow {
 } // func
 
 /* Classify a array of rows returns the analyzed
-rows and the Test summary results.  */
-func (fier *Classifier) ClassifyRows(rows [][]float32) ([]ResultForRow, *SimpResults) {
+rows and the Test summary results.   The
+list of feats parameter is required to allow the
+classify operation to run on a subset of featurs
+rather than the entire set.  This is required by
+some of the data data discovery capabilities.  */
+func (fier *Classifier) ClassifyRows(rows [][]float32, feats []*Feature) ([]ResultForRow, *SimpResults) {
 	numRow := len(rows)
 	tout := make([]ResultForRow, numRow)
 
@@ -256,7 +262,7 @@ func (fier *Classifier) ClassifyRows(rows [][]float32) ([]ResultForRow, *SimpRes
 	for ndx := 0; ndx < numRow; ndx++ {
 		rowIn := rows[ndx]
 
-		cres := fier.ClassRow(rowIn)
+		cres := fier.ClassRow(rowIn, feats)
 		cres.ActClass = int16(rowIn[fier.ClassCol])
 		//fmt.Printf("L239: cres=%v\n", cres)
 		// Copy into Simplified structure

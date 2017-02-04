@@ -38,7 +38,7 @@ func printLn(f *os.File, txt string) {
 
 func ProcessRowsRows(fier *Classifier, req *ClassifyRequest, rows [][]float32, inName string, outBaseName string, asTest bool) {
 	fmt.Println("\nfinished build Now Try to classify")
-	detRows, sumRows := fier.ClassifyRows(rows)
+	detRows, sumRows := fier.ClassifyRows(rows, fier.ColDef)
 	classCol := fier.ClassCol
 	//
 	fmt.Printf("num deRows=%v\n", len(detRows))
@@ -56,6 +56,36 @@ func ProcessRowsRows(fier *Classifier, req *ClassifyRequest, rows [][]float32, i
 
 		// Add class probability output
 		// add detailed probability output
+	}
+
+	if req.DoPreAnalyze {
+		// Pre-analyze each column to try and find the sweet spot
+		// for precision and recall as number of buckets.
+		origTrainRows := fier.GetTrainRowsAsArr(OneGig)
+		testRows := origTrainRows
+		trainRows := origTrainRows
+		if req.AnalSplitType == 1 {
+			// pull test records from the body of test data
+			// best for normal sets.
+			oneEvery := int(float32(len(origTrainRows)) / (float32(len(origTrainRows)) * req.AnalTestPort))
+			fmt.Printf("Analyze SplitOneEvery=%v  portSet=%v\n", oneEvery, req.AnalTestPort)
+			trainRows, testRows = qutil.SplitFloatArrOneEvery(origTrainRows, 1, oneEvery)
+		} else {
+			// pull records from end of test data.  Best for
+			// time series when predicting on records near the end
+			fmt.Printf("Analyze splitEnd PortSet=%v", req.AnalTestPort)
+			trainRows, testRows = qutil.SplitFloatArrTail(origTrainRows, req.AnalTestPort)
+		}
+		// Have to retrain based on the newly split data
+		fmt.Printf("Analyze #TrainRow=%v #TestRow=%v\n", len(trainRows), len(testRows))
+		fier.Retrain(trainRows)
+		anaRes := fier.TestIndividualColumnsNB(AnalNoClassSpecified, -1.0, trainRows, testRows)
+		fmt.Printf("L68: anaRes=%v\n", anaRes)
+
+		// Have to re-run with the new configuration
+		// of column settings
+		fier.Retrain(origTrainRows)
+		detRows, sumRows = fier.ClassifyRows(rows, fier.ColDef)
 	}
 
 	// Convert the summary Rows into printable Output to display
@@ -477,8 +507,24 @@ A integer ID that maps to one class.  The Optimizer
 					   Must be true if -optOKBuck is false when
 					   optimizer is ran. 
 					
+	
+	-DoPreAnalyze      If true will pre-analyze data set attempting
+	                   to find number of buckets for each column
+					   that maximizes a combination of precision and
+					   recall.  Defaults to false
 					
-					
+    -AnalClassId       When specified it will analyze based on finding
+	                   best settings for the specified class otherwise
+					   will try to find best precision for the entire
+					   set of records.  Defaults to not set
+	
+	-AnalSplitType     if 1 then split by pulling test records from
+	                   body of training data.  If 2 then pull test
+					   records from end of training data. Defaults
+					   to 1
+	
+	-AnalSplitPort     The portion of training set to use as test data
+	                   defaults to 0.15 if not set.
 	
   -`
 	fmt.Println(msg)
@@ -525,10 +571,14 @@ func ParseClassifyFileCommandParms(args []string) *ClassifyRequest {
 	aReq.DoOpt = parms.Bval("doopt", false)
 	aReq.OptPreRandomize = parms.Bval("optrandomize", false)
 	aReq.OptMaxTime = parms.F64val("optmaxtime", 2.0) * 1000.0
-	aReq.OptClassId = int16(parms.Ival("optclassid", -9999))
+	aReq.OptClassId = int16(parms.Ival("optclassid", AnalNoClassSpecified))
 	aReq.OptMinRecall = parms.Fval("optminrecall", 0.01)
 	aReq.OptMaxPrec = parms.Fval("optmaxprec", 0.95)
 	aReq.OkToRun = false
+	aReq.DoPreAnalyze = parms.Bval("dopreanalyze", false)
+	aReq.AnalClassId = int16(parms.Ival("analclassid", AnalNoClassSpecified))
+	aReq.AnalSplitType = int16(parms.Ival("analsplittype", 1))
+	aReq.AnalTestPort = parms.Fval("analtestport", 0.15)
 
 	if aReq.TrainInFi == "" && aReq.ModelFi == "" {
 		checkClassifyFilesParms("Either training file or model file must be specified", true)

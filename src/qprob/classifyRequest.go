@@ -32,6 +32,14 @@ type ClassifyRequest struct {
 	OptMinRecall    float32
 	OptMaxPrec      float32
 
+	DoPreAnalyze    bool
+	AnalClassId     int16
+	AnalMinRecall   float32
+	AnalMinPrec     float32
+	AnalSeekOptFeat bool
+	AnalSplitType   int16   // 1 = take from body,  2 = split end
+	AnalTestPort    float32 // portion of training set to use for test data
+
 	Header string
 }
 

@@ -47,16 +47,17 @@ type QuantList struct {
 // would be 1 column of data.
 type Feature struct {
 	Buckets    []map[int16]*QuantList
+	BuckSize   []float32 // Need to know bucket size for each numBucket
+	ColNum     int
 	Spec       *CSVCol
 	Enabled    bool
 	ProcType   QuantType
 	EffMaxVal  float32
 	EffMinVal  float32
 	EffRange   float32
-	BuckSize   []float32
 	FeatWeight float32
-	//WeightByLevel []float32
 	MaxNumBuck int16
+	MinNumBuck int16
 	// Need the following as part of feature to support sparse
 	// feature matrix where not all rows have all featurs.
 	// an example would be text processing where  # feaures
@@ -105,7 +106,7 @@ func (fier *Classifier) PrintTrainClassProb() {
 
 func (feat *Feature) printDistElem() {
 	csv := feat.Spec
-	fmt.Printf("L108: CSV Dist Elem absMin=%v absMax=%v absRange=%v csvStep=%v\n", csv.MinFlt, csv.MaxFlt, csv.AbsRange, csv.distStepSize)
+	//fmt.Printf("L108: CSV Dist Elem absMin=%v absMax=%v absRange=%v csvStep=%v\n", csv.MinFlt, csv.MaxFlt, csv.AbsRange, csv.distStepSize)
 	for ndx, drow := range csv.distCounts {
 		if drow > 0 {
 			fmt.Printf("   L111: ndx=%v  cnt=%v\n", ndx, drow)
@@ -139,7 +140,7 @@ func (fe *Feature) setFeatEffMinMax(fier *Classifier, numRemMin int, numRemMax i
 	dist := csv.distCounts
 	stepSize := csv.distStepSize
 	//fmt.Printf("L131: setFeatEffMinMax numRemMin=%v  numRemMax=%v absMax=%v absMin=%v stepSize=%v\n", numRemMin, numRemMax, csv.MaxFlt, csv.MinFlt, stepSize)
-	fe.printDistElem()
+	//fe.printDistElem()
 	// Scan from Bottom removing large numbers
 	// We look ahead 1 so if it would place us
 	// over our targetCnt then we abort.
@@ -231,7 +232,7 @@ to compute step size for bucket indexing.   */
 
 func (cl *Classifier) updateStepValues(afeat *Feature) {
 	maxBuck := int(cl.MaxNumBuck)
-	for nb := 0; nb < maxBuck; nb++ {
+	for nb := 0; nb <= maxBuck; nb++ {
 		afeat.EffRange = afeat.EffMaxVal - afeat.EffMinVal
 		afeat.BuckSize[nb] = afeat.EffRange / float32(nb)
 	}
@@ -280,30 +281,30 @@ func (fier *Classifier) initFromCSV(csv *CSVInfo) {
 	// for each column.
 	for i := 0; i < fier.NumCol; i++ {
 		col := fier.Info.Col[i]
-		fier.ColDef[i] = fier.makeFeature(col)
+		fier.ColDef[i] = fier.makeFeature(col, i)
 	}
 }
 
-func (cl *Classifier) makeFeature(col *CSVCol) *Feature {
+func (cl *Classifier) makeFeature(col *CSVCol, colNum int) *Feature {
 	afeat := new(Feature)
 	afeat.Spec = col
+	afeat.ColNum = colNum
 	afeat.Enabled = true
-	afeat.BuckSize = make([]float32, cl.MaxNumBuck)
 	afeat.EffMaxVal = col.MaxFlt
 	afeat.EffMinVal = col.MinFlt
 	afeat.ProcType = QTBucket
 	//afeat.WeightByLevel = make([]float32, cl.MaxNumBuck)
 	afeat.Buckets = make([]map[int16]*QuantList, cl.MaxNumBuck+1)
+	afeat.BuckSize = make([]float32, cl.MaxNumBuck+1)
 	afeat.MaxNumBuck = cl.MaxNumBuck
+	afeat.MinNumBuck = 1
 	afeat.FeatWeight = 1.0
 	afeat.NumRow = 0
 	afeat.ClassCounts = make(map[int16]int32)
 	afeat.ClassProb = make(map[int16]float32)
 	for nb := int16(0); nb <= cl.MaxNumBuck; nb++ {
-		//afeat.WeightByLevel[nb] = 1.0
 		afeat.Buckets[nb] = make(map[int16]*QuantList)
 	}
-
 	cl.updateStepValues(afeat)
 	return afeat
 }

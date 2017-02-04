@@ -228,7 +228,7 @@ Not all files are listed here. The intent is to help you find those files that a
 >*  See [Text classification overview](docs/text-classification/overview-classification.md) 
 * **[design-notes.md](docs/design-notes.md)** Engineering Design Notes and design thoughts.
 * **[genomic-notes.md](docs/genomic-notes.md)**
-* **[go-notes.html](docs/go-notes.html)** Notes and helpful links about GO that I recorded while working on the classifer.go
+* **[go-notes.md](docs/go-notes.md)** Notes and helpful links about GO that I recorded while working on the classifer.go
 * [**Background**](https://bitbucket.org/joexdobs/ml-classifier-gesture-recognition/wiki/background.md)   Includes documentation about a skewed population with overlapping values and how we are going to approach it.  It also introduced the Quantized Filter concept and how it helps deal with the skewed population problem
 * Writing tests
 * Code review
@@ -289,5 +289,5 @@ TensorFlow Deep Learning is the newest buzz term so I am evaluating it's perform
 >
 > It also includes samples of the classifiers in python that cope well with smaller training data sets and demonstrate using  the Quantized classifier approach.  They also handle massive training data sets with minimal memory. 
 
-### See Also [bibliography.md](bibliography.md)
+### See Also [bibliography.md](docs/bibliography.md)
 

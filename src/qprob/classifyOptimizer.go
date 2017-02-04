@@ -102,7 +102,7 @@ func (fier *Classifier) optRunOne(featNdx int16, newNumBuck int16, newWeight flo
 	//if oldNumBuck != newNumBuck {
 	//	fier.RetrainFeature(featNdx, trainRows)
 	//}
-	_, sumRows := fier.ClassifyRows(testRows)
+	_, sumRows := fier.ClassifyRows(testRows, fier.ColDef)
 	clasSum := fier.MakeByClassStats(sumRows, testRows)
 	optClass, optClassFnd := clasSum.ByClass[optClassId]
 
@@ -363,7 +363,7 @@ func (fier *Classifier) OptProcess(splitOneEvery int, maxTimeSec float64, target
 
 	//fmt.Printf("OptProcess len featLst=%v", featLst)
 	// Run the first classify pass to get baseline stats
-	_, lastSum := fier.ClassifyRows(testRows)
+	_, lastSum := fier.ClassifyRows(testRows, fier.ColDef)
 	lastPrec := lastSum.Precis
 	lastRecall := float32(0.0)
 
@@ -408,7 +408,7 @@ func (fier *Classifier) OptProcess(splitOneEvery int, maxTimeSec float64, target
 			currClassCnt += 1
 			fier.Req.OptClassId = currClassId
 			if len(classIds) > 0 && currClassCnt > 5 {
-				_, lastSum := fier.ClassifyRows(testRows)
+				_, lastSum := fier.ClassifyRows(testRows, fier.ColDef)
 				tmpSum := fier.MakeByClassStats(lastSum, testRows)
 
 				optClass, optClassFnd := tmpSum.ByClass[currClassId]
