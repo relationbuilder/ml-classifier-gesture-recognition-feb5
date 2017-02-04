@@ -180,7 +180,9 @@ Please send me data sets you would like to add  to the test.
 >>                       defaults to true.
 >> ```
 
-* > **[classifyTestBCancer.bat](classifyTestBCancer.bat)** - Runs classifyFiles on breast cancer data set.   Look in tmpout for generated files.
+* > #### Classification Examples
+  >
+  > **[classifyTestBCancer.bat](classifyTestBCancer.bat)** - Runs classifyFiles on breast cancer data set.   Look in tmpout for generated files.
 
 * > **[classifyTestDiabetes.bat](classifyTestDiabetes.bat)** - Runs classifyFiles on diabetes data set. Look in tmpout for generated files.
 
@@ -189,6 +191,21 @@ Please send me data sets you would like to add  to the test.
 * > **[classifyTestTitanic.bat](classifyTestTitanic.bat)** - Runs classifyFiles on Titanic survial data set.  Look in tmpout for generated files.
   >
   > **[classifyWine.bat](classifyTestWine.bat)** - runs classifyFiles on the Wine taste prediction data set. Look in tmpout for generated files.
+  >
+  > #### Example of predicting stock price movement
+  >
+  > * **classifyTestStockspy30  [bat](classifyTestStockslv30.bat)   [sh](classifyTestStockslv30.sh)**  - Classify SPY seeking a 1% gain in market price before market price drops by over 1%. 
+  > * classifyTestStockspy90 [bat](classifyTestStockspy90.bat)   [sh](classifyTestStockspy90.sh)
+  > * classifyTestStockslv30  [bat](classifyTestStockslv30.bat)   [sh](classifyTestStockslv30.sh)
+  >
+  > #### Analyze Relative Importance of Features
+  >
+  > * **analyzeDiabetes  [bat](analyzeDiabetes.bat)  [sh](analyzeDiabetes.sh)**  - Analyze relative importance of different features for the diabetes test data set. 
+  > * analyzeLiverDisorder  [bat](analyzeLiverDisorder.bat)   [sh](analyzeLiverDisorder.sh)
+  > * analyzeStockspy30  [bat](analyzeStockspy30.bat)   [sh](analyzeStockspy30.sh)
+  > * analyzeTitanic  [bat](analyzeTitanic.bat)    [sh](analyzeTitanic.sh)
+  >
+  > ​
 
 ####For the Tensorflow tests###
 * See [TensorFlow Demo][tlearn]

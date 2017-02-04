@@ -1,0 +1,1 @@
+classifyFiles -train=data/slv.slp30.train.csv -test=data/slv.slp30.test.csv -maxBuck=160 -testOut=tmpout/slv.slp30.out.csv 
