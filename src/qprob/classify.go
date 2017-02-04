@@ -297,7 +297,7 @@ func (cl *Classifier) makeFeature(col *CSVCol, colNum int) *Feature {
 	afeat.Buckets = make([]map[int16]*QuantList, cl.MaxNumBuck+1)
 	afeat.BuckSize = make([]float32, cl.MaxNumBuck+1)
 	afeat.MaxNumBuck = cl.MaxNumBuck
-	afeat.MinNumBuck = 1
+	afeat.MinNumBuck = 2
 	afeat.FeatWeight = 1.0
 	afeat.NumRow = 0
 	afeat.ClassCounts = make(map[int16]int32)

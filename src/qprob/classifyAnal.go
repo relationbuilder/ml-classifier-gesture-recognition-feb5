@@ -81,6 +81,11 @@ func (fier *Classifier) TestColumnNumBuck(targClass int16, targPrecis float32, t
 	return nil
 }
 
+// Analyze inidividual columns predictive power.  This can help identify
+// columns that have better predictive input.  It can also help
+// identify columns with low predictive input so they can be
+// removed from the dataset.
+//
 // Runs each feature independantly by the number of buckets
 // seeking the number of columns for this feature that return
 // the best results.
