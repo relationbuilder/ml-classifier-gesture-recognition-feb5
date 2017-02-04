@@ -81,6 +81,8 @@ func (fier *Classifier) TestColumnNumBuck(targClass int16, targPrecis float32, t
 	return nil
 }
 
+// TODO: Add the Save Feature
+
 // Analyze inidividual columns predictive power.  This can help identify
 // columns that have better predictive input.  It can also help
 // identify columns with low predictive input so they can be
@@ -103,6 +105,9 @@ func (fier *Classifier) TestIndividualColumnsNB(targClass int16, targPrecis floa
 		fmt.Printf("Analyze for Total Set\n")
 	}
 
+	//fmt.Printf("L108:trainRows=%v\n", trainRows)
+	//fmt.Printf("L100: testRows=%v\n", testRows)
+
 	for _, feat := range fier.ColDef {
 		featNum := feat.ColNum
 		if featNum == fier.ClassCol {
@@ -114,25 +119,31 @@ func (fier *Classifier) TestIndividualColumnsNB(targClass int16, targPrecis floa
 		//featSet = fier.ColDef // see if changing individual feature changes entire set score
 
 		_, sumRows := fier.ClassifyRows(testRows, featSet)
-		startPrec := sumRows.Precis
-		startRecall := float32(0.0)
-		//fmt.Printf("L102: featNum=%v StartPrecis=%v startMaxNB=%v startMinNB=%v\n", featNum, startPrec, startMaxNumBuck, startMinNumBuck)
+		//detRow, sumRows := fier.ClassifyRows(testRows, featSet)
+		//fmt.Printf("L122: detRow=%v\n", detRow)
+		//fmt.Printf("L123: sumRows=%s\n", sumRows.ToDispStr())
+		startMaxPrec := sumRows.Precis
+		startMaxRecall := float32(0.0)
 		bestMaxPrecis := sumRows.Precis
 		bestMaxBuck := startMaxNumBuck
-		bestMaxRecall := startRecall
-		//fmt.Printf("specClass=%v AnalNoClassSpecified=%v\n", specClass, AnalNoClassSpecified)
+		bestMaxRecall := startMaxRecall
 		if specClass != AnalNoClassSpecified {
 			clasSum := fier.MakeByClassStats(sumRows, testRows)
 			tclass := clasSum.ByClass[specClass]
 			//fmt.Printf("L113: Init by class tclass=%v\n", tclass)
-			startRecall = tclass.Recall
+			startMaxRecall = tclass.Recall
+			startMaxPrec = tclass.Prec
 			bestMaxRecall = tclass.Recall
 			bestMaxPrecis = tclass.Prec
 		}
 
+		//fmt.Printf("L102: featNum=%v StartPrecis=%v startMaxNB=%v startMinNB=%v\n", featNum, startMaxPrec, startMaxNumBuck, startMinNumBuck)
+		//fmt.Printf("specClass=%v AnalNoClassSpecified=%v\n", specClass, AnalNoClassSpecified)
+
 		for maxNumBuck := feat.MaxNumBuck; maxNumBuck >= 2; maxNumBuck-- {
 			feat.MaxNumBuck = maxNumBuck
 			_, sumRows := fier.ClassifyRows(testRows, featSet)
+			//fmt.Printf("L120: sumRows=%s\n", sumRows.ToDispStr())
 			//fmt.Printf("L115: fe#=%v maxNB=%v setPrec=%v bMaxPrec=%v bMaxRec=%v bestNb=%v\n", featNum, maxNumBuck, sumRows.Precis, bestMaxPrecis, bestMaxRecall, bestMaxBuck)
 			if req.AnalClassId == AnalNoClassSpecified {
 				if sumRows.Precis >= bestMaxPrecis {
@@ -149,7 +160,7 @@ func (fier *Classifier) TestIndividualColumnsNB(targClass int16, targPrecis floa
 				clasSum := fier.MakeByClassStats(sumRows, testRows)
 				tclass := clasSum.ByClass[specClass]
 				//fmt.Printf("L137: test by class tclass=%v\n", tclass)
-				if (tclass.Prec > bestMaxPrecis && tclass.Recall >= bestMaxRecall) || (tclass.Prec >= bestMaxPrecis && tclass.Recall > bestMaxRecall) {
+				if (tclass.Prec >= bestMaxPrecis && tclass.Recall >= bestMaxRecall) || (tclass.Prec >= bestMaxPrecis && tclass.Recall > bestMaxRecall) {
 					bestMaxRecall = tclass.Recall
 					bestMaxPrecis = tclass.Prec
 					bestMaxBuck = maxNumBuck
@@ -165,8 +176,8 @@ func (fier *Classifier) TestIndividualColumnsNB(targClass int16, targPrecis floa
 
 		// Now relax the minimum number of buckets to find our best setting
 		bestMinBuck := startMinNumBuck
-		bestMinPrecis := startPrec
-		bestMinRecall := startRecall
+		bestMinPrecis := startMaxPrec
+		bestMinRecall := startMaxRecall
 
 		for minNumBuck := startMinNumBuck; minNumBuck <= feat.MaxNumBuck; minNumBuck++ {
 			feat.MinNumBuck = minNumBuck
@@ -196,15 +207,15 @@ func (fier *Classifier) TestIndividualColumnsNB(targClass int16, targPrecis floa
 
 		} // for minNumBuck
 		feat.MinNumBuck = bestMinBuck
-		//_, sumRows = fier.ClassifyRows(testRows, featSet)
+		_, sumRows = fier.ClassifyRows(testRows, featSet)
 		//fmt.Printf("L163:MIN fe#=%v BMinNB=%v BPrec=%v retestPre%v\n", featNum, bestMinBuck, bestMinPrecis, sumRows.Precis)
 
 		// TODO: Add complete printout of what we discovered by Feature
 		fmt.Printf("L158: After Analyze ColNum=%v colName=%v\n   startPrecis=%v endPrecis=%v\n",
-			feat.ColNum, feat.Spec.ColName, startPrec, bestMinPrecis)
+			feat.ColNum, feat.Spec.ColName, startMaxPrec, bestMinPrecis)
 
 		if req.AnalClassId != AnalNoClassSpecified {
-			fmt.Printf("   startRecall=%v endRecall=%v\n", startRecall, bestMinRecall)
+			fmt.Printf("   startRecall=%v endRecall=%v\n", startMaxRecall, bestMinRecall)
 		}
 
 		fmt.Printf("   startMaxNumBuck=%v endBackNumBuck=%v\n   startMinNumBuck=%v  endMinNumBuck=%v\n",

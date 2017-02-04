@@ -224,6 +224,7 @@ func (fier *Classifier) ClassRow(drow []float32, feats []*Feature) *ResultForRow
 	// Copy Classes to acutal output
 	// and select best item
 	bestProb := float32(0.0)
+	bestClassCnt := int32(0)
 	for classId, classWrk := range clsm {
 		if classWrk.Prob <= 0.0 {
 			fmt.Printf("L227: ERR: Class Prob should not be 0 classId=%v classWrk=%v\n", classId, classWrk)
@@ -232,13 +233,24 @@ func (fier *Classifier) ClassRow(drow []float32, feats []*Feature) *ResultForRow
 		classWrk.Prob = classWrk.Prob / float32(len(fier.ColDef))
 		//fmt.Printf("L209: classId=%v prob=%v bestProb=%v classWrk=%v\n", classId, classWrk.Prob, bestProb, classWrk)
 		tout.Classes[classId] = *classWrk
-		if bestProb < classWrk.Prob {
+		//fmt.Printf("L235: classId=%v bestProb=%v classWorkProb=%v classWrk=%v\n", classId, bestProb, classWrk.Prob, classWrk)
+
+		if bestProb < classWrk.Prob || (bestProb == classWrk.Prob && fier.ClassCounts[classId] > bestClassCnt) {
+			// Had to add more sophisticated check her to tie break identical
+			// class Probability.   I made an arbitrary choice to choose the
+			// class with the greater total number of records assuming the tied
+			// record would have a better chance of being in that class.
+			// still have a potential of random differences between runs
+			// if the total class probabilties are equal because GO
+			// re-orders hash tables unpredictably
 			bestProb = classWrk.Prob
+			bestClassCnt = fier.ClassCounts[classId]
 			tout.BestProb = classWrk.Prob
 			tout.BestClass = classId
 			tout.ActClass = -9999
 		}
 	}
+	//fmt.Printf("L245: bestClass=%v bestProb=%v\n", tout.BestClass, tout.BestProb)
 
 	return tout
 } // func
@@ -251,7 +263,7 @@ rather than the entire set.  This is required by
 some of the data data discovery capabilities.  */
 func (fier *Classifier) ClassifyRows(rows [][]float32, feats []*Feature) ([]ResultForRow, *SimpResults) {
 	numRow := len(rows)
-	tout := make([]ResultForRow, numRow)
+	tout := make([]ResultForRow, 0, numRow)
 
 	//sucessCnt := 0
 	//rowCnt := 0
@@ -264,7 +276,8 @@ func (fier *Classifier) ClassifyRows(rows [][]float32, feats []*Feature) ([]Resu
 
 		cres := fier.ClassRow(rowIn, feats)
 		cres.ActClass = int16(rowIn[fier.ClassCol])
-		//fmt.Printf("L239: cres=%v\n", cres)
+		tout = append(tout, *cres)
+		//fmt.Printf("L239: ndx=%v cres=%v numRow=%v \n", ndx, cres, numRow)
 		// Copy into Simplified structure
 		// for use generating the output
 		// CSV.   We also need this one to
@@ -277,6 +290,7 @@ func (fier *Classifier) ClassifyRows(rows [][]float32, feats []*Feature) ([]Resu
 		if rrow.BestClass == rrow.ActClass {
 			resRows.SucCnt += 1
 		}
+		//fmt.Printf("L281: ndx=%v bestClass=%v bestProb=%v actClass=%v\n", ndx, rrow.BestClass, rrow.BestProb, rrow.ActClass)
 		//fmt.Printf("252: ndx=%v rrow=%v\n", ndx, rrow)
 		//if cres.actClass == cres.BestClass {
 		//	sucessCnt += 1
