@@ -38,11 +38,9 @@ func printLn(f *os.File, txt string) {
 
 func ProcessRowsRows(fier *Classifier, req *ClassifyRequest, rows [][]float32, inName string, outBaseName string, asTest bool) {
 	fmt.Println("\nfinished build Now Try to classify")
-	detRows, sumRows := fier.ClassifyRows(rows, fier.ColDef)
+	_, sumRows := fier.ClassifyRows(rows, fier.ColDef)
 	classCol := fier.ClassCol
 	//
-	fmt.Printf("num deRows=%v\n", len(detRows))
-	fmt.Printf("num sumRows.Precis=%v\n", sumRows.Precis)
 
 	if req.WriteJSON {
 		jsonsumstr := sumRows.ToJSON()
@@ -85,7 +83,7 @@ func ProcessRowsRows(fier *Classifier, req *ClassifyRequest, rows [][]float32, i
 		// Have to re-run with the new configuration
 		// of column settings
 		fier.Retrain(origTrainRows)
-		detRows, sumRows = fier.ClassifyRows(rows, fier.ColDef)
+		_, sumRows = fier.ClassifyRows(rows, fier.ColDef)
 	}
 
 	// Convert the summary Rows into printable Output to display
@@ -163,7 +161,10 @@ func ProcessRowsRows(fier *Classifier, req *ClassifyRequest, rows [][]float32, i
 	fmt.Printf("\nSummary By Class\n")
 	clasSum := fier.MakeByClassStats(sumRows, rows)
 	fier.PrintTrainClassProb()
+
 	fmt.Printf("\nRESULTS FOR TEST DATA\n  Num Test Rows=%v\n", len(rows))
+	fmt.Printf("  Total Set Precis=%v\n", sumRows.Precis)
+
 	fier.PrintResultsByClass(clasSum)
 	// TODO: Print this out nicely
 }

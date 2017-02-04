@@ -195,9 +195,16 @@ func (fier *Classifier) TestIndividualColumnsNB(targClass int16, targPrecis floa
 		//fmt.Printf("L163:MIN fe#=%v BMinNB=%v BPrec=%v retestPre%v\n", featNum, bestMinBuck, bestMinPrecis, sumRows.Precis)
 
 		// TODO: Add complete printout of what we discovered by Feature
-		fmt.Printf("L158: After Analyze ColNum=%v colName=%v\n   startPrecis=%v endPrecis=%v\n  startRecall=%v endRecall=%v\n  startMaxNumBuck=%v endBackNumBuck=%v\n  startMinNumBuck=%v  endMinNumBuck=%v\n",
-			feat.ColNum, feat.Spec.ColName, startPrec, bestMinPrecis, startRecall, bestMinRecall,
+		fmt.Printf("L158: After Analyze ColNum=%v colName=%v\n   startPrecis=%v endPrecis=%v\n",
+			feat.ColNum, feat.Spec.ColName, startPrec, bestMinPrecis)
+
+		if req.AnalClassId != AnalNoClassSpecified {
+			fmt.Printf("   startRecall=%v endRecall=%v\n", startRecall, bestMinRecall)
+		}
+
+		fmt.Printf("   startMaxNumBuck=%v endBackNumBuck=%v\n   startMinNumBuck=%v  endMinNumBuck=%v\n",
 			startMaxNumBuck, bestMaxBuck, startMinNumBuck, bestMinBuck)
+
 	} // for features
 	_, sumRows := fier.ClassifyRows(testRows, fier.ColDef)
 	fmt.Printf("L176: After analyze setPrec all Feat enabled = %v\n", sumRows.Precis)

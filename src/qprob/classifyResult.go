@@ -394,7 +394,7 @@ func (fier *Classifier) MakeByClassStats(sr *SimpResults, tstdta [][]float32) *R
 func (fier *Classifier) PrintResultsByClass(rbc *ResByClasses) {
 	// Update final stats for each class
 	for classId, bclass := range rbc.ByClass {
-		fmt.Printf("class=%v ClassCnt=%v classProb=%v, Predicted=%v Correct=%v  recall=%v  Prec=%v Lift=%v\n",
+		fmt.Printf("class=%v ClassCnt=%v classProb=%v\n   Predicted=%v Correct=%v\n   recall=%v  Prec=%v\n   Lift=%v\n",
 			classId, bclass.ClassCnt, bclass.ClassProb, bclass.FoundCnt, bclass.SucCnt, bclass.Recall, bclass.Prec, bclass.Lift)
 	}
 }
