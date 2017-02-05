@@ -75,9 +75,9 @@ Please send me data sets you would like to add  to the test.
 
 * [**Install GO**](https://golang.org/doc/install)
 
-* **[setGoEvn.bat](setGOEnv.bat)** - will set the GOHOME directory to current working directory  in a command prompt.  This is required for the GO compiler to find the  source code.   *Tested on windows 10 but should be similar on linux if chmod is set to 777*.
+* **[setGoEvn.bat](setGOEnv.bat)**  [.sh](setGOEnv.sh) - will set the GOHOME directory to current working directory  in a command prompt.  This is required for the GO compiler to find the  source code.   *Tested on windows 10 but should be similar on linux if chmod is set to 777*.
 
-* **[makeGO.bat](makeGO.bat)** - First install GO and ensure it has  been added to PATH.  Open a command line at  the base directory containing makeGO.bat and run it. It will build the executables based on GO that are needed to run  the tests. Tested on windows 10 but should be similar on linux.
+* **[makeGO.bat](makeGO.bat)**   [.sh](splitData.sh)- First install GO and ensure it has  been added to PATH.  Open a command line at  the base directory containing makeGO.bat and run it. It will build the executables based on GO that are needed to run  the tests. Tested on windows 10 but should be similar on linux.
 
 * > ```
   > go build src/classifyFiles.go   
@@ -90,7 +90,7 @@ Please send me data sets you would like to add  to the test.
 
 * **[splitData.bat](splitData.bat)** - Creates sub .train.csv and  test.csv files for the files used in the classifier tests. Uses splitCSVFile.exe which is built by makeGo.  Run this before  attempting to run the classifier to ensure proper data is present.
 
-* [**classifyBeastCancer.bat**](classifyBeastCancer.bat)
+* **classifyBeastCancer [.bat](classifyTestBreastCancer.bat)   [.sh](classifyTestBreastCancer.sh)**
 
   > > ```
   > > classifyFiles -train=data/breast-cancer-wisconsin.adj.data.train.csv -class=data/breast-cancer-wisconsin.adj.data.class.csv -numBuck=10 -WriteJSON=false -classOut=tmpout/breast-cancer.class.out.csv  -WriteFullCSV=true  -detToStdOut=true
@@ -182,28 +182,28 @@ Please send me data sets you would like to add  to the test.
 
 * > #### Classification Examples
   >
-  > **[classifyTestBCancer.bat](classifyTestBCancer.bat)** - Runs classifyFiles on breast cancer data set.   Look in tmpout for generated files.
+  > **[classifyTestBreastCancer.bat](classifyTestBreastCancer.bat) [.sh](classifyTestBreastCancer.sh)** - Runs classifyFiles on breast cancer data set.   Look in tmpout for generated files.
 
-* > **[classifyTestDiabetes.bat](classifyTestDiabetes.bat)** - Runs classifyFiles on diabetes data set. Look in tmpout for generated files.
+* > **[classifyTestDiabetes.bat](classifyTestDiabetes.bat)**  [.sh](classifyTestDiabetes.sh) - Runs classifyFiles on diabetes data set. Look in tmpout for generated files.
 
-* > **[classifyTestLiverDisorder.bat](classifyTestLiverDisorder.bat)** - Runs classifyFiles on Liver disorder data set.  Look in tmpout for generated files.
+* > **[classifyTestLiverDisorder.bat](classifyTestLiverDisorder.bat)**  [.sh](classifyTestLiverDisorder.sh)- Runs classifyFiles on Liver disorder data set.  Look in tmpout for generated files.
 
-* > **[classifyTestTitanic.bat](classifyTestTitanic.bat)** - Runs classifyFiles on Titanic survial data set.  Look in tmpout for generated files.
+* > **[classifyTestTitanic.bat](classifyTestTitanic.bat)**  [.sh](classifyTestTitanic.sh) - Runs classifyFiles on Titanic survial data set.  Look in tmpout for generated files.
   >
-  > **[classifyTestWine.bat](classifyTestWine.bat)** - runs classifyFiles on the Wine taste prediction data set. Look in tmpout for generated files.
+  > **[classifyTestWine.bat](classifyTestWine.bat)** [.sh](classifyTestWine.sh) - runs classifyFiles on the Wine taste prediction data set. Look in tmpout for generated files.
   >
   > #### Example of predicting stock price movement
   >
   > * **classifyTestStockspy30  [bat](classifyTestStockslv30.bat)   [sh](classifyTestStockslv30.sh)**  - Classify SPY seeking a 1% gain in market price before market price drops by over 1%. 
-  > * classifyTestStockspy90 [bat](classifyTestStockspy90.bat)   [sh](classifyTestStockspy90.sh)
-  > * classifyTestStockslv30  [bat](classifyTestStockslv30.bat)   [sh](classifyTestStockslv30.sh)
+  > * **classifyTestStockspy90 [bat](classifyTestStockspy90.bat)   [sh](classifyTestStockspy90.sh)** - 
+  > * **classifyTestStockslv30  [bat](classifyTestStockslv30.bat)   [sh](classifyTestStockslv30.sh)**  - 
   >
   > #### Analyze Relative Importance of Features
   >
   > * **analyzeDiabetes  [bat](analyzeDiabetes.bat)  [sh](analyzeDiabetes.sh)**  - Analyze relative importance of different features for the diabetes test data set. 
-  > * analyzeLiverDisorder  [bat](analyzeLiverDisorder.bat)   [sh](analyzeLiverDisorder.sh)
-  > * analyzeStockspy30  [bat](analyzeStockspy30.bat)   [sh](analyzeStockspy30.sh)
-  > * analyzeTitanic  [bat](analyzeTitanic.bat)    [sh](analyzeTitanic.sh)
+  > * **analyzeLiverDisorder  [bat](analyzeLiverDisorder.bat)   [sh](analyzeLiverDisorder.sh)** -
+  > * **analyzeStockspy30  [bat](analyzeStockspy30.bat)   [sh](analyzeStockspy30.sh)** -
+  > * **analyzeTitanic  [bat](analyzeTitanic.bat)    [sh](analyzeTitanic.sh)** - 
   >
   > ​
 
