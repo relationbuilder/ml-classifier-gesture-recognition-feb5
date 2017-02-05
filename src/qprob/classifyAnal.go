@@ -51,20 +51,34 @@ func (sumRes *summaryResult) ToSimpleRowCSV(fier *Classifier) string {
 
 */
 
-type AnalResByClass struct {
-	FeatNdx     float32
-	minNumBuck  int16
-	maxNumBuck  int16
-	bestNumBuck int16
-	ByClasses   map[int16]*ResByClass
+type AnalResByFeat struct {
+	FeatNdx    int
+	ColName    string
+	MinNumBuck int16
+	MaxNumBuck int16
+	EffMinVal  float32
+	EffMaxVal  float32
+	TotCnt     int32
+	SucCnt     int32
+	Prec       float32
+	TargClass  int16
+	ByClasses  map[int16]ResByClass
 }
 
-type AnalResByClassByCol struct {
-	Cols   []*AnalResByClass
+type AnalResults struct {
+	Cols   []AnalResByFeat
 	TotCnt int32
 	SucCnt int32
 	Prec   float32
-	Recall float32
+}
+
+func makeAnalResults(numCol int) *AnalResults {
+	tout := new(AnalResults)
+	tout.Cols = make([]AnalResByFeat, numCol)
+	for tndx := 0; tndx < numCol; tndx++ {
+		tout.Cols[tndx].ByClasses = make(map[int16]ResByClass)
+	}
+	return tout
 }
 
 //If targClass is != AnalNoClassSpecified then the results
@@ -77,7 +91,7 @@ type AnalResByClassByCol struct {
 // MinNumBuck as well becaause if we know that a low number such
 // as 2 yeidls poor results for a given class we do not want to
 // allow the results module to fall back to those lower numbers
-func (fier *Classifier) TestColumnNumBuck(targClass int16, targPrecis float32, trainRow [][]float32, testRow [][]float32) []*AnalResByClassByCol {
+func (fier *Classifier) TestColumnNumBuck(targClass int16, targPrecis float32, trainRow [][]float32, testRow [][]float32) []*AnalResults {
 	return nil
 }
 
@@ -99,7 +113,7 @@ func (fier *Classifier) TestColumnNumBuck(targClass int16, targPrecis float32, t
 // Runs each feature independantly by the number of buckets
 // seeking the number of columns for this feature that return
 // the best results.
-func (fier *Classifier) TestIndividualColumnsNB(targClass int16, targPrecis float32, trainRows [][]float32, testRows [][]float32) []*AnalResByClass {
+func (fier *Classifier) TestIndividualColumnsNB(targClass int16, targPrecis float32, trainRows [][]float32, testRows [][]float32) *AnalResults {
 	// Question how do you quantify better.  If Precision is high
 	// but recall is very low then which is better.  Seems like you
 	// must set one as a minimum value and alllow the others to
@@ -112,6 +126,9 @@ func (fier *Classifier) TestIndividualColumnsNB(targClass int16, targPrecis floa
 	} else {
 		fmt.Printf("Analyze for Total Set\n")
 	}
+
+	numCol := len(fier.ColDef)
+	tout := makeAnalResults(numCol)
 
 	//fmt.Printf("L108:trainRows=%v\n", trainRows)
 	//fmt.Printf("L100: testRows=%v\n", testRows)
@@ -229,9 +246,32 @@ func (fier *Classifier) TestIndividualColumnsNB(targClass int16, targPrecis floa
 		fmt.Printf("   startMaxNumBuck=%v endBackNumBuck=%v\n   startMinNumBuck=%v  endMinNumBuck=%v\n",
 			startMaxNumBuck, bestMaxBuck, startMinNumBuck, bestMinBuck)
 
-	} // for features
-	_, sumRows := fier.ClassifyRows(testRows, fier.ColDef)
-	fmt.Printf("L176: After analyze setPrec all Feat enabled = %v\n", sumRows.Precis)
+		// Update output structure
+		clasSum := fier.MakeByClassStats(sumRows, testRows)
+		for classId, aclass := range clasSum.ByClass {
+			tout.Cols[featNum].ByClasses[classId] = *aclass
+		}
+		col := &tout.Cols[featNum]
+		col.FeatNdx = feat.ColNum
+		col.ColName = feat.Spec.ColName
+		col.EffMinVal = feat.EffMinVal
+		col.EffMaxVal = feat.EffMaxVal
+		col.MinNumBuck = bestMinBuck
+		col.MaxNumBuck = bestMaxBuck
+		col.TotCnt = sumRows.TotCnt
+		col.SucCnt = sumRows.SucCnt
+		col.Prec = sumRows.Precis
+		col.TargClass = req.AnalClassId
 
-	return nil
+	} // for features
+
+	// Update out output structure for enire set.
+	_, sumRows := fier.ClassifyRows(testRows, fier.ColDef)
+	tout.Prec = sumRows.Precis
+	tout.SucCnt = sumRows.SucCnt
+	tout.TotCnt = sumRows.TotCnt
+
+	fmt.Printf("L274: After analyze setPrec all Feat enabled = %v\n", sumRows.Precis)
+
+	return tout
 }

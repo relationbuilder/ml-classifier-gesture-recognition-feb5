@@ -13,7 +13,7 @@ import (
 	"os"
 	"qutil"
 	//"strconv"
-	//"encoding/json"
+	"encoding/json"
 	"io/ioutil"
 	s "strings"
 )
@@ -42,9 +42,10 @@ func ProcessRowsRows(fier *Classifier, req *ClassifyRequest, rows [][]float32, i
 	classCol := fier.ClassCol
 	//
 
+	outFileName := ""
 	if req.WriteJSON {
 		jsonsumstr := sumRows.ToJSON()
-		outFileName := s.Replace(outBaseName, ".csv", ".out.sum.json", -1)
+		outFileName = s.Replace(outBaseName, ".csv", ".out.sum.json", -1)
 		outFileName = s.Replace(outFileName, ".out.out", ".out", -1)
 		fmt.Printf("write JSON sum rows to %s\n", outFileName)
 		if req.DetToStdOut {
@@ -78,7 +79,21 @@ func ProcessRowsRows(fier *Classifier, req *ClassifyRequest, rows [][]float32, i
 		fmt.Printf("Analyze #TrainRow=%v #TestRow=%v\n", len(trainRows), len(testRows))
 		fier.Retrain(trainRows)
 		anaRes := fier.TestIndividualColumnsNB(AnalNoClassSpecified, -1.0, trainRows, testRows)
-		fmt.Printf("L68: anaRes=%v\n", anaRes)
+		jsonRes, err := json.Marshal(anaRes)
+		if err != nil {
+			fmt.Printf("L83: Error converting analyze res to JSON err=%v  analRes=%v\n", err, anaRes)
+		} else {
+			//fmt.Printf("L86: Analysis Results=\n%s\n", jsonRes)
+			//fmt.Printf("L86: outBaseName=%s\n", outBaseName)
+			analFiName := s.Replace(outBaseName, ".csv", ".anal.sav.json", -1)
+			analFiName = s.Replace(analFiName, ".out.", ".", -1)
+			barr := []byte(jsonRes)
+			fmt.Printf("L90: write %v bytes to %v\n", len(barr), analFiName)
+			err := ioutil.WriteFile(analFiName, barr, 0666)
+			if err != nil {
+				fmt.Printf("L92: Error writting analyzis output file %s err=%v\n", analFiName, err)
+			}
+		}
 
 		// Have to re-run with the new configuration
 		// of column settings
