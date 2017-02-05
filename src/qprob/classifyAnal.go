@@ -82,6 +82,14 @@ func (fier *Classifier) TestColumnNumBuck(targClass int16, targPrecis float32, t
 }
 
 // TODO: Add the Save Feature
+// TODO: Add a human legible save feature
+// TODO: Add ability to sort the list of featurs by precision
+// TODO: Convert the analysis result structure to direct storage to allow JSON conversion.
+// TODO: Need a smaller JSON structure that is just enough to reload latter classification runs.
+// TODO: We should take the highest precision feature and give it a weight
+//    value of that is high then assign each lower precision value
+//    a lower weight.
+// TODO: Need human editable stucture to turn feature columns off.
 
 // Analyze inidividual columns predictive power.  This can help identify
 // columns that have better predictive input.  It can also help

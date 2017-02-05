@@ -223,7 +223,7 @@ Not all files are listed here. The intent is to help you find those files that a
 
 * [src/qprob/classify.go](src/qprob/classify.go) Main Classifier data structures along with training logic.
 * [src/qprob/classifyResult.go](src/qprob/classifyResult.go) - Performs the basic classify operations and includes data structures for the classify result. 
-* [src/qprob/classifyAnal.go](src/qprob/classifyOptimizer.go) - Adds basic Analysis functions to the results such as providing statistics by class. 
+* [src/qprob/classifyAnal.go](src/qprob/classifyOptimizer.go) - Adds basic Analysis functions to the results such as providing statistics by class.   Also analyzes relative importance of various features.
 * [src/qprob/classifyOptimizer.go](src/qprob/classifyOptimizer.go) - Implements the optimizer 
 * [src/qutil/commandLineParser.go](src/qutil/commandLineParser.go) - Utility to parse command line into easy to access components.
 * [src/classifyFiles.go](src/classifyFiles.go) Main file driver interface for classifier.  A good set of example code if you want to use the classifier library from GO source code. 
