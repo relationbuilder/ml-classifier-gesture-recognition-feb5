@@ -19,13 +19,11 @@ A general purpose, high performance machine learning classifier.    [wiki](https
 
 Please send me data sets you would like to add  to the test.
 
-**I Offer Consulting services see: http://BayesAnalytic.com/contact** 
-
 | [Stock Price Prediction tutorial](https://bitbucket.org/joexdobs/ml-classifier-gesture-recognition/wiki/stock-example/predict-future-stock-price-using-machine-learning.md) |      |      |
 | ---------------------------------------- | ---- | ---- |
-| [Analyze Predictive value of Features in stock price prediction](https://bitbucket.org/joexdobs/ml-classifier-gesture-recognition/wiki/stock-example/stock-price-prediction-analyze-feature-value.md) |      |      |
+| **[Analyze Predictive value of Features in stock price prediction](https://bitbucket.org/joexdobs/ml-classifier-gesture-recognition/wiki/stock-example/stock-price-prediction-analyze-feature-value.md)** |      |      |
 |                                          |      |      |
-|                                          |      |      |
+| **I Offer Consulting services see: http://BayesAnalytic.com/contact** |      |      |
 
 ### Quantized Classifier ###
 >The Quantized classifier uses a clever grouping mechanism to identify similar groups of items for each feature.  This mechanism is very fast, yields good classification accurcy and delivers unique data discovery capabilities.  The design was  inspired by  KNN, Bayesian, K-Means, SVM and Ensemble techniques.  
@@ -70,16 +68,17 @@ Please send me data sets you would like to add  to the test.
 
 ## How to Use ##
 
-* On my machine I have cygwin installed and added to PATH so I can use most linux commands from DOS shells.   You will notice that I use some linux commands like rm instead of the DOS equivalent.  You can edit the BAT to make them windows specific without cygwin but I prefer them the way they are because it allows the Linux shell to execute them once chmod +x is added to the .bat files.  
+* On my machine I have cygwin installed and added to PATH so I can use most linux commands from DOS shells.   You will notice that I use some linux commands like rm instead of the DOS equivalent.  You can edit the BAT to make them windows specific without cygwin.    We also have .sh files for most scripts to support linux users buy you may need to chmod +x to make them executable.
 
 
-* [**Install GO**](https://golang.org/doc/install)
+1 [**Install GO**](https://golang.org/doc/install)
 
-* **[setGoEvn.bat](setGOEnv.bat)**  [.sh](setGOEnv.sh) - will set the GOHOME directory to current working directory  in a command prompt.  This is required for the GO compiler to find the  source code.   *Tested on windows 10 but should be similar on linux if chmod is set to 777*.
+2 **[setGoEvn.bat](setGOEnv.bat)**  [.sh](setGOEnv.sh) - will set the GOHOME directory to current working directory  in a command prompt.  This is required for the GO compiler to find the  source code.   *Tested on windows 10 but should be similar on linux if chmod is set to 777*.
 
-* **[makeGO.bat](makeGO.bat)**   [.sh](splitData.sh)- First install GO and ensure it has  been added to PATH.  Open a command line at  the base directory containing makeGO.bat and run it. It will build the executables based on GO that are needed to run  the tests. Tested on windows 10 but should be similar on linux.
+3 **[makeGO.bat](makeGO.bat)**   [.sh](splitData.sh)- First install GO and ensure it has  been added to PATH.  Open a command line at  the base directory containing makeGO.bat and run it. It will build the executables based on GO that are needed to run  the tests. Tested on windows 10 but should be similar on linux.
 
-* > ```
+
+  > ```
   > go build src/classifyFiles.go   
   >  
   >   Builds executable classifyFiles from GO source.
@@ -88,9 +87,9 @@ Please send me data sets you would like to add  to the test.
   >   
   > ```
 
-* **[splitData.bat](splitData.bat)** - Creates sub .train.csv and  test.csv files for the files used in the classifier tests. Uses splitCSVFile.exe which is built by makeGo.  Run this before  attempting to run the classifier to ensure proper data is present.
+4 **[splitData.bat](splitData.bat)** - Creates sub .train.csv and  test.csv files for the files used in the classifier tests. Uses splitCSVFile.exe which is built by makeGo.  Run this before  attempting to run the classifier to ensure proper data is present.
 
-* **classifyBeastCancer [.bat](classifyTestBreastCancer.bat)   [.sh](classifyTestBreastCancer.sh)**
+5 **classifyBeastCancer [.bat](classifyTestBreastCancer.bat)   [.sh](classifyTestBreastCancer.sh)**
 
   > > ```
   > > classifyFiles -train=data/breast-cancer-wisconsin.adj.data.train.csv -class=data/breast-cancer-wisconsin.adj.data.class.csv -numBuck=10 -WriteJSON=false -classOut=tmpout/breast-cancer.class.out.csv  -WriteFullCSV=true  -detToStdOut=true
@@ -116,7 +115,7 @@ Please send me data sets you would like to add  to the test.
   > >     7,2,0.5792924
   > >
 
->> * **ClassifyFiles**  This following is printed by the classify files when incorrect parameters are entered. 
+>> 6  **ClassifyFiles**  This following is printed by the classify files when incorrect parameters are entered. 
 >> ```
 >>     -train=finame      file containing training data
 >>                        optional when model input is specified
@@ -209,7 +208,7 @@ Please send me data sets you would like to add  to the test.
   > * **analyzeStockspy30  [bat](analyzeStockspy30.bat)   [sh](analyzeStockspy30.sh)** - Analyze relative importance of different features for predicting stock prices.   [See Also](https://bitbucket.org/joexdobs/ml-classifier-gesture-recognition/wiki/stock-example/stock-price-prediction-analyze-feature-value.md)  Shows that  column sl6, and sl12 are very important and the sl6 could actually deliver better precision and recall used alone than when used in conjuction with the other features.  It shows the sl60, sl30 and sl3 deliver such low predictive input that they are most likely reducing the net quality of predictions. 
   > * **analyzeTitanic  [bat](analyzeTitanic.bat)    [sh](analyzeTitanic.sh)** - 
   >
-  > ​
+  >
 
 ####For the Tensorflow tests###
 * See [TensorFlow Demo][tlearn]
