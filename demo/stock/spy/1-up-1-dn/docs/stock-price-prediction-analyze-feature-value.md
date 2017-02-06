@@ -89,10 +89,13 @@ The analyzer accomplishes this by taking the portion of the training data it res
 
 ### Not all Features have equal value
 
-![feat-compared](feat-spy-compared.jpg)The indicator used for the tutorial was a very simple slope of price change compared to a bar in the past.   The column named **sl3** is looking 3 bars back while sl6 is looking 6 bars back.   The total set of features used are sl3, sl6, sl12, sl20, sl30, sl60, sl90.     You could approximate these visually by drawing lines from current bar to the price that many bars back.  It is not a great indicator but it does allow the system to see a short term rise in comparison to a mid term drop.
+![features compared](feat2comp.gif){:style="float: right;margin-right: 7px;margin-top: 7px;"} The indicator used for the tutorial was a very simple slope of price change compared to a bar in the past.   The column named **sl3** is looking 3 bars back while sl6 is looking 6 bars back.   The total set of features used are sl3, sl6, sl12, sl20, sl30, sl60, sl90.     You could approximate these visually by drawing lines from current bar to the price that many bars back.  It is not a great indicator but it does allow the system to see a short term rise in comparison to a mid term drop.
 
-When you think about a 1% rise of SPY unless markets are particularly volatile it will normally take a few days for the price to move upwards by 1%.  
 
+
+ When you think about a 1% rise of SPY unless markets are particularly volatile it will normally take a few days for the price to move upwards by 1%.  
+
+<img src="feat2comp.gif" align="right"></img>
 The Analyzer found that for this goal sl6 which looks 6 days back was able to obtain 80% precision with a 32.9% recall.  In contrast   SL60 which looks back 60 days was only able to obtain 54% accuracy but with high recall.     
 
 > > It is fairly likely that SL60 is negatively contributing to the accuracy of the prediction and should be remove.   SL60 may be perfectly good for a different classification but the amount of time you need to look forward or backwards from the current bar is influenced by how long you will hold it.  In most instances the SPY will only take a few days to move up or down so the SL60 is probably looking to far away.  SL60 may be perfectly good input if it was based on the slope compared to the lowest price within the last 60 days instead of a simple sliding window.
