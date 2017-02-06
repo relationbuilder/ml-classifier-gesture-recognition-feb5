@@ -1,6 +1,6 @@
 # ML Quantized classifier in GO#
 
-A general purpose, high performance machine learning classifier.    [wiki](https://bitbucket.org/joexdobs/ml-classifier-gesture-recognition/wiki/Home)
+A general purpose, high performance machine learning classifier.   
 
 #### Basic Test results
 
@@ -19,11 +19,11 @@ A general purpose, high performance machine learning classifier.    [wiki](https
 
 Please send me data sets you would like to add  to the test.
 
-| [Stock Price Prediction tutorial](https://bitbucket.org/joexdobs/ml-classifier-gesture-recognition/wiki/stock-example/predict-future-stock-price-using-machine-learning.md) |      |      |
-| ---------------------------------------- | ---- | ---- |
-| **[Analyze Predictive value of Features in stock price prediction](https://bitbucket.org/joexdobs/ml-classifier-gesture-recognition/wiki/stock-example/stock-price-prediction-analyze-feature-value.md)** |      |      |
-|                                          |      |      |
-| **I Offer Consulting services see: http://BayesAnalytic.com/contact** |      |      |
+| [Stock Price Prediction tutorial](https://bitbucket.org/joexdobs/ml-classifier-gesture-recognition/wiki/stock-example/predict-future-stock-price-using-machine-learning.md) |      | [wiki](https://bitbucket.org/joexdobs/ml-classifier-gesture-recognition/wiki/Home) |
+| ---------------------------------------- | ---- | ---------------------------------------- |
+| **[Analyze Predictive value of Features in stock price prediction](https://bitbucket.org/joexdobs/ml-classifier-gesture-recognition/src/default/demo/stock/spy/1-up-1-dn/docs/stock-price-prediction-analyze-feature-value.md?at=Adding+By+Feature+and+By+Feature+Group+Analysis&fileviewer=file-view-default)** |      |                                          |
+|                                          |      |                                          |
+| **I Offer Consulting services see: http://BayesAnalytic.com/contact** |      |                                          |
 
 ### Quantized Classifier ###
 >The Quantized classifier uses a clever grouping mechanism to identify similar groups of items for each feature.  This mechanism is very fast, yields good classification accurcy and delivers unique data discovery capabilities.  The design was  inspired by  KNN, Bayesian, K-Means, SVM and Ensemble techniques.  
