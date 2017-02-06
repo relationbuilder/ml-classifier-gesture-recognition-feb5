@@ -16,78 +16,26 @@ There are several focus areas where I can invest time. Please let me know if you
 
 ##Roughly prioritized Feature Work##
 
-* DONE:JOE:2017-01-30: Enhance QuantProb classifier so when classifying a given column we use the largest number of buckets possible then fall back for that column to a lesser number when we get a miss on the number of buckets.  This means we need to create the index for 2 to N buckets which means we need to add one more layer to the model builder.   This should allow us to use the most specific value match we can with reasonable fallback. 
-
-* DONE:JOE:2017-01-30: Fix the Breast Cancer demo that is currently reporting 75% accuracy.  The Bucket # seems to be messed up.  In a column with a value range from 1..10 and numBuck=10 it is assigning value 2 to bucket 92. 
-
 * Enhance classifier to save model as CSV file.   eg: feat#, NumOfBuck, buck#, class#, TotCnt,  classBuckProb,  buckFeatPob, classProb where classBuckProb is the probability of that class within the bucket and buckFeatProb is probability of that bucket relative to all values, Class prob = probaiblty of that class within set.  Also write code to read this and use to rebuild model.  NumOfBuck is the number of bucket used to generate this line whiel buck# is the actual computed buck ID.  We need both because our model includes records for all values from 1 to maxBuck.
-
 * Write a script that can read normal CSV and convert string input columns into integer values based on the number of unique values it finds.  It needs to determine which columns are safe to consider numeric and which ones must be converted.   Whoudl be able to specify category columns at command line.  Should be able to suppress columns at command line. 
-
-* DONE:JOE:2017-02-01: Add by class reporting to tensorflow script results.
-
-* DONE:JOE:2017-02-04: Add a simple analysis component that shows the predictive value of each single feature.  eg: run the classifier for a single feature varying numBuck for that feature.
-
 * Add simple analysis component that shows predictive value of different groups of features compared to other groupings of features.   
-
-* DONE:JOE:2017-02-04: Add a analysis component that analyzes predictive value of each feature column.    It should be able to measure the value for total precision of the set or for a combined input on predictive value by class.   It should seek to find a number of buckets for that feature that will maximize predictive value from that feature and be storable so the set of these values can be used to configure operation of the primary classifier.    
-
 * Enhance analysis component to set feature weight by percieved value / accuracy of that feature.
-
-* Enhance analysis component to save and restore analysis outputs with optional command parameter so the analysis can be used to influence future runs of classififier.
-
 * Add classifier a command option so the set divisor can be either number of features or adjusted weight based on feature weight.
-
 * Add classifier option to supress some columns by name.  
-
 * Add analysis component that randomly combines feature combinations in twin and tripplets to see if we can find sets that provide good predictive value superior using features individually.   This should probably be done using the quant filter combination so each mini set is working as a mini decision tree.
-
 * Add Ability to include mini-feature sets groups of fields in the quant prob model.   This could either be done by the primary quant prob engine or possibly by an external component that essentially create the feature groups and takes the statistical output from them to build a new file which is fed into the quant prob engine.  This approach would help isolate complexity but may be slower.   For example  if we find that day of week + hour of day + % above Min represents a good feature group using the quant_filter aspect then comming out of that engine we know the relative probability by class.   May be able to combine this into a single feature using a range for each class but it may be easier to create a new column one for each class  that contains the probability the quant_filter found for that feature group for that class.  Then we could suppress the actual features in the input set.  In the short term the easiest way to run this would be to generate an intermediate file but if it works well should be done as virtually added columns. 
-
 * Create ClassifyAnal module to create output Statistics
 
   * Output should include Add recall, precision by class in classifyFiles
   * Convert output of run from byte array to a structure that can be retained and used as output by optimizer to compare quality of output against other runs. 
   * Add report of base prob by class so we can see how the Accuracy of the class compares to the base probability or measure Lift.
-
 * Implement Model Save and Model Restore for Classify.go Saves the model wide parameters in INI file key=value Saves the model wide parameters in INI file key=value / parameters in file fiName.model.txt  Saves the feature defenitions in CSV format. featureNum, NumBuck, FeatWeight, TotCnt, Bucket1Id, Bucket1Cnt, Buck1EffMinVal, Buc1MaxVal, Bucket1AbsMinVAl, Bucket1AbsMaxVal Where each of the Bucket1  features are repeated for 1..N buckets.  This should give us everything we need to restore a model with  all of it's optimized settings intack.  It also gives us a nice representation to support the discovery aspects of the system.  function saveModel
-
 * Implement LoadModel to restore model state from files created by saveModel.  Also add print model that produces human friendly version. 
-
 * Implement browser display utility to display in nice format data from saveModel
-
 * Add a function which reports by Class and for the entire set What is the minimum Prob Number needed to reach a given level of precision in 5% increments from the base sucess  rate to 100% success rate.    This should include the % of recall at each tier. This may be a alternative way to set the optimizer goal where we seek to maximize recall at the X% such as 95% precision. 
-
 * Split the work for training and classification out to multiple cores.   May as well read X lines in chunks and allow each one to process the input.   Will be easy for classification but may require synchronizing the models for training to avoid two threads updating the same buckets simutaneously but could still have one core doing the load and split,  another core doing the convert to float and a 3rd core doing the document update.   Could also possibly have each core build their own model and merge the counts at the end which would scale better for a distributed architecture.     Another approach would be to switch the trainer so it is feature centric so they share a input set of rows but each process / core is only updating one feature which would remove the risk of overlapping count updates.  Also write a document on how this is approached for the Bayes blog. 
-
-* Add QProb optimizer that is allowed to change Feature weight and number of buckets.
-
-* > * List optimizer settings at end of run
-  > * Implment optimizer save and restore feature
-  > * implement optclear feature including delete existing opt settings file.
-  > * Implement -OptCycleClass
-  > * implement -optClear
-  > * implement -optSave
-  > * implement -optMinRecall
-  > * ​
-  > * DONE:JOE:2017-01-28 Add OptClassOption
-  > * Implement a option to allow the quantized classifier to store the entire array of training data in memory pre-converted to arrays of floats.  This will allow much faster re-train when changing the number number of buckets in the optimizer.    Also Requires Modify the classifier core to accept row with array of flow.  Separate the parsing / conversion form the training. 
-  > > * Add Retrain from RAM option which causes CSV util to pre-parse float array.  Will need one fast scan to count lines.  Need to borrow the fast version of that I wrote to support the comparative testing.
-  > > * Add ability for training and classify to be ran from an array of pre-parsed float.   Need this to support speed during optimizer runs.   Ideally if input file size is below a threshold we would retain in RAM otherwise we have to scan form disk to avoid consuming all available ram. 
-
-* > * DONE:JOE:2017-01-24: Improve optimizer specification on ClassifyFiles 
-
-* > * Implement a -describe option to better explain reasoning output
-  > * Implement option to describe high priority features  in optimizer.
-  > * Implement option to describe high priority patterns for high priority features. EG: Those sets of values from the quants that deliver the greatest  predictive input for each identified class.
-  > * Allow only a single feature to be retrained.  This is needed to support speed when allowing the optimizer change number of buckets for a feature. 
-  > * weight and feature number of buckets seeking to maximize precision at 100% recall. Where total number of buckets is considered primary cost.  Minimum number of buckets is equal to 2.  a Feature can be turned off by setting it's feature weight to 0. 
-  > * Optimizer needs ability to reserve some data from training data set to use for training.  It needs to periodically change which data is reserved.  EG: It may choose every 5th record for a while then switch to every 10th record.   It Also needs choice to use only last x% of set for optimizer setting when running with time series data.
-  > * Optimizer rules.   Can keep change if precision increases while recall stays the same.  Can keep the change is recall rises while precision remains the same. Can keep change is both precision and recall rise.   Can keep change if precision rises but recall doesn't drop below a configured threashold.    When changing number of buckets must always try  1 bucket,  1/2 current number of buckets,  random number between 1 and max buckets.   When changing  priority of a feature it must first try a priority of 0,  then a priority of 1/2 current priority, then random number between 0  and maxPriority.   When changing features the system must ensure all features are checked so first try 3 random features then 1 feature from each end working from the end towards the other end.    
-  > * ​
-
+* ​
 * Write  a blog on bayes for approaching text classification.  Based on [Text classification overview](docs/text-classification/overview-classification.md) 
-
 * Add ability in CSV Files for command line parser to specify a column other than column #1 as the class.  
 
 > - Only include detail probs if requested.   
@@ -139,7 +87,48 @@ There are several focus areas where I can invest time. Please let me know if you
 
           ​
 
+# DEFER Items
+
+- Defer further work on the optimizer until I have reconciled where the responsibility of the Analyzer stops or how the two features are supposed to interact:   Add QProb optimizer that is allowed to change Feature weight and number of buckets.
+
+- > - List optimizer settings at end of run
+  > - Implment optimizer save and restore feature
+  > - implement optclear feature including delete existing opt settings file.
+  > - Implement -OptCycleClass
+  > - implement -optClear
+  > - implement -optSave
+  > - implement -optMinRecall
+  > - ​
+  > - DONE:JOE:2017-01-28 Add OptClassOption
+  > - Implement a option to allow the quantized classifier to store the entire array of training data in memory pre-converted to arrays of floats.  This will allow much faster re-train when changing the number number of buckets in the optimizer.    Also Requires Modify the classifier core to accept row with array of flow.  Separate the parsing / conversion form the training. 
+  >
+  > > - Add Retrain from RAM option which causes CSV util to pre-parse float array.  Will need one fast scan to count lines.  Need to borrow the fast version of that I wrote to support the comparative testing.
+  > > - Add ability for training and classify to be ran from an array of pre-parsed float.   Need this to support speed during optimizer runs.   Ideally if input file size is below a threshold we would retain in RAM otherwise we have to scan form disk to avoid consuming all available ram. 
+
+- > - DONE:JOE:2017-01-24: Improve optimizer specification on ClassifyFiles 
+
+- > - Implement a -describe option to better explain reasoning output
+  > - Implement option to describe high priority features  in optimizer.
+  > - Implement option to describe high priority patterns for high priority features. EG: Those sets of values from the quants that deliver the greatest  predictive input for each identified class.
+  > - Allow only a single feature to be retrained.  This is needed to support speed when allowing the optimizer change number of buckets for a feature. 
+  > - weight and feature number of buckets seeking to maximize precision at 100% recall. Where total number of buckets is considered primary cost.  Minimum number of buckets is equal to 2.  a Feature can be turned off by setting it's feature weight to 0. 
+  > - Optimizer needs ability to reserve some data from training data set to use for training.  It needs to periodically change which data is reserved.  EG: It may choose every 5th record for a while then switch to every 10th record.   It Also needs choice to use only last x% of set for optimizer setting when running with time series data.
+  > - Optimizer rules.   Can keep change if precision increases while recall stays the same.  Can keep the change is recall rises while precision remains the same. Can keep change is both precision and recall rise.   Can keep change if precision rises but recall doesn't drop below a configured threashold.    When changing number of buckets must always try  1 bucket,  1/2 current number of buckets,  random number between 1 and max buckets.   When changing  priority of a feature it must first try a priority of 0,  then a priority of 1/2 current priority, then random number between 0  and maxPriority.   When changing features the system must ensure all features are checked so first try 3 random features then 1 feature from each end working from the end towards the other end.    
+  > - ​
+
 # Completed Items Phase 1 #
+
+* DONE:JOE:2017-02-01: Add by class reporting to tensorflow script results.
+
+* DONE:JOE:2017-02-04: Add a simple analysis component that shows the predictive value of each single feature.  eg: run the classifier for a single feature varying numBuck for that feature.
+
+* DONE:JOE:2017-02-04: Add a analysis component that analyzes predictive value of each feature column.    It should be able to measure the value for total precision of the set or for a combined input on predictive value by class.   It should seek to find a number of buckets for that feature that will maximize predictive value from that feature and be storable so the set of these values can be used to configure operation of the primary classifier.    
+
+* DONE:JOE-2017-02-05: Enhance analysis component to save and restore analysis outputs with optional command parameter so the analysis can be used to influence future runs of classififier.
+
+* DONE:JOE:2017-01-30: Enhance QuantProb classifier so when classifying a given column we use the largest number of buckets possible then fall back for that column to a lesser number when we get a miss on the number of buckets.  This means we need to create the index for 2 to N buckets which means we need to add one more layer to the model builder.   This should allow us to use the most specific value match we can with reasonable fallback. 
+
+* DONE:JOE:2017-01-30: Fix the Breast Cancer demo that is currently reporting 75% accuracy.  The Bucket # seems to be messed up.  In a column with a value range from 1..10 and numBuck=10 it is assigning value 2 to bucket 92. 
 
 * DONE:JOE:2017-01-29: Enhance quant_filt.py to support two file inputs one for train and one for class.  Also include set and by class analysis of results.
 
