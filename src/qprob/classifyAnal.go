@@ -3,7 +3,10 @@ package qprob
 // classifyAnal.go
 
 import (
+	"encoding/json"
 	"fmt"
+	iou "io/ioutil"
+	"qutil"
 )
 
 const AnalNoClassSpecified = -9999
@@ -51,20 +54,37 @@ func (sumRes *summaryResult) ToSimpleRowCSV(fier *Classifier) string {
 
 */
 
-type AnalResByClass struct {
-	FeatNdx     float32
-	minNumBuck  int16
-	maxNumBuck  int16
-	bestNumBuck int16
-	ByClasses   map[int16]*ResByClass
+type AnalResByFeat struct {
+	FeatNdx    int
+	FeatWeight float32 // assigned by
+	ColName    string
+	MinNumBuck int16
+	MaxNumBuck int16
+	EffMinVal  float32
+	EffMaxVal  float32
+	TotCnt     int32
+	SucCnt     int32
+	Prec       float32
+	TargClass  int16
+	ByClasses  map[int16]ResByClass
 }
 
-type AnalResByClassByCol struct {
-	Cols   []*AnalResByClass
+type AnalResults struct {
+	Cols   []AnalResByFeat
 	TotCnt int32
 	SucCnt int32
 	Prec   float32
-	Recall float32
+}
+
+func makeAnalResults(numCol int) *AnalResults {
+	tout := new(AnalResults)
+	tout.Cols = make([]AnalResByFeat, numCol)
+	for tndx := 0; tndx < numCol; tndx++ {
+		tout.Cols[tndx].ByClasses = make(map[int16]ResByClass)
+		tout.Cols[tndx].FeatWeight = 1
+		tout.Cols[tndx].FeatNdx = -1
+	}
+	return tout
 }
 
 //If targClass is != AnalNoClassSpecified then the results
@@ -77,8 +97,106 @@ type AnalResByClassByCol struct {
 // MinNumBuck as well becaause if we know that a low number such
 // as 2 yeidls poor results for a given class we do not want to
 // allow the results module to fall back to those lower numbers
-func (fier *Classifier) TestColumnNumBuck(targClass int16, targPrecis float32, trainRow [][]float32, testRow [][]float32) []*AnalResByClassByCol {
+func (fier *Classifier) TestColumnNumBuck(targClass int16, targPrecis float32, trainRow [][]float32, testRow [][]float32) []*AnalResults {
 	return nil
+}
+
+// Loads the saved analysis input and uses those values
+// to override the default minNumBuck,  MaxNumBuck, featWeight
+// for each column.
+func (fier *Classifier) LoadSavedAnal(fiName string) {
+	fmt.Printf("L108: Attempt Load Saved Analysis settings from %s\n", fiName)
+	ba, err := iou.ReadFile(fiName)
+	if err != nil {
+		fmt.Printf("L105: LoadSavedAnal() Error Reading %s  err=%v \n", fiName, err)
+	} else {
+		tobj := AnalResults{}
+		if err := json.Unmarshal(ba, &tobj); err != nil {
+			fmt.Printf("L111: LoadSavedAnal() Error JSON Parsing from %s err=%v\n", fiName, err)
+		} else {
+			// Copy our important values from the saved set back into the
+			// classifier so it can use them to adjust it's classificaiton
+			// results.
+
+			// WARN:   The MaxBuck used when the saved values are generated
+			//   must be the same or smaller as the MaxBuck used in this run
+			//   or a index error will occur.  The number of features in the
+			//   training file must be identical to those used when the
+			//   saved settings were generated.
+			// fmt.Printf("L112 tobj=%v\n", tobj)
+
+			for _, acol := range tobj.Cols {
+				featndx := acol.FeatNdx
+				if featndx != fier.ClassCol && featndx != -1 {
+					fier.ColDef[featndx].MaxNumBuck = acol.MaxNumBuck
+					fier.ColDef[featndx].MinNumBuck = acol.MinNumBuck
+					fier.ColDef[featndx].FeatWeight = acol.FeatWeight
+				}
+			}
+
+		}
+	}
+}
+
+func sortColumnsByPrecision(col []AnalResByFeat) {
+
+}
+
+func setFeatWeightByOrderedPrecision(col []AnalResByFeat) {
+
+}
+
+func (fier *Classifier) DoPreAnalyze(analFiName string) {
+	req := fier.Req
+
+	// Pre-analyze each column to try and find the sweet spot
+	// for precision and recall as number of buckets.
+	origTrainRows := fier.GetTrainRowsAsArr(OneGig)
+	testRows := origTrainRows
+	trainRows := origTrainRows
+	if req.AnalTestPort == 100 {
+		fmt.Printf("L139: DoPreAnalyze() Use entire training set as test numRow=%v", len(origTrainRows))
+	} else if req.AnalSplitType == 1 {
+		// pull test records from the body of test data using 1 row every
+		// so often.   Nice to get a good sampling of data that is not
+		// time series.
+		oneEvery := int(float32(len(origTrainRows)) / (float32(len(origTrainRows)) * req.AnalTestPort))
+		fmt.Printf("Analyze SplitOneEvery=%v  portSet=%v\n", oneEvery, req.AnalTestPort)
+		trainRows, testRows = qutil.SplitFloatArrOneEvery(origTrainRows, 1, oneEvery)
+	} else {
+		// pull records from end of test data.  Best for
+		// time series when predicting on records near the end
+		fmt.Printf("Analyze splitEnd PortSet=%v", req.AnalTestPort)
+		trainRows, testRows = qutil.SplitFloatArrTail(origTrainRows, req.AnalTestPort)
+	}
+	_, sumRows := fier.ClassifyRows(testRows, fier.ColDef)
+
+	// Have to retrain based on the newly split data
+	fmt.Printf("Analyze #TrainRow=%v #TestRow=%v\n", len(trainRows), len(testRows))
+	fier.Retrain(trainRows)
+	anaRes := fier.TestIndividualColumnsNB(AnalNoClassSpecified, -1.0, trainRows, testRows)
+	jsonRes, err := json.Marshal(anaRes)
+	if err != nil {
+		fmt.Printf("L83: Error converting analyze res to JSON err=%v  analRes=%v\n", err, anaRes)
+	} else {
+		//fmt.Printf("L86: Analysis Results=\n%s\n", jsonRes)
+		//fmt.Printf("L86: outBaseName=%s\n", outBaseName)
+		barr := []byte(jsonRes)
+		fmt.Printf("L90: write %v bytes to %v\n", len(barr), analFiName)
+		err := iou.WriteFile(analFiName, barr, 0666)
+		if err != nil {
+			fmt.Printf("L92: Error writting analyzis output file %s err=%v\n", analFiName, err)
+		}
+	}
+
+	if req.AnalTestPort != 100 {
+		// Rerun the classificaiton using all our columns but with the new
+		// bucket and weights for each column
+		fier.Retrain(origTrainRows)
+		_, sumRows = fier.ClassifyRows(testRows, fier.ColDef)
+		fmt.Printf("L178: DoPreAnalyze() Precision with all columns = %v\n  Based on training data\n", sumRows.Precis)
+
+	}
 }
 
 // TODO: Add the Save Feature
@@ -99,7 +217,7 @@ func (fier *Classifier) TestColumnNumBuck(targClass int16, targPrecis float32, t
 // Runs each feature independantly by the number of buckets
 // seeking the number of columns for this feature that return
 // the best results.
-func (fier *Classifier) TestIndividualColumnsNB(targClass int16, targPrecis float32, trainRows [][]float32, testRows [][]float32) []*AnalResByClass {
+func (fier *Classifier) TestIndividualColumnsNB(targClass int16, targPrecis float32, trainRows [][]float32, testRows [][]float32) *AnalResults {
 	// Question how do you quantify better.  If Precision is high
 	// but recall is very low then which is better.  Seems like you
 	// must set one as a minimum value and alllow the others to
@@ -112,6 +230,9 @@ func (fier *Classifier) TestIndividualColumnsNB(targClass int16, targPrecis floa
 	} else {
 		fmt.Printf("Analyze for Total Set\n")
 	}
+
+	numCol := len(fier.ColDef)
+	tout := makeAnalResults(numCol)
 
 	//fmt.Printf("L108:trainRows=%v\n", trainRows)
 	//fmt.Printf("L100: testRows=%v\n", testRows)
@@ -229,9 +350,32 @@ func (fier *Classifier) TestIndividualColumnsNB(targClass int16, targPrecis floa
 		fmt.Printf("   startMaxNumBuck=%v endBackNumBuck=%v\n   startMinNumBuck=%v  endMinNumBuck=%v\n",
 			startMaxNumBuck, bestMaxBuck, startMinNumBuck, bestMinBuck)
 
-	} // for features
-	_, sumRows := fier.ClassifyRows(testRows, fier.ColDef)
-	fmt.Printf("L176: After analyze setPrec all Feat enabled = %v\n", sumRows.Precis)
+		// Update output structure
+		clasSum := fier.MakeByClassStats(sumRows, testRows)
+		for classId, aclass := range clasSum.ByClass {
+			tout.Cols[featNum].ByClasses[classId] = *aclass
+		}
+		col := &tout.Cols[featNum]
+		col.FeatNdx = feat.ColNum
+		col.ColName = feat.Spec.ColName
+		col.EffMinVal = feat.EffMinVal
+		col.EffMaxVal = feat.EffMaxVal
+		col.MinNumBuck = bestMinBuck
+		col.MaxNumBuck = bestMaxBuck
+		col.TotCnt = sumRows.TotCnt
+		col.SucCnt = sumRows.SucCnt
+		col.Prec = sumRows.Precis
+		col.TargClass = req.AnalClassId
 
-	return nil
+	} // for features
+
+	// Update out output structure for enire set.
+	_, sumRows := fier.ClassifyRows(testRows, fier.ColDef)
+	tout.Prec = sumRows.Precis
+	tout.SucCnt = sumRows.SucCnt
+	tout.TotCnt = sumRows.TotCnt
+
+	fmt.Printf("L274: After analyze setPrec all Feat enabled = %v\n", sumRows.Precis)
+
+	return tout
 }

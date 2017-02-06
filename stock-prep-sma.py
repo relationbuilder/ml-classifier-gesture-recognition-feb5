@@ -142,6 +142,10 @@ def process(inName, amtRise, amtFall, smaLen, cmp):
     
   savePortSet(outTrainName, smaLen+1, smaLen + numTrainRow)
   savePortSet(outTestName,  smaLen+numTrainRow+1, numBar)
+  
+  outClassName = outTrainName.replace(".train.", ".class.")
+  
+  savePortSet(outClassName, numBar-5, numBar)
 
 # TODO:  Need to Audit the SMA ouptut 
 

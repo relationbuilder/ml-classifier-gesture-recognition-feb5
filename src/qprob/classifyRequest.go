@@ -32,6 +32,7 @@ type ClassifyRequest struct {
 	OptMinRecall    float32
 	OptMaxPrec      float32
 
+	LoadSavedAnal   bool // Load the previously saved analyzer output if available
 	DoPreAnalyze    bool
 	AnalClassId     int16
 	AnalMinRecall   float32
