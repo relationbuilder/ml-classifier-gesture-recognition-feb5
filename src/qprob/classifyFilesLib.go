@@ -13,7 +13,7 @@ import (
 	"os"
 	"qutil"
 	//"strconv"
-	"encoding/json"
+	//"encoding/json"
 	"io/ioutil"
 	s "strings"
 )
@@ -40,7 +40,22 @@ func ProcessRowsRows(fier *Classifier, req *ClassifyRequest, rows [][]float32, i
 	fmt.Println("\nfinished build Now Try to classify")
 	_, sumRows := fier.ClassifyRows(rows, fier.ColDef)
 	classCol := fier.ClassCol
-	//
+
+	fmt.Printf("L50: outBaseName=%s\n", outBaseName)
+	analFiName := s.Replace(outBaseName, ".csv", ".anal.sav.json", -1)
+	analFiName = s.Replace(analFiName, ".out.", ".", -1)
+	if req.LoadSavedAnal {
+		fier.LoadSavedAnal(analFiName)
+		_, sumRows = fier.ClassifyRows(rows, fier.ColDef)
+	}
+	// TODO: MOve this to a method
+	if req.DoPreAnalyze {
+		if req.LoadSavedAnal {
+			fmt.Printf("L54: WARN Should not specify -LoadSavedAnal and -DoPreAnalyze becuase -DoPreAnalyze will overrite values loaded by -LoadSavedAnal\n")
+		}
+		fier.DoPreAnalyze(analFiName)
+		_, sumRows = fier.ClassifyRows(rows, fier.ColDef)
+	}
 
 	outFileName := ""
 	if req.WriteJSON {
@@ -55,50 +70,6 @@ func ProcessRowsRows(fier *Classifier, req *ClassifyRequest, rows [][]float32, i
 
 		// Add class probability output
 		// add detailed probability output
-	}
-
-	if req.DoPreAnalyze {
-		// Pre-analyze each column to try and find the sweet spot
-		// for precision and recall as number of buckets.
-		origTrainRows := fier.GetTrainRowsAsArr(OneGig)
-		testRows := origTrainRows
-		trainRows := origTrainRows
-		if req.AnalSplitType == 1 {
-			// pull test records from the body of test data
-			// best for normal sets.
-			oneEvery := int(float32(len(origTrainRows)) / (float32(len(origTrainRows)) * req.AnalTestPort))
-			fmt.Printf("Analyze SplitOneEvery=%v  portSet=%v\n", oneEvery, req.AnalTestPort)
-			trainRows, testRows = qutil.SplitFloatArrOneEvery(origTrainRows, 1, oneEvery)
-		} else {
-			// pull records from end of test data.  Best for
-			// time series when predicting on records near the end
-			fmt.Printf("Analyze splitEnd PortSet=%v", req.AnalTestPort)
-			trainRows, testRows = qutil.SplitFloatArrTail(origTrainRows, req.AnalTestPort)
-		}
-		// Have to retrain based on the newly split data
-		fmt.Printf("Analyze #TrainRow=%v #TestRow=%v\n", len(trainRows), len(testRows))
-		fier.Retrain(trainRows)
-		anaRes := fier.TestIndividualColumnsNB(AnalNoClassSpecified, -1.0, trainRows, testRows)
-		jsonRes, err := json.Marshal(anaRes)
-		if err != nil {
-			fmt.Printf("L83: Error converting analyze res to JSON err=%v  analRes=%v\n", err, anaRes)
-		} else {
-			//fmt.Printf("L86: Analysis Results=\n%s\n", jsonRes)
-			//fmt.Printf("L86: outBaseName=%s\n", outBaseName)
-			analFiName := s.Replace(outBaseName, ".csv", ".anal.sav.json", -1)
-			analFiName = s.Replace(analFiName, ".out.", ".", -1)
-			barr := []byte(jsonRes)
-			fmt.Printf("L90: write %v bytes to %v\n", len(barr), analFiName)
-			err := ioutil.WriteFile(analFiName, barr, 0666)
-			if err != nil {
-				fmt.Printf("L92: Error writting analyzis output file %s err=%v\n", analFiName, err)
-			}
-		}
-
-		// Have to re-run with the new configuration
-		// of column settings
-		fier.Retrain(origTrainRows)
-		_, sumRows = fier.ClassifyRows(rows, fier.ColDef)
 	}
 
 	// Convert the summary Rows into printable Output to display
@@ -364,90 +335,7 @@ func printClassifyFilesHelp() {
 					   time so turn of except when debugging. 
 					   defaults to true. 
 					
-  -doOpt=false.        When set to true the optimizer is allowed
-                       to run and use all the -opt* features 
-					   but when false will not run optimizer at
-					   all but it will still load existing optimizer
-					   settings if the file exists.
-  
-  -optMaxTime=1        Max Time each cycle of Optimizer is allowed 
-	                   to run when seeking to reach optMinPrec
-					   Specified as integer num representing 
-					   seconds between 1.0 and 1000.0 Defaults to 
-					   1 if not specified. 
-					
-  -OptClassId=-999    Normall optimizer logic involves either
-                       cycling time between all classes or
-					   simply trying to maximize precision 
-					   measured across all documents.  When
-					   this number value is set to a valid classid
-					   then all optimizer time will be invested
-					   in improving performance for that class
-					   which may happen at the expense of 
-					   precision and recall for other classes 
-					   defaults to -999
-					
-  -OptCycleClass=true  When true and when a specific class for 
-                       optimization has not been supplied 
-					   the optimizer will cycle through features
-					   optimzing each one with the knowledge that
-					   a change to help one may hurt others.  
-					   When false and no class has been specified
-					   using the -optClassId flag then optimizer
-					   only looks at precision for entire set
-					   of test records which means that the 
-					   class with the most records in the training
-					   set will get preferential treatment.
-					   defaults to true  TBD 
-					
-					
-  -optClear=false	   Clear existing optimizer settings 
-                       to a weight of 1 and numBuck equal
-					   to current setting for -NumBuck. 
-					   This will cause any currently saved 
-					   optimizer settings  to be cleared. 
-					   This will delete the optimizer savings
-					   file generated by prior optimizer runs.
-					   TBD
-					
-  -optSave=true        Will cause the new optimizer settings
-                       to be saved so they can automatically
-					   be restored for the next run with the 
-					   same input file.  This is saved in 
-					   same directory with inputTraining file
-					   with name changed from finame.csv to
-					   finame.optset.txt
-					   TBD
-	
-  -optMinRecall=0.01   When optimizing for specific features 
-                       the optimizer normally only keeps a 
-					   change if it increases precision 
-					   or increases recall without reducing
-					   precision.  The optimizer is allowed
-					   to keep changes that increase recall
-					   even when it hurts precision when current
-					   recall is below this number.  
-					   Defaults to 0.01 which means it will
-					   agressively seek to increase recall whenever
-					   recall is below 1%.
-					
-  -OptMaxPrec=0.95     When optimizing at the feature level the 
-                       system normally seeks to always increase
-					   precision but under some cases once we
-					   have good enough precision it is better 
-					   to increase recall.  Once the precision
-					   for a class exceeds this number the 
-					   optimizer will accept changes provided 
-					   they increase recall and do not reduce
-					   precision below this value.   Defaults
-					   to 0.95 if not set.
-  
-  -optRandomize=false  If true will randomize all current 
-                       optimizer settings.  This can 
-					   help discover new paths but is really in place
-					   to support genetic altorithms in the future.
-					   defaults to false
-	
+
 	
 A integer ID that maps to one class.  The Optimizer
 	                   run compare the results for this class to try and
@@ -508,8 +396,6 @@ A integer ID that maps to one class.  The Optimizer
 	                   precision at 100% recall has been reached.
 					   will stop when optimizer has ran optMaxCycles
 					   if not set then no optimizer is ran. 
-	
-  
 					
 	
 	-optOKBuck=true    If true then optimizer is allowed to 
@@ -523,7 +409,15 @@ A integer ID that maps to one class.  The Optimizer
 					   Must be true if -optOKBuck is false when
 					   optimizer is ran. 
 					
-	
+	-LoadSavedAnal     When true will load previously saved
+	                   analyzer output and use that to control min
+					   max num of buckets and feature weight.  If 
+					   analyzer file does not exist then has no effect
+					   defaults to false. The analyzer file is automatically
+					   created by the -DoPreAnalyze with it's name 
+					   and location derived from file named by
+					   -testout option.
+					
 	-DoPreAnalyze      If true will pre-analyze data set attempting
 	                   to find number of buckets for each column
 					   that maximizes a combination of precision and
@@ -540,10 +434,99 @@ A integer ID that maps to one class.  The Optimizer
 					   to 1
 	
 	-AnalSplitPort     The portion of training set to use as test data
-	                   defaults to 0.15 if not set.
+	                   defaults to 0.15 if not set.  When set to 100
+					   it will use entire training set as both test
+					   and train during the analysis phase.
 	
   -`
 	fmt.Println(msg)
+
+	/*
+	     -doOpt=false.        When set to true the optimizer is allowed
+	                          to run and use all the -opt* features
+	   					   but when false will not run optimizer at
+	   					   all but it will still load existing optimizer
+	   					   settings if the file exists.
+
+	     -optMaxTime=1        Max Time each cycle of Optimizer is allowed
+	   	                   to run when seeking to reach optMinPrec
+	   					   Specified as integer num representing
+	   					   seconds between 1.0 and 1000.0 Defaults to
+	   					   1 if not specified.
+
+	     -OptClassId=-999    Normall optimizer logic involves either
+	                          cycling time between all classes or
+	   					   simply trying to maximize precision
+	   					   measured across all documents.  When
+	   					   this number value is set to a valid classid
+	   					   then all optimizer time will be invested
+	   					   in improving performance for that class
+	   					   which may happen at the expense of
+	   					   precision and recall for other classes
+	   					   defaults to -999
+
+	     -OptCycleClass=true  When true and when a specific class for
+	                          optimization has not been supplied
+	   					   the optimizer will cycle through features
+	   					   optimzing each one with the knowledge that
+	   					   a change to help one may hurt others.
+	   					   When false and no class has been specified
+	   					   using the -optClassId flag then optimizer
+	   					   only looks at precision for entire set
+	   					   of test records which means that the
+	   					   class with the most records in the training
+	   					   set will get preferential treatment.
+	   					   defaults to true  TBD
+
+
+	     -optClear=false	   Clear existing optimizer settings
+	                          to a weight of 1 and numBuck equal
+	   					   to current setting for -NumBuck.
+	   					   This will cause any currently saved
+	   					   optimizer settings  to be cleared.
+	   					   This will delete the optimizer savings
+	   					   file generated by prior optimizer runs.
+	   					   TBD
+
+	     -optSave=true        Will cause the new optimizer settings
+	                          to be saved so they can automatically
+	   					   be restored for the next run with the
+	   					   same input file.  This is saved in
+	   					   same directory with inputTraining file
+	   					   with name changed from finame.csv to
+	   					   finame.optset.txt
+	   					   TBD
+
+	     -optMinRecall=0.01   When optimizing for specific features
+	                          the optimizer normally only keeps a
+	   					   change if it increases precision
+	   					   or increases recall without reducing
+	   					   precision.  The optimizer is allowed
+	   					   to keep changes that increase recall
+	   					   even when it hurts precision when current
+	   					   recall is below this number.
+	   					   Defaults to 0.01 which means it will
+	   					   agressively seek to increase recall whenever
+	   					   recall is below 1%.
+
+	     -OptMaxPrec=0.95     When optimizing at the feature level the
+	                          system normally seeks to always increase
+	   					   precision but under some cases once we
+	   					   have good enough precision it is better
+	   					   to increase recall.  Once the precision
+	   					   for a class exceeds this number the
+	   					   optimizer will accept changes provided
+	   					   they increase recall and do not reduce
+	   					   precision below this value.   Defaults
+	   					   to 0.95 if not set.
+
+	     -optRandomize=false  If true will randomize all current
+	                          optimizer settings.  This can
+	   					   help discover new paths but is really in place
+	   					   to support genetic altorithms in the future.
+	   					   defaults to false
+
+	*/
 }
 
 func checkClassifyFilesParms(msg string, abort bool) {
@@ -591,6 +574,7 @@ func ParseClassifyFileCommandParms(args []string) *ClassifyRequest {
 	aReq.OptMinRecall = parms.Fval("optminrecall", 0.01)
 	aReq.OptMaxPrec = parms.Fval("optmaxprec", 0.95)
 	aReq.OkToRun = false
+	aReq.LoadSavedAnal = parms.Bval("loadsavedanal", false)
 	aReq.DoPreAnalyze = parms.Bval("dopreanalyze", false)
 	aReq.AnalClassId = int16(parms.Ival("analclassid", AnalNoClassSpecified))
 	aReq.AnalSplitType = int16(parms.Ival("analsplittype", 1))
@@ -605,6 +589,7 @@ func ParseClassifyFileCommandParms(args []string) *ClassifyRequest {
 		if _, err := os.Stat(aReq.TrainInFi); os.IsNotExist(err) {
 			fmt.Printf("ERROR: train file does not exist %s\n", aReq.TrainInFi)
 			printClassifyFilesHelp()
+			fmt.Printf("ERROR: train file does not exist %s\n", aReq.TrainInFi)
 			return aReq
 		}
 	}
@@ -613,6 +598,7 @@ func ParseClassifyFileCommandParms(args []string) *ClassifyRequest {
 		if _, err := os.Stat(aReq.TestInFi); os.IsNotExist(err) {
 			fmt.Printf("ERROR: test file does not exist %s\n", aReq.TestInFi)
 			printClassifyFilesHelp()
+			fmt.Printf("ERROR: test file does not exist %s\n", aReq.TestInFi)
 			return aReq
 
 		}
@@ -622,6 +608,7 @@ func ParseClassifyFileCommandParms(args []string) *ClassifyRequest {
 		if _, err := os.Stat(aReq.ClassInFi); os.IsNotExist(err) {
 			fmt.Printf("ERROR: Class file does not exist %s\n", aReq.ClassInFi)
 			printClassifyFilesHelp()
+			fmt.Printf("ERROR: Class file does not exist %s\n", aReq.ClassInFi)
 			return aReq
 
 		}
@@ -631,6 +618,7 @@ func ParseClassifyFileCommandParms(args []string) *ClassifyRequest {
 		if _, err := os.Stat(aReq.ModelFi); os.IsNotExist(err) {
 			fmt.Printf("ERROR: model file does not exist %s\n", aReq.ModelFi)
 			printClassifyFilesHelp()
+			fmt.Printf("ERROR: model file does not exist %s\n", aReq.ModelFi)
 			return aReq
 		}
 	}

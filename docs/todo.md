@@ -20,15 +20,25 @@ There are several focus areas where I can invest time. Please let me know if you
 
 * DONE:JOE:2017-01-30: Fix the Breast Cancer demo that is currently reporting 75% accuracy.  The Bucket # seems to be messed up.  In a column with a value range from 1..10 and numBuck=10 it is assigning value 2 to bucket 92. 
 
-* Add by class reporting to tensorflow script results.
+* Enhance classifier to save model as CSV file.   eg: feat#, NumOfBuck, buck#, class#, TotCnt,  classBuckProb,  buckFeatPob, classProb where classBuckProb is the probability of that class within the bucket and buckFeatProb is probability of that bucket relative to all values, Class prob = probaiblty of that class within set.  Also write code to read this and use to rebuild model.  NumOfBuck is the number of bucket used to generate this line whiel buck# is the actual computed buck ID.  We need both because our model includes records for all values from 1 to maxBuck.
 
-* If we want to use Optimizer for data importance discovery then we should consider tracking weights by bucket ID rather than the feature level.  That way if we boost  the weight of a given bucket it gives us a direct signal on the value of that data element.   
+* Write a script that can read normal CSV and convert string input columns into integer values based on the number of unique values it finds.  It needs to determine which columns are safe to consider numeric and which ones must be converted.   Whoudl be able to specify category columns at command line.  Should be able to suppress columns at command line. 
 
-* Add a simple analysis component that shows the predictive value of each single feature.  eg: run the classifier for a single feature varying numBuck for that feature.
+* DONE:JOE:2017-02-01: Add by class reporting to tensorflow script results.
+
+* DONE:JOE:2017-02-04: Add a simple analysis component that shows the predictive value of each single feature.  eg: run the classifier for a single feature varying numBuck for that feature.
 
 * Add simple analysis component that shows predictive value of different groups of features compared to other groupings of features.   
 
-* Add a analysis component that analyzes predictive value of each feature column.    It should be able to measure the value for total precision of the set or for a combined input on predictive value by class.   It should seek to find a number of buckets for that feature that will maximize predictive value from that feature and be storable so the set of these values can be used to configure operation of the primary classifier.     
+* DONE:JOE:2017-02-04: Add a analysis component that analyzes predictive value of each feature column.    It should be able to measure the value for total precision of the set or for a combined input on predictive value by class.   It should seek to find a number of buckets for that feature that will maximize predictive value from that feature and be storable so the set of these values can be used to configure operation of the primary classifier.    
+
+* Enhance analysis component to set feature weight by percieved value / accuracy of that feature.
+
+* Enhance analysis component to save and restore analysis outputs with optional command parameter so the analysis can be used to influence future runs of classififier.
+
+* Add classifier a command option so the set divisor can be either number of features or adjusted weight based on feature weight.
+
+* Add classifier option to supress some columns by name.  
 
 * Add analysis component that randomly combines feature combinations in twin and tripplets to see if we can find sets that provide good predictive value superior using features individually.   This should probably be done using the quant filter combination so each mini set is working as a mini decision tree.
 
@@ -127,7 +137,7 @@ There are several focus areas where I can invest time. Please let me know if you
 
 *   Finish filling in sections of the [Genomic research white paper](genomic-notes.md). Add Test set for Daily stock bar data.  Where we add a column which is a SMA(x) where X defaults to 30 days. and features are the slope of the SMA(X) when comparing current bar to SMA(x) at some number of days in past create.  In a stock scenario  you would have a goal EG: A Bar for a symbol where price rose by P% within N days without dropping by more than Q% before it reached P%.  Those that meet the rule get a class of 1 while those that fail get a class of 0.       
 
-        ​
+          ​
 
 # Completed Items Phase 1 #
 
