@@ -81,9 +81,13 @@ func ProcessRowsRows(fier *Classifier, req *ClassifyRequest, rows [][]float32, i
 		} else {
 			sumRows.AsStrToBuffClass(sb)
 		}
-		outFileName := s.Replace(outBaseName, ".csv", ".out.sum.csv", -1)
-		outFileName = s.Replace(outFileName, ".out.out", ".out", -1)
-		fmt.Printf("write CSV sum rows to %s\n", outFileName)
+
+		outFileName := outBaseName
+		if s.Contains(outBaseName, ".class.") == false {
+			outFileName := s.Replace(outBaseName, ".csv", ".out.class.csv", -1)
+			outFileName = s.Replace(outFileName, ".out.out", ".out", -1)
+		}
+		fmt.Printf("L89: write CSV sum rows to %s\n", outFileName)
 		ioutil.WriteFile(outFileName, sb.Bytes(), 0644)
 		if req.DetToStdOut {
 			// TODO: Need to re-read actual string values
@@ -137,21 +141,27 @@ func ProcessRowsRows(fier *Classifier, req *ClassifyRequest, rows [][]float32, i
 
 		outFileName := s.Replace(outBaseName, ".csv", ".out.csv", -1)
 		outFileName = s.Replace(outFileName, ".out.out", ".out", -1)
-		fmt.Printf("write CSV detail rows to %s\n", outFileName)
+
+		fmt.Printf("L145: write CSV detail rows to %s\n", outFileName)
 		ioutil.WriteFile(outFileName, sb.Bytes(), 0644)
 		if req.DetToStdOut {
-			fmt.Println("Original CSV with Class Column changed to predicted class")
+			fmt.Println("L148: Original CSV with Class Column changed to predicted class")
 			fmt.Println(sb.String())
 		}
 	}
+
 	fmt.Printf("\nSummary By Class\n")
 	clasSum := fier.MakeByClassStats(sumRows, rows)
 	fier.PrintTrainClassProb()
 
-	fmt.Printf("\nRESULTS FOR TEST DATA\n  Num Test Rows=%v\n", len(rows))
-	fmt.Printf("  Total Set Precis=%v\n", sumRows.Precis)
+	if s.Contains(outBaseName, ".class") == false {
+		fmt.Printf("\nRESULTS FOR TEST DATA\n  Num Test Rows=%v\n", len(rows))
+		fmt.Printf("  Total Set Precis=%v\n", sumRows.Precis)
+		fier.PrintResultsByClass(clasSum)
+	} else {
+		fmt.Printf("L162: Num of rows classified %v\n", len(rows))
+	}
 
-	fier.PrintResultsByClass(clasSum)
 	// TODO: Print this out nicely
 }
 
@@ -335,7 +345,36 @@ func printClassifyFilesHelp() {
 					   time so turn of except when debugging. 
 					   defaults to true. 
 					
-
+					
+  -LoadSavedAnal       When true will load previously saved
+	                   analyzer output and use that to control min
+					   max num of buckets and feature weight.  If 
+					   analyzer file does not exist then has no effect
+					   defaults to false. The analyzer file is automatically
+					   created by the -DoPreAnalyze with it's name 
+					   and location derived from file named by
+					   -testout option.
+					
+  -DoPreAnalyze      If true will pre-analyze data set attempting
+	                   to find number of buckets for each column
+					   that maximizes a combination of precision and
+					   recall.  Defaults to false
+					
+  -AnalClassId       When specified it will analyze based on finding
+	                   best settings for the specified class otherwise
+					   will try to find best precision for the entire
+					   set of records.  Defaults to not set
+	
+  -AnalSplitType     if 1 then split by pulling test records from
+	                   body of training data.  If 2 then pull test
+					   records from end of training data. Defaults
+					   to 1
+	
+  -AnalSplitPort     The portion of training set to use as test data
+	                   defaults to 0.15 if not set.  When set to 100
+					   it will use entire training set as both test
+					   and train during the analysis phase.
+					
 	
 A integer ID that maps to one class.  The Optimizer
 	                   run compare the results for this class to try and
@@ -385,146 +424,119 @@ A integer ID that maps to one class.  The Optimizer
 					   it exists.  If File does not exist it will be 
 					   generated when the training has been completed
 					   and after optimization passes.
-					
-	-runOpt=true       If true will run the optimizer.  If false then
-	                   all optimizer settings are ignored. 	 Defaults
-					   to false
-				
 
-					
-    -optMinPrec=95     Will run optimizer cycles until a minimum 
-	                   precision at 100% recall has been reached.
-					   will stop when optimizer has ran optMaxCycles
-					   if not set then no optimizer is ran. 
-					
-	
-	-optOKBuck=true    If true then optimizer is allowed to 
-	                   change numer of quant buckets.  Defaults
-					   to true if not set.  Must be true if
-					   -optOKWeight is false when he optimizer 
-					   is set. 
-					
-	-optOKWeight       If True the optimizer is allowed to change
-	                   feature weight.  Defaults to true if not set.
-					   Must be true if -optOKBuck is false when
-					   optimizer is ran. 
-					
-	-LoadSavedAnal     When true will load previously saved
-	                   analyzer output and use that to control min
-					   max num of buckets and feature weight.  If 
-					   analyzer file does not exist then has no effect
-					   defaults to false. The analyzer file is automatically
-					   created by the -DoPreAnalyze with it's name 
-					   and location derived from file named by
-					   -testout option.
-					
-	-DoPreAnalyze      If true will pre-analyze data set attempting
-	                   to find number of buckets for each column
-					   that maximizes a combination of precision and
-					   recall.  Defaults to false
-					
-    -AnalClassId       When specified it will analyze based on finding
-	                   best settings for the specified class otherwise
-					   will try to find best precision for the entire
-					   set of records.  Defaults to not set
-	
-	-AnalSplitType     if 1 then split by pulling test records from
-	                   body of training data.  If 2 then pull test
-					   records from end of training data. Defaults
-					   to 1
-	
-	-AnalSplitPort     The portion of training set to use as test data
-	                   defaults to 0.15 if not set.  When set to 100
-					   it will use entire training set as both test
-					   and train during the analysis phase.
 	
   -`
 	fmt.Println(msg)
 
 	/*
-	     -doOpt=false.        When set to true the optimizer is allowed
-	                          to run and use all the -opt* features
-	   					   but when false will not run optimizer at
-	   					   all but it will still load existing optimizer
-	   					   settings if the file exists.
+			     -doOpt=false.        When set to true the optimizer is allowed
+			                          to run and use all the -opt* features
+			   					   but when false will not run optimizer at
+			   					   all but it will still load existing optimizer
+			   					   settings if the file exists.
 
-	     -optMaxTime=1        Max Time each cycle of Optimizer is allowed
-	   	                   to run when seeking to reach optMinPrec
-	   					   Specified as integer num representing
-	   					   seconds between 1.0 and 1000.0 Defaults to
-	   					   1 if not specified.
+			     -optMaxTime=1        Max Time each cycle of Optimizer is allowed
+			   	                   to run when seeking to reach optMinPrec
+			   					   Specified as integer num representing
+			   					   seconds between 1.0 and 1000.0 Defaults to
+			   					   1 if not specified.
 
-	     -OptClassId=-999    Normall optimizer logic involves either
-	                          cycling time between all classes or
-	   					   simply trying to maximize precision
-	   					   measured across all documents.  When
-	   					   this number value is set to a valid classid
-	   					   then all optimizer time will be invested
-	   					   in improving performance for that class
-	   					   which may happen at the expense of
-	   					   precision and recall for other classes
-	   					   defaults to -999
-
-	     -OptCycleClass=true  When true and when a specific class for
-	                          optimization has not been supplied
-	   					   the optimizer will cycle through features
-	   					   optimzing each one with the knowledge that
-	   					   a change to help one may hurt others.
-	   					   When false and no class has been specified
-	   					   using the -optClassId flag then optimizer
-	   					   only looks at precision for entire set
-	   					   of test records which means that the
-	   					   class with the most records in the training
-	   					   set will get preferential treatment.
-	   					   defaults to true  TBD
+			     -OptClassId=-999    Normall optimizer logic involves either
+			                          cycling time between all classes or
+			   					   simply trying to maximize precision
+			   					   measured across all documents.  When
+			   					   this number value is set to a valid classid
+			   					   then all optimizer time will be invested
+			   					   in improving performance for that class
+			   					   which may happen at the expense of
+			   					   precision and recall for other classes
+			   					   defaults to -999
 
 
-	     -optClear=false	   Clear existing optimizer settings
-	                          to a weight of 1 and numBuck equal
-	   					   to current setting for -NumBuck.
-	   					   This will cause any currently saved
-	   					   optimizer settings  to be cleared.
-	   					   This will delete the optimizer savings
-	   					   file generated by prior optimizer runs.
-	   					   TBD
+			-runOpt=true       If true will run the optimizer.  If false then
+			                   all optimizer settings are ignored. 	 Defaults
+							   to false
 
-	     -optSave=true        Will cause the new optimizer settings
-	                          to be saved so they can automatically
-	   					   be restored for the next run with the
-	   					   same input file.  This is saved in
-	   					   same directory with inputTraining file
-	   					   with name changed from finame.csv to
-	   					   finame.optset.txt
-	   					   TBD
 
-	     -optMinRecall=0.01   When optimizing for specific features
-	                          the optimizer normally only keeps a
-	   					   change if it increases precision
-	   					   or increases recall without reducing
-	   					   precision.  The optimizer is allowed
-	   					   to keep changes that increase recall
-	   					   even when it hurts precision when current
-	   					   recall is below this number.
-	   					   Defaults to 0.01 which means it will
-	   					   agressively seek to increase recall whenever
-	   					   recall is below 1%.
 
-	     -OptMaxPrec=0.95     When optimizing at the feature level the
-	                          system normally seeks to always increase
-	   					   precision but under some cases once we
-	   					   have good enough precision it is better
-	   					   to increase recall.  Once the precision
-	   					   for a class exceeds this number the
-	   					   optimizer will accept changes provided
-	   					   they increase recall and do not reduce
-	   					   precision below this value.   Defaults
-	   					   to 0.95 if not set.
+		    -optMinPrec=95     Will run optimizer cycles until a minimum
+			                   precision at 100% recall has been reached.
+							   will stop when optimizer has ran optMaxCycles
+							   if not set then no optimizer is ran.
 
-	     -optRandomize=false  If true will randomize all current
-	                          optimizer settings.  This can
-	   					   help discover new paths but is really in place
-	   					   to support genetic altorithms in the future.
-	   					   defaults to false
+
+			-optOKBuck=true    If true then optimizer is allowed to
+			                   change numer of quant buckets.  Defaults
+							   to true if not set.  Must be true if
+							   -optOKWeight is false when the optimizer
+							   is set.
+
+			-optOKWeight       If True the optimizer is allowed to change
+			                   feature weight.  Defaults to true if not set.
+							   Must be true if -optOKBuck is false when
+							   optimizer is ran.
+
+			     -OptCycleClass=true  When true and when a specific class for
+			                          optimization has not been supplied
+			   					   the optimizer will cycle through features
+			   					   optimzing each one with the knowledge that
+			   					   a change to help one may hurt others.
+			   					   When false and no class has been specified
+			   					   using the -optClassId flag then optimizer
+			   					   only looks at precision for entire set
+			   					   of test records which means that the
+			   					   class with the most records in the training
+			   					   set will get preferential treatment.
+			   					   defaults to true  TBD
+
+
+			     -optClear=false	   Clear existing optimizer settings
+			                          to a weight of 1 and numBuck equal
+			   					   to current setting for -NumBuck.
+			   					   This will cause any currently saved
+			   					   optimizer settings  to be cleared.
+			   					   This will delete the optimizer savings
+			   					   file generated by prior optimizer runs.
+			   					   TBD
+
+			     -optSave=true        Will cause the new optimizer settings
+			                          to be saved so they can automatically
+			   					   be restored for the next run with the
+			   					   same input file.  This is saved in
+			   					   same directory with inputTraining file
+			   					   with name changed from finame.csv to
+			   					   finame.optset.txt
+			   					   TBD
+
+			     -optMinRecall=0.01   When optimizing for specific features
+			                          the optimizer normally only keeps a
+			   					   change if it increases precision
+			   					   or increases recall without reducing
+			   					   precision.  The optimizer is allowed
+			   					   to keep changes that increase recall
+			   					   even when it hurts precision when current
+			   					   recall is below this number.
+			   					   Defaults to 0.01 which means it will
+			   					   agressively seek to increase recall whenever
+			   					   recall is below 1%.
+
+			     -OptMaxPrec=0.95     When optimizing at the feature level the
+			                          system normally seeks to always increase
+			   					   precision but under some cases once we
+			   					   have good enough precision it is better
+			   					   to increase recall.  Once the precision
+			   					   for a class exceeds this number the
+			   					   optimizer will accept changes provided
+			   					   they increase recall and do not reduce
+			   					   precision below this value.   Defaults
+			   					   to 0.95 if not set.
+
+			     -optRandomize=false  If true will randomize all current
+			                          optimizer settings.  This can
+			   					   help discover new paths but is really in place
+			   					   to support genetic altorithms in the future.
+			   					   defaults to false
 
 	*/
 }

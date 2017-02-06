@@ -17,6 +17,6 @@
 
 set XXCWD=%cd%
 cd ..\..\..\..\
-classifyFiles -train=data/spy.slp30.train.csv -class=data/spy.slp30.class.csv -maxBuck=140 -classOut=tmpout/spy.slp30.pred.class.csv -testOut=tmpout/spy.slp30.out.csv -LoadSavedAnal=true 
+classifyFiles -train=data/spy.slp30.train.csv -test=data/spy.slp30.test.csv -maxBuck=140 -testOut=tmpout/spy.slp30.out.csv 
 cd %XXCWD%
 
